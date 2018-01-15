@@ -217,6 +217,16 @@
         </li>
       
         
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
         <li class="menu-item menu-item-about">
           <a href="/about/" rel="section">
             
@@ -300,10 +310,10 @@
         
           <div class="tag-cloud">
             <div class="tag-cloud-title">
-                目前共计 12 个标签
+                目前共计 14 个标签
             </div>
             <div class="tag-cloud-tags">
-              <a href="/tags/Android邮箱客户端/" style="font-size: 12px; color: #ccc">Android邮箱客户端</a> <a href="/tags/DiskLruCache/" style="font-size: 12px; color: #ccc">DiskLruCache</a> <a href="/tags/Imap协议/" style="font-size: 12px; color: #ccc">Imap协议</a> <a href="/tags/LRU/" style="font-size: 30px; color: #111">LRU</a> <a href="/tags/LruCache/" style="font-size: 12px; color: #ccc">LruCache</a> <a href="/tags/Oauth2-0/" style="font-size: 12px; color: #ccc">Oauth2.0</a> <a href="/tags/gmail/" style="font-size: 12px; color: #ccc">gmail</a> <a href="/tags/outlook/" style="font-size: 12px; color: #ccc">outlook</a> <a href="/tags/磁盘缓存/" style="font-size: 12px; color: #ccc">磁盘缓存</a> <a href="/tags/缓存技术/" style="font-size: 12px; color: #ccc">缓存技术</a>
+              <a href="/tags/AndFix/" style="font-size: 12px; color: #ccc">AndFix</a> <a href="/tags/Android热修复/" style="font-size: 12px; color: #ccc">Android热修复</a> <a href="/tags/Android邮箱客户端/" style="font-size: 12px; color: #ccc">Android邮箱客户端</a> <a href="/tags/DiskLruCache/" style="font-size: 12px; color: #ccc">DiskLruCache</a> <a href="/tags/Imap协议/" style="font-size: 12px; color: #ccc">Imap协议</a> <a href="/tags/LRU/" style="font-size: 30px; color: #111">LRU</a> <a href="/tags/LruCache/" style="font-size: 12px; color: #ccc">LruCache</a> <a href="/tags/Oauth2-0/" style="font-size: 12px; color: #ccc">Oauth2.0</a> <a href="/tags/Sophix/" style="font-size: 12px; color: #ccc">Sophix</a> <a href="/tags/Unsafe/" style="font-size: 12px; color: #ccc">Unsafe</a> <a href="/tags/gmail/" style="font-size: 12px; color: #ccc">gmail</a> <a href="/tags/outlook/" style="font-size: 12px; color: #ccc">outlook</a> <a href="/tags/磁盘缓存/" style="font-size: 12px; color: #ccc">磁盘缓存</a> <a href="/tags/缓存技术/" style="font-size: 12px; color: #ccc">缓存技术</a>
             </div>
           </div>
         
@@ -367,7 +377,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -377,10 +387,10 @@
               
               
               <div class="site-state-item site-state-categories">
-                
+                <a href="/categories/index.html">
                   <span class="site-state-item-count">1</span>
                   <span class="site-state-item-name">分类</span>
-                
+                </a>
               </div>
             
 
@@ -389,7 +399,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">14</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -488,6 +498,12 @@
       </div>
     
 
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
     
 
   </div>
@@ -965,18 +981,18 @@
 
   <script>
     
-      pbOptions = {};
-      
-          pbOptions.iconStyle = "box";
-      
-          pbOptions.boxForm = "horizontal";
-      
-          pbOptions.position = "bottomCenter";
-      
-          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
-      
-      new needShareButton('#needsharebutton-postbottom', pbOptions);
     
+      flOptions = {};
+      
+          flOptions.iconStyle = "box";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "middleRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
     
   </script>
 
