@@ -395,11 +395,11 @@
 
       
         
-          
-          前言AndFix，全称是Android hot-fix，是阿里开源的一个Android热修复框架，允许APP在不重新发布版本的情况下修复线上的bug。就目前来说，AndFix支持Android 2.3到6.0版本，并且支持arm 与 X86系统架构的设备。完美支持Dalvik与ART的Runtime。 这个框架的核心技术点有两个方面：
-
-1.通过apkpatch工具生成一个.apatch格式的补丁
-          ...
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>AndFix，全称是Android hot-fix，是阿里开源的一个Android热修复框架，允许APP在不重新发布版本的情况下修复线上的bug。就目前来说，AndFix支持Android 2.3到6.0版本，并且支持arm 与 X86系统架构的设备。完美支持Dalvik与ART的Runtime。 这个框架的核心技术点有两个方面：</p>
+<blockquote>
+<p>1.通过apkpatch工具生成一个.apatch格式的补丁文件，加载补丁文件，并在修复时通过@MethodReplace的注&emsp;解，找到需要替换的方法进行修复。<br>2.找到Java层的Method对应Native层的结构体方法的指针，然后替换结构体的成员每一项数据，完成修复。</p>
+</blockquote>
+<p>针对第二点，在native层，需要分Art和Dalvik虚拟机分别做处理，因为两种虚拟机下，java层Method对应的Native结构体完全不相同。<br>本文只针对Art虚拟机下Native层的方法替换进行解析，并基于AndFix修复原理，手写一个简易的热修复框架。<br>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2018/01/15/Android热修复框架AndFix核心代码分析以及纯Java代码实现AndFix/#more" rel="contents">
