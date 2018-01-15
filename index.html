@@ -293,6 +293,156 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/15/超级实用的Android磁盘缓存工具DiskDataCacher用法以及原理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Windy">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/my_photo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Windy's Journal">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/01/15/超级实用的Android磁盘缓存工具DiskDataCacher用法以及原理/" itemprop="url">超级实用的Android轻量级磁盘缓存工具DiskDataCacher用法以及原理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-15T21:30:17+08:00">
+                2018-01-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p><code>DiskDataCacher</code>是一个轻量级的Android磁盘缓存工具，基于LRU算法实现，同时可以设置缓存有效期，使用起来十分方便。<br>源码托管：<a href="https://github.com/WindySha/DiskDataCacher" target="_blank" rel="noopener"><code>DiskDataCacher</code></a></p>
+<h2 id="工具用途"><a href="#工具用途" class="headerlink" title="工具用途"></a>工具用途</h2><ul>
+<li>用于缓存网络请求返回的数据，并且可以设置缓存数据的有效期，比如，缓存时间假设为1个小时，超时1小时后再次获取缓存会自动失效，让客户端重新请求新的数据，这样可以减少客户端流量，同时减少服务器并发量。</li>
+<li>用于代替<code>SharePreference</code>当做配置文件，缓存一些较大的配置数据，效率更高，可以减少内存消耗。<br>SharePreference 不能用来缓存较大数据的理由：<strong><a href="http://weishu.me/2016/10/13/sharedpreference-advices/" target="_blank" rel="noopener">请不要滥用SharedPreference</a></strong></li>
+<li>支持扩展，扩展后可以缓存<code>JsonObject</code>、<code>Bitmap</code>、<code>Drawable</code>和序列化的java对象等等。
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/01/15/超级实用的Android磁盘缓存工具DiskDataCacher用法以及原理/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/12/Gmail，OutLook账户基于Oauth2-0协议授权登录邮箱客户端的功能实现/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -363,9 +513,9 @@
 
       
         
-          <h1 id="邮箱登录安全"><a href="#邮箱登录安全" class="headerlink" title="邮箱登录安全"></a>邮箱登录安全</h1><p>考虑到邮箱登陆的安全性，使用这种登陆方法，用户不用暴露帐号密码给我们客户端就可以进行收发邮件，google推荐用户使用网页授权登陆的方式来登陆Gmail邮箱。<br>查阅相关资料后，得知，这种授权登陆的方式都是给予Oauth2.0协议。很多第三方的邮件客户端都已实现了给予Oauth2.0授权登陆这一功能，例如：</p>
+          <h1 id="邮箱登录安全"><a href="#邮箱登录安全" class="headerlink" title="邮箱登录安全"></a>邮箱登录安全</h1><p>考虑到邮箱登陆的安全性，使用这种登陆方法，用户不用暴露帐号密码给我们客户端就可以进行收发邮件，google推荐用户使用网页授权登陆的方式来登陆Gmail邮箱。<br>经过研究后，得知，这种授权登陆的方式都是给予Oauth2.0协议。很多第三方的邮件客户端都已实现了给予Oauth2.0授权登陆这一功能，例如：</p>
 <p>WPS邮箱,QQ邮箱，网易邮箱大师实现了gmail的授权登陆<br>WeMail，myMail等客户端实现了gmail和outlook的授权登陆<br>微软的Outlook客户端实现了gmail,outlook，yahoo,office365的授权登陆<br>ios邮件实现了gmail,yahoo的授权登陆</p>
-<h1 id="Oauth2-0协议流程"><a href="#Oauth2-0协议流程" class="headerlink" title="Oauth2.0协议流程"></a>Oauth2.0协议流程</h1><p>经研究，终于弄清楚了登陆的流程。整个流程就是基于Oauth2.0协议和Imap协议的。Oauth2.0授权登陆流程具体如下：</p>
+<h1 id="Oauth2-0协议流程"><a href="#Oauth2-0协议流程" class="headerlink" title="Oauth2.0协议流程"></a>Oauth2.0协议流程</h1><p>经研究，发现整个流程就是基于Oauth2.0协议和Imap协议的。Oauth2.0授权登陆流程具体如下：</p>
 <p>Oauth2.0授权模式有多种，这里使用简化模式登陆最方便。<br>简化模式（implicit grant type）不通过第三方应用程序的服务器，直接在浏览器中向认证服务器申请令牌，跳过了”授权码”这个步骤，因此得名。所有步骤在浏览器中完成，令牌对访问者是可见的，且客户端不需要认证。<br>
           <!--noindex-->
           <div class="post-button text-center">
@@ -586,12 +736,21 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
             
 
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">分类</span>
+                
+              </div>
             
 
             
@@ -599,7 +758,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

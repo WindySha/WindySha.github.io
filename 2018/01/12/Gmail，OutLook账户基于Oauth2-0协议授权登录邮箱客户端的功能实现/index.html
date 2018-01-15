@@ -75,7 +75,7 @@
 
 
 
-  <meta name="keywords" content="Oauth2.0, Android邮箱客户端," />
+  <meta name="keywords" content="Oauth2.0,Android邮箱客户端,Imap协议,gmail,outlook," />
 
 
 
@@ -86,18 +86,18 @@
 
 
 
-<meta name="description" content="邮箱登录安全考虑到邮箱登陆的安全性，使用这种登陆方法，用户不用暴露帐号密码给我们客户端就可以进行收发邮件，google推荐用户使用网页授权登陆的方式来登陆Gmail邮箱。查阅相关资料后，得知，这种授权登陆的方式都是给予Oauth2.0协议。很多第三方的邮件客户端都已实现了给予Oauth2.0授权登陆这一功能，例如： WPS邮箱,QQ邮箱，网易邮箱大师实现了gmail的授权登陆WeMail，myMa">
-<meta name="keywords" content="Oauth2.0, Android邮箱客户端">
+<meta name="description" content="邮箱登录安全考虑到邮箱登陆的安全性，使用这种登陆方法，用户不用暴露帐号密码给我们客户端就可以进行收发邮件，google推荐用户使用网页授权登陆的方式来登陆Gmail邮箱。经过研究后，得知，这种授权登陆的方式都是给予Oauth2.0协议。很多第三方的邮件客户端都已实现了给予Oauth2.0授权登陆这一功能，例如： WPS邮箱,QQ邮箱，网易邮箱大师实现了gmail的授权登陆WeMail，myMail">
+<meta name="keywords" content="Oauth2.0,Android邮箱客户端,Imap协议,gmail,outlook">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Gmail，OutLook账户基于Oauth2.0协议授权登录邮箱客户端的功能实现">
 <meta property="og:url" content="http://yoursite.com/2018/01/12/Gmail，OutLook账户基于Oauth2-0协议授权登录邮箱客户端的功能实现/index.html">
 <meta property="og:site_name" content="Windy&#39;s Journal">
-<meta property="og:description" content="邮箱登录安全考虑到邮箱登陆的安全性，使用这种登陆方法，用户不用暴露帐号密码给我们客户端就可以进行收发邮件，google推荐用户使用网页授权登陆的方式来登陆Gmail邮箱。查阅相关资料后，得知，这种授权登陆的方式都是给予Oauth2.0协议。很多第三方的邮件客户端都已实现了给予Oauth2.0授权登陆这一功能，例如： WPS邮箱,QQ邮箱，网易邮箱大师实现了gmail的授权登陆WeMail，myMa">
+<meta property="og:description" content="邮箱登录安全考虑到邮箱登陆的安全性，使用这种登陆方法，用户不用暴露帐号密码给我们客户端就可以进行收发邮件，google推荐用户使用网页授权登陆的方式来登陆Gmail邮箱。经过研究后，得知，这种授权登陆的方式都是给予Oauth2.0协议。很多第三方的邮件客户端都已实现了给予Oauth2.0授权登陆这一功能，例如： WPS邮箱,QQ邮箱，网易邮箱大师实现了gmail的授权登陆WeMail，myMail">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-01-12T09:50:54.582Z">
+<meta property="og:updated_time" content="2018-01-15T14:01:37.911Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Gmail，OutLook账户基于Oauth2.0协议授权登录邮箱客户端的功能实现">
-<meta name="twitter:description" content="邮箱登录安全考虑到邮箱登陆的安全性，使用这种登陆方法，用户不用暴露帐号密码给我们客户端就可以进行收发邮件，google推荐用户使用网页授权登陆的方式来登陆Gmail邮箱。查阅相关资料后，得知，这种授权登陆的方式都是给予Oauth2.0协议。很多第三方的邮件客户端都已实现了给予Oauth2.0授权登陆这一功能，例如： WPS邮箱,QQ邮箱，网易邮箱大师实现了gmail的授权登陆WeMail，myMa">
+<meta name="twitter:description" content="邮箱登录安全考虑到邮箱登陆的安全性，使用这种登陆方法，用户不用暴露帐号密码给我们客户端就可以进行收发邮件，google推荐用户使用网页授权登陆的方式来登陆Gmail邮箱。经过研究后，得知，这种授权登陆的方式都是给予Oauth2.0协议。很多第三方的邮件客户端都已实现了给予Oauth2.0授权登陆这一功能，例如： WPS邮箱,QQ邮箱，网易邮箱大师实现了gmail的授权登陆WeMail，myMail">
 
 
 
@@ -366,9 +366,9 @@
       
 
       
-        <h1 id="邮箱登录安全"><a href="#邮箱登录安全" class="headerlink" title="邮箱登录安全"></a>邮箱登录安全</h1><p>考虑到邮箱登陆的安全性，使用这种登陆方法，用户不用暴露帐号密码给我们客户端就可以进行收发邮件，google推荐用户使用网页授权登陆的方式来登陆Gmail邮箱。<br>查阅相关资料后，得知，这种授权登陆的方式都是给予Oauth2.0协议。很多第三方的邮件客户端都已实现了给予Oauth2.0授权登陆这一功能，例如：</p>
+        <h1 id="邮箱登录安全"><a href="#邮箱登录安全" class="headerlink" title="邮箱登录安全"></a>邮箱登录安全</h1><p>考虑到邮箱登陆的安全性，使用这种登陆方法，用户不用暴露帐号密码给我们客户端就可以进行收发邮件，google推荐用户使用网页授权登陆的方式来登陆Gmail邮箱。<br>经过研究后，得知，这种授权登陆的方式都是给予Oauth2.0协议。很多第三方的邮件客户端都已实现了给予Oauth2.0授权登陆这一功能，例如：</p>
 <p>WPS邮箱,QQ邮箱，网易邮箱大师实现了gmail的授权登陆<br>WeMail，myMail等客户端实现了gmail和outlook的授权登陆<br>微软的Outlook客户端实现了gmail,outlook，yahoo,office365的授权登陆<br>ios邮件实现了gmail,yahoo的授权登陆</p>
-<h1 id="Oauth2-0协议流程"><a href="#Oauth2-0协议流程" class="headerlink" title="Oauth2.0协议流程"></a>Oauth2.0协议流程</h1><p>经研究，终于弄清楚了登陆的流程。整个流程就是基于Oauth2.0协议和Imap协议的。Oauth2.0授权登陆流程具体如下：</p>
+<h1 id="Oauth2-0协议流程"><a href="#Oauth2-0协议流程" class="headerlink" title="Oauth2.0协议流程"></a>Oauth2.0协议流程</h1><p>经研究，发现整个流程就是基于Oauth2.0协议和Imap协议的。Oauth2.0授权登陆流程具体如下：</p>
 <p>Oauth2.0授权模式有多种，这里使用简化模式登陆最方便。<br>简化模式（implicit grant type）不通过第三方应用程序的服务器，直接在浏览器中向认证服务器申请令牌，跳过了”授权码”这个步骤，因此得名。所有步骤在浏览器中完成，令牌对访问者是可见的，且客户端不需要认证。<br><a id="more"></a></p>
 <p>它的步骤如下：<br>（A）客户端将用户导向认证服务器。<br>（B）用户决定是否给于客户端授权。<br>（C）假设用户给予授权，认证服务器将用户导向客户端指定的”重定向URI”，并在URI的Hash部分包含了访问令牌。<br>（D）浏览器向资源服务器发出请求，其中不包括上一步收到的Hash值。<br>（E）资源服务器返回一个网页，其中包含的代码可以获取Hash值中的令牌。<br>（F）浏览器执行上一步获得的脚本，提取出令牌。<br>（G）浏览器将令牌发给客户端。</p>
 <p>下面是上面这些步骤所需要的参数。<br>A步骤中，客户端发出的HTTP请求，包含以下参数：</p>
@@ -414,7 +414,15 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Oauth2-0-Android邮箱客户端/" rel="tag"># Oauth2.0, Android邮箱客户端</a>
+            <a href="/tags/Oauth2-0/" rel="tag"># Oauth2.0</a>
+          
+            <a href="/tags/Android邮箱客户端/" rel="tag"># Android邮箱客户端</a>
+          
+            <a href="/tags/Imap协议/" rel="tag"># Imap协议</a>
+          
+            <a href="/tags/gmail/" rel="tag"># gmail</a>
+          
+            <a href="/tags/outlook/" rel="tag"># outlook</a>
           
         </div>
       
@@ -451,6 +459,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/15/超级实用的Android磁盘缓存工具DiskDataCacher用法以及原理/" rel="prev" title="超级实用的Android轻量级磁盘缓存工具DiskDataCacher用法以及原理">
+                超级实用的Android轻量级磁盘缓存工具DiskDataCacher用法以及原理 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -531,12 +543,21 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
             
 
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">分类</span>
+                
+              </div>
             
 
             
@@ -544,7 +565,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

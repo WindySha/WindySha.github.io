@@ -75,7 +75,7 @@
 
 
 
-  <meta name="keywords" content="LRU 性能优化," />
+  <meta name="keywords" content="LRU,LruCache,缓存技术," />
 
 
 
@@ -87,14 +87,14 @@
 
 
 <meta name="description" content="今天与大家分享一下图片的缓存技术，利用它可以提高UI的流畅性、响应速度，给用户好的体验。 如何在内存中做缓存？ 通过内存缓存可以快速加载缓存图片，但会消耗应用的内存空间。LruCache类（通过兼容包可以支持到sdk4）很适合做图片缓存，它通过LinkedHashMap保持图片的强引用方式存储图片，当缓存空间超过设置定的限值时会释放掉早期的缓存。   注：在过去，常用的内存缓存实现是通过SoftR">
-<meta name="keywords" content="LRU 性能优化">
+<meta name="keywords" content="LRU,LruCache,缓存技术">
 <meta property="og:type" content="article">
 <meta property="og:title" content="详解基于LRU缓存的LruCache类及其在Android内存优化中的应用">
 <meta property="og:url" content="http://yoursite.com/2018/01/12/详解基于LRU缓存的LruCache类及其在Android内存优化中的应用/index.html">
 <meta property="og:site_name" content="Windy&#39;s Journal">
 <meta property="og:description" content="今天与大家分享一下图片的缓存技术，利用它可以提高UI的流畅性、响应速度，给用户好的体验。 如何在内存中做缓存？ 通过内存缓存可以快速加载缓存图片，但会消耗应用的内存空间。LruCache类（通过兼容包可以支持到sdk4）很适合做图片缓存，它通过LinkedHashMap保持图片的强引用方式存储图片，当缓存空间超过设置定的限值时会释放掉早期的缓存。   注：在过去，常用的内存缓存实现是通过SoftR">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-01-12T09:52:05.574Z">
+<meta property="og:updated_time" content="2018-01-15T14:02:59.991Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="详解基于LRU缓存的LruCache类及其在Android内存优化中的应用">
 <meta name="twitter:description" content="今天与大家分享一下图片的缓存技术，利用它可以提高UI的流畅性、响应速度，给用户好的体验。 如何在内存中做缓存？ 通过内存缓存可以快速加载缓存图片，但会消耗应用的内存空间。LruCache类（通过兼容包可以支持到sdk4）很适合做图片缓存，它通过LinkedHashMap保持图片的强引用方式存储图片，当缓存空间超过设置定的限值时会释放掉早期的缓存。   注：在过去，常用的内存缓存实现是通过SoftR">
@@ -396,7 +396,11 @@
       
         <div class="post-tags">
           
-            <a href="/tags/LRU-性能优化/" rel="tag"># LRU 性能优化</a>
+            <a href="/tags/LRU/" rel="tag"># LRU</a>
+          
+            <a href="/tags/LruCache/" rel="tag"># LruCache</a>
+          
+            <a href="/tags/缓存技术/" rel="tag"># 缓存技术</a>
           
         </div>
       
@@ -513,12 +517,21 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
             
 
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">分类</span>
+                
+              </div>
             
 
             
@@ -526,7 +539,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
