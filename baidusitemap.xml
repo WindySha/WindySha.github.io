@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+
+    
+  <url>
+    <loc>http://yoursite.com/2018/01/15/Android%E7%83%AD%E4%BF%AE%E5%A4%8D%E6%A1%86%E6%9E%B6AndFix%E6%A0%B8%E5%BF%83%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%E4%BB%A5%E5%8F%8A%E7%BA%AFJava%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0AndFix/</loc>
+    <lastmod>2018-01-15T14:42:07.288Z</lastmod>
+    <data>
+        <display>
+        <title>Android热修复框架AndFix核心代码分析以及纯Java代码实现AndFix</title>
+        <pubTime>2018-01-15T14:32:12.000Z</pubTime>
+        
+        <tag>Android热修复</tag>
+         
+        <tag>AndFix</tag>
+         
+        <tag>Sophix</tag>
+         
+        <tag>Unsafe</tag>
+         
+         
+           
+             
+              <breadCrumb title="Android" url="http://yoursite.com/categories/Android/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+    
+    
+  <url>
+    <loc>http://yoursite.com/2018/01/15/%E8%B6%85%E7%BA%A7%E5%AE%9E%E7%94%A8%E7%9A%84Android%E7%A3%81%E7%9B%98%E7%BC%93%E5%AD%98%E5%B7%A5%E5%85%B7DiskDataCacher%E7%94%A8%E6%B3%95%E4%BB%A5%E5%8F%8A%E5%8E%9F%E7%90%86/</loc>
+    <lastmod>2018-01-15T14:06:47.760Z</lastmod>
+    <data>
+        <display>
+        <title>超级实用的Android轻量级磁盘缓存工具DiskDataCacher用法以及原理</title>
+        <pubTime>2018-01-15T13:30:17.000Z</pubTime>
+        
+        <tag>LRU</tag>
+         
+        <tag>磁盘缓存</tag>
+         
+        <tag>DiskLruCache</tag>
+         
+         
+           
+             
+              <breadCrumb title="Android" url="http://yoursite.com/categories/Android/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://yoursite.com/2018/01/12/%E8%AF%A6%E8%A7%A3%E5%9F%BA%E4%BA%8ELRU%E7%BC%93%E5%AD%98%E7%9A%84LruCache%E7%B1%BB%E5%8F%8A%E5%85%B6%E5%9C%A8Android%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/</loc>
+    <lastmod>2018-01-15T14:02:59.991Z</lastmod>
+    <data>
+        <display>
+        <title>详解基于LRU缓存的LruCache类及其在Android内存优化中的应用</title>
+        <pubTime>2018-01-12T07:15:20.000Z</pubTime>
+        
+        <tag>LRU</tag>
+         
+        <tag>LruCache</tag>
+         
+        <tag>缓存技术</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://yoursite.com/2018/01/12/Gmail%EF%BC%8COutLook%E8%B4%A6%E6%88%B7%E5%9F%BA%E4%BA%8EOauth2-0%E5%8D%8F%E8%AE%AE%E6%8E%88%E6%9D%83%E7%99%BB%E5%BD%95%E9%82%AE%E7%AE%B1%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0/</loc>
+    <lastmod>2018-01-15T14:01:37.911Z</lastmod>
+    <data>
+        <display>
+        <title>Gmail，OutLook账户基于Oauth2.0协议授权登录邮箱客户端的功能实现</title>
+        <pubTime>2018-01-12T07:40:38.000Z</pubTime>
+        
+        <tag>Oauth2.0</tag>
+         
+        <tag>Android邮箱客户端</tag>
+         
+        <tag>Imap协议</tag>
+         
+        <tag>gmail</tag>
+         
+        <tag>outlook</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+</urlset>
