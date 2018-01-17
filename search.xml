@@ -134,9 +134,9 @@
         
         <tags>
             
-            <tag> 磁盘缓存 </tag>
-            
             <tag> LRU </tag>
+            
+            <tag> 磁盘缓存 </tag>
             
             <tag> DiskLruCache </tag>
             
