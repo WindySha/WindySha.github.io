@@ -32,16 +32,12 @@
 
 
 
-  <meta name="google-site-verification" content="DriWLHPOSm42mFNpn-8F4QnKrvTt4aj2cqvnOToSeaw" />
 
 
 
 
 
 
-
-
-  <meta name="baidu-site-verification" content="l1rAwZtE1v" />
 
 
 
@@ -92,13 +88,14 @@
 
 <meta name="description" content="用技术撬动地球">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Windy&#39;s Journal">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta property="og:title" content="标签">
+<meta property="og:url" content="http://yoursite.com/tags/index.html">
 <meta property="og:site_name" content="Windy&#39;s Journal">
 <meta property="og:description" content="用技术撬动地球">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-01-12T08:11:00.422Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Windy&#39;s Journal">
+<meta name="twitter:title" content="标签">
 <meta name="twitter:description" content="用技术撬动地球">
 
 
@@ -129,13 +126,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/"/>
+  <link rel="canonical" href="http://yoursite.com/tags/"/>
 
 
 
 
 
-  <title>Windy's Journal</title>
+  <title>标签 | Windy's Journal</title>
   
 
 
@@ -154,8 +151,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -292,567 +288,44 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/15/Android热修复框架AndFix核心代码分析以及纯Java代码实现AndFix/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Windy">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/my_photo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Windy's Journal">
-    </span>
-
     
+    
+    <div class="post-block page">
       <header class="post-header">
 
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/01/15/Android热修复框架AndFix核心代码分析以及纯Java代码实现AndFix/" itemprop="url">Android热修复框架AndFix核心代码分析以及纯Java代码实现AndFix</a></h1>
-        
+	<h1 class="post-title" itemprop="name headline">标签</h1>
 
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-15T22:32:12+08:00">
-                2018-01-15
-              </time>
-            
 
-            
 
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Android/" itemprop="url" rel="index">
-                    <span itemprop="name">Android</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
+</header>
 
       
       
-
       
+      <div class="post-body">
         
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>AndFix，全称是Android hot-fix，是阿里开源的一个Android热修复框架，允许APP在不重新发布版本的情况下修复线上的bug。就目前来说，AndFix支持Android 2.3到6.0版本，并且支持arm 与 X86系统架构的设备。完美支持Dalvik与ART的Runtime。 这个框架的核心技术点有两个方面：</p>
-<blockquote>
-<p>1.通过apkpatch工具生成一个.apatch格式的补丁文件，加载补丁文件，并在修复时通过@MethodReplace的注&emsp;解，找到需要替换的方法进行修复。<br>2.找到Java层的Method对应Native层的结构体方法的指针，然后替换结构体的成员每一项数据，完成修复。</p>
-</blockquote>
-<p>针对第二点，在native层，需要分Art和Dalvik虚拟机分别做处理，因为两种虚拟机下，java层Method对应的Native结构体完全不相同。<br>本文只针对Art虚拟机下Native层的方法替换进行解析，并基于AndFix修复原理，手写一个简易的热修复框架。<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/01/15/Android热修复框架AndFix核心代码分析以及纯Java代码实现AndFix/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
+        
+          <div class="tag-cloud">
+            <div class="tag-cloud-title">
+                目前共计 14 个标签
+            </div>
+            <div class="tag-cloud-tags">
+              <a href="/tags/AndFix/" style="font-size: 12px; color: #ccc">AndFix</a> <a href="/tags/Android热修复/" style="font-size: 12px; color: #ccc">Android热修复</a> <a href="/tags/Android邮箱客户端/" style="font-size: 12px; color: #ccc">Android邮箱客户端</a> <a href="/tags/DiskLruCache/" style="font-size: 12px; color: #ccc">DiskLruCache</a> <a href="/tags/Imap协议/" style="font-size: 12px; color: #ccc">Imap协议</a> <a href="/tags/LRU/" style="font-size: 30px; color: #111">LRU</a> <a href="/tags/LruCache/" style="font-size: 12px; color: #ccc">LruCache</a> <a href="/tags/Oauth2-0/" style="font-size: 12px; color: #ccc">Oauth2.0</a> <a href="/tags/Sophix/" style="font-size: 12px; color: #ccc">Sophix</a> <a href="/tags/Unsafe/" style="font-size: 12px; color: #ccc">Unsafe</a> <a href="/tags/gmail/" style="font-size: 12px; color: #ccc">gmail</a> <a href="/tags/outlook/" style="font-size: 12px; color: #ccc">outlook</a> <a href="/tags/磁盘缓存/" style="font-size: 12px; color: #ccc">磁盘缓存</a> <a href="/tags/缓存技术/" style="font-size: 12px; color: #ccc">缓存技术</a>
+            </div>
           </div>
-          <!--/noindex-->
         
+      </div>
+      
+      
       
     </div>
     
     
     
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
   </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/15/超级实用的Android磁盘缓存工具DiskDataCacher用法以及原理/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Windy">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/my_photo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Windy's Journal">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/01/15/超级实用的Android磁盘缓存工具DiskDataCacher用法以及原理/" itemprop="url">超级实用的Android轻量级磁盘缓存工具DiskDataCacher用法以及原理</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-15T21:30:17+08:00">
-                2018-01-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Android/" itemprop="url" rel="index">
-                    <span itemprop="name">Android</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p><code>DiskDataCacher</code>是一个轻量级的Android磁盘缓存工具，基于LRU算法实现，同时可以设置缓存有效期，使用起来十分方便。<br>源码托管：<a href="https://github.com/WindySha/DiskDataCacher" target="_blank" rel="noopener"><code>DiskDataCacher</code></a></p>
-<h2 id="工具用途"><a href="#工具用途" class="headerlink" title="工具用途"></a>工具用途</h2><ul>
-<li>用于缓存网络请求返回的数据，并且可以设置缓存数据的有效期，比如，缓存时间假设为1个小时，超时1小时后再次获取缓存会自动失效，让客户端重新请求新的数据，这样可以减少客户端流量，同时减少服务器并发量。</li>
-<li>用于代替<code>SharePreference</code>当做配置文件，缓存一些较大的配置数据，效率更高，可以减少内存消耗。<br>SharePreference 不能用来缓存较大数据的理由：<strong><a href="http://weishu.me/2016/10/13/sharedpreference-advices/" target="_blank" rel="noopener">请不要滥用SharedPreference</a></strong></li>
-<li>支持扩展，扩展后可以缓存<code>JsonObject</code>、<code>Bitmap</code>、<code>Drawable</code>和序列化的java对象等等。
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/01/15/超级实用的Android磁盘缓存工具DiskDataCacher用法以及原理/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/12/Gmail，OutLook账户基于Oauth2-0协议授权登录邮箱客户端的功能实现/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Windy">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/my_photo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Windy's Journal">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/01/12/Gmail，OutLook账户基于Oauth2-0协议授权登录邮箱客户端的功能实现/" itemprop="url">Gmail，OutLook账户基于Oauth2.0协议授权登录邮箱客户端的功能实现</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-12T15:40:38+08:00">
-                2018-01-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="邮箱登录安全"><a href="#邮箱登录安全" class="headerlink" title="邮箱登录安全"></a>邮箱登录安全</h1><p>考虑到邮箱登陆的安全性，使用这种登陆方法，用户不用暴露帐号密码给我们客户端就可以进行收发邮件，google推荐用户使用网页授权登陆的方式来登陆Gmail邮箱。<br>经过研究后，得知，这种授权登陆的方式都是给予Oauth2.0协议。很多第三方的邮件客户端都已实现了给予Oauth2.0授权登陆这一功能，例如：</p>
-<p>WPS邮箱,QQ邮箱，网易邮箱大师实现了gmail的授权登陆<br>WeMail，myMail等客户端实现了gmail和outlook的授权登陆<br>微软的Outlook客户端实现了gmail,outlook，yahoo,office365的授权登陆<br>ios邮件实现了gmail,yahoo的授权登陆</p>
-<h1 id="Oauth2-0协议流程"><a href="#Oauth2-0协议流程" class="headerlink" title="Oauth2.0协议流程"></a>Oauth2.0协议流程</h1><p>经研究，发现整个流程就是基于Oauth2.0协议和Imap协议的。Oauth2.0授权登陆流程具体如下：</p>
-<p>Oauth2.0授权模式有多种，这里使用简化模式登陆最方便。<br>简化模式（implicit grant type）不通过第三方应用程序的服务器，直接在浏览器中向认证服务器申请令牌，跳过了”授权码”这个步骤，因此得名。所有步骤在浏览器中完成，令牌对访问者是可见的，且客户端不需要认证。<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/01/12/Gmail，OutLook账户基于Oauth2-0协议授权登录邮箱客户端的功能实现/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/12/详解基于LRU缓存的LruCache类及其在Android内存优化中的应用/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Windy">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/my_photo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Windy's Journal">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/01/12/详解基于LRU缓存的LruCache类及其在Android内存优化中的应用/" itemprop="url">详解基于LRU缓存的LruCache类及其在Android内存优化中的应用</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-12T15:15:20+08:00">
-                2018-01-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>今天与大家分享一下图片的缓存技术，利用它可以提高UI的流畅性、响应速度，给用户好的体验。</p>
-<p>如何在内存中做缓存？</p>
-<p>通过内存缓存可以快速加载缓存图片，但会消耗应用的内存空间。LruCache类（通过兼容包可以支持到sdk4）很适合做图片缓存，它通过LinkedHashMap保持图片的强引用方式存储图片，当缓存空间超过设置定的限值时会释放掉早期的缓存。</p>
-<p>  注：在过去，常用的内存缓存实现是通过SoftReference或WeakReference，但不建议这样做。从Android2.3（API等级9）垃圾收集器开始更积极收集软/弱引用，这使得它们相当无效。此外，在Android 3.0（API等级11）之前，存储在native内存中的可见的bitmap不会被释放，可能会导致应用程序暂时地超过其内存限制并崩溃。</p>
-<p>什么是LruCache？<br>LruCache实现原理是什么？   </p>
-<p>要回答这个两个问题，先要知道什么是LRU。<br>LRU是Least Recently Used 的缩写，翻译过来就是“最近最少使用”，LRU缓存就是使用这种原理实现，简单的说就是缓存一定量的数据，当超过设定的阈值时就把一些过期的数据删除掉，比如我们缓存100M的数据，当总数据小于100M时可以随意添加，当超过100M时就需要把新的数据添加进来，同时要把过期数据删除，以确保我们最大缓存100M，那怎么确定删除哪条过期数据呢，采用LRU算法实现的话就是将最老的数据删掉。利用LRU缓存，我们能够提高系统的performance.<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/01/12/详解基于LRU缓存的LruCache类及其在Android内存优化中的应用/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-  </section>
-
-  
 
 
           </div>
@@ -860,6 +333,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -1098,6 +575,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
