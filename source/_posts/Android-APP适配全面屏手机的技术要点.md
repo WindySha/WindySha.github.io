@@ -105,6 +105,17 @@ compile 'com.android.support:percent:23.0.1'
 具体的使用方法本文就不详细介绍了，可以参考官方的sample: [android-percent-support-lib-sample][6]
 或者这个博客：[百分比布局支持库][7]
 
+***
+**还有**一个布局方式，比上面说的两种布局方法更加强大好用，那就是`ConstraintLayout`，大家发现没有，每次使用android studio创建一个默认工程的时候，默认给我们的布局就是使用`ConstraintLayout`，也就是说，google也在大力推行`ConstraintLayout`。Why？
+因为`ConstraintLayout`有以下三大优势：
+> * 可以极大地减少布局的嵌套，提升界面渲染性能
+> * 可以使用可视化的方式来编写Android布局文件，非常方便
+> * 跟上面介绍的几种布局对比，可以更方便地实现百分比布局，适配全面屏也毫无压力
+
+所以，强烈推荐大家学习和使用`ConstraintLayout`。不会`ConstraintLayout`，那你就OUT了。
+***
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 *2018.04.27 updated*
+
 ## **虚拟导航键(NavigationBar)适配**
 
 ### **判断虚拟导航键是否存在**
