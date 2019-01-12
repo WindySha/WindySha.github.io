@@ -412,12 +412,21 @@ gitment:
   lazy: false # Comments lazy loading with a button
   cleanly: false # Hide 'Powered by ...' on footer, and more
   language: zh-Hans # Force language, or auto switch by theme
-  github_user: # MUST HAVE, Your Github ID
-  github_repo: # MUST HAVE, The repo you use to store Gitment comments
-  client_id: # MUST HAVE, Github client id for the Gitment
-  client_secret: # EITHER this or proxy_gateway, Github access secret token for the Gitment
+  github_user: WindySha
+  github_repo: my_blog_comments
+  client_id: 74fae1ebd3ed7c477fa3
+  client_secret: 6c20e96e69c1d539a3150d1c464977fbcd2ce50e
   proxy_gateway: # Address of api proxy, See: https://github.com/aimingoo/intersect
   redirect_protocol: # Protocol of redirect_uri with force_redirect_protocol when mint enabled
+  
+gitalk:
+  enable: true
+  githubID: WindySha
+  repo: my_hexo_blog_comments
+  ClientID: 74fae1ebd3ed7c477fa3
+  ClientSecret: 6c20e96e69c1d539a3150d1c464977fbcd2ce50e
+  adminUser: WindySha
+  distractionFreeMode: true
 
 # Baidu Share
 # Available value:
@@ -540,8 +549,8 @@ rating:
 # You can visit https://leancloud.cn get AppID and AppKey.
 leancloud_visitors:
   enable: false
-  app_id: #<app_id>
-  app_key: #<app_key>
+  app_id: RWAKCEYDTA1tlrl9VggkAMDy-gzGzoHsz
+  app_key: QKwAYT64U3kGKnaAl9DF4OFV
 
 # Another tool to show number of visitors to each article.
 # visit https://console.firebase.google.com/u/0/ to get apiKey and projectId
@@ -559,11 +568,11 @@ busuanzi_count:
   # count values only if the other configs are false
   enable: true
   # custom uv span for the whole site
-  site_uv: true
+  site_uv: false
   site_uv_header: <i class="fa fa-user"></i>
   site_uv_footer:
   # custom pv span for the whole site
-  site_pv: true
+  site_pv: false
   site_pv_header: <i class="fa fa-eye"></i>
   site_pv_footer:
   # custom pv span for one page only
