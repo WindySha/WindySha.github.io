@@ -5,14 +5,14 @@ type: "about"
 ---
 
 ## 关于我
-毕业于西北工业大学数学系
-曾供职于oppo，魅族等手机公司，从事app以及android framework的开发工作
-目前职于欢聚时代，负责短视频业务，游戏辅助工具等技术的研发
+毕业于西工大数学系  
+曾供职于oppo，魅族等手机公司，从事Android App以及Framework的开发  
+目前职于国内某互联网公司，负责Android App产品的研发 
 
 
-## 关于博客
-将Android开发中积累的干货与大家分享
-享受知识分享带来的快乐
+## 博客初衷
+热衷于分享技术  
+并享受知识分享带来的快乐
 
 
 ## 我的更多站点
@@ -21,7 +21,8 @@ CSDN: [Windy的专栏][2]
 简书: [Windy][3]
 
 ## 联系方式
-邮箱：eGlhd2FubGliYmJAcXEuY29tCg==（base64）
+邮箱：ODM0ODI4MDg4QHFxLmNvbQ==  
+QQ: ODM0ODI4MDg4  （Base64）
 
 
   [1]: https://github.com/WindySha
