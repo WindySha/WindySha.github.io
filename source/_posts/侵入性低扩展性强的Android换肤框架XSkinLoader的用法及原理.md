@@ -30,23 +30,47 @@ XSkinLoader项目源码地址为：**[https://github.com/WindySha/XSkinLoader][8
 
 下面，先简单介绍XSkinLoader的基本用法，再通过分析源码来解析这些改进点的实现原理。
 
-## **XSkinLoader的使用方法**
-XSkinLoader的使用方式特别简单，对代码的侵入性很低，需要换肤的Activity中只用在调用一行代码即可：
+# 引用
+代码已经上传到Jcenter  
+gradle: 
+```
+implementation 'com.windysha.xskinloader:xskinloader:0.1.0'
+```
+maven: 
+```
+<dependency>
+	<groupId>com.windysha.xskinloader</groupId>
+	<artifactId>xskinloader</artifactId>
+	<version>0.1.0</version>
+	<type>pom</type>
+</dependency>
+```
+
+# 使用
+## 加载资源Apk
+只需要将资源Apk拷贝到sdcard下面，调用loadSkin进行加载：
+```
+String skinApkPath = "mnt/sdcard/skin.apk";
+SkinManager.get().loadSkin(skinApkPath);
+```
+如果需要恢复到默认皮肤（使用宿主Apk资源），调用restoreToDefaultSkin()即可：
+```
+SkinManager.get().restoreToDefaultSkin();
+```
+## Activity中布局文件换肤
+对于需要换肤的Activity，在Activity的setContentView方法调用之前，设置其LayoutInflater的Factory接口：
 ```
     SkinInflaterFactory.setFactory(this);
 ```
-用法跟其他换肤框架基本相同，先在Application中初始化，然后在相关xml中加上`skin:enable="true"`即可， 详细用法如下：
-### **初始化**
-首先在`Application`的`onCreate`中进行初始化：
+这样，使用Activity的LayoutInflater加载的xml布局就可以支持换肤了。
+
+## 设置Application的LayoutInflater
+
+如果使用Application Context的LayoutInflater加载View也需要换肤，在Application的onCreate中加上这样一行代码：
 ```
-        SkinManager.get().init(this);
+        SkinInflaterFactory.setFactory(LayoutInflater.from(this));
 ```
-如果代码中需要经常使用Application Context的LayoutInflater加载View，最好同时加上这样一行代码：
-```
-        SkinInflaterFactory.setFactory(LayoutInflater.from(this));  // for skin change
-        SkinManager.get().init(this);
-```
-如此，使用LayoutInflater.from(context.getApplicationContext()).inflate()加载的view也是可以换肤的
+如此，使用LayoutInflater.from(context.getApplicationContext()).inflate()加载的view也是可以换肤。
 
 ### **XML换肤**
 xml布局中的View需要换肤的，只需要在布局文件中相关View标签下添加`skin:enable="true"`即可,例如：
