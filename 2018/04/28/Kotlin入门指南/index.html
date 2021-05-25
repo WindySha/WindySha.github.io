@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+  <meta name="google-site-verification" content="DriWLHPOSm42mFNpn-8F4QnKrvTt4aj2cqvnOToSeaw">
+
+
+
+
+
+
+
+
+  <meta name="baidu-site-verification" content="l1rAwZtE1v">
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Kotlin,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Windy's Journal" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="Kotlin的优势代码简洁高效、强大的when语法，不用写分号结尾，findViewById光荣退休，空指针安全、强大的扩展功能、函数式编程、支持lambda表达式、流式API等等 Kotlin基本语法基本用法类型和函数定义在Kotlin中,常量用val声明，变量用var声明，关键字在前面，类型在后面以冒号:隔开，也可以省略直接赋值(自动进行类型推断):1234var str: String =">
+<meta name="keywords" content="Kotlin">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kotlin入门指南">
+<meta property="og:url" content="http://yoursite.com/2018/04/28/Kotlin入门指南/index.html">
+<meta property="og:site_name" content="Windy&#39;s Journal">
+<meta property="og:description" content="Kotlin的优势代码简洁高效、强大的when语法，不用写分号结尾，findViewById光荣退休，空指针安全、强大的扩展功能、函数式编程、支持lambda表达式、流式API等等 Kotlin基本语法基本用法类型和函数定义在Kotlin中,常量用val声明，变量用var声明，关键字在前面，类型在后面以冒号:隔开，也可以省略直接赋值(自动进行类型推断):1234var str: String =">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2021-05-25T16:15:36.406Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kotlin入门指南">
+<meta name="twitter:description" content="Kotlin的优势代码简洁高效、强大的when语法，不用写分号结尾，findViewById光荣退休，空指针安全、强大的扩展功能、函数式编程、支持lambda表达式、流式API等等 Kotlin基本语法基本用法类型和函数定义在Kotlin中,常量用val声明，变量用var声明，关键字在前面，类型在后面以冒号:隔开，也可以省略直接赋值(自动进行类型推断):1234var str: String =">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideUpIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/04/28/Kotlin入门指南/">
+
+
+
+
+
+  <title>Kotlin入门指南 | Windy's Journal</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Windy's Journal</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/04/28/Kotlin入门指南/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Windy">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/my_photo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Windy's Journal">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Kotlin入门指南</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-28T19:07:12+08:00">
+                2018-04-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kotlin/" itemprop="url" rel="index">
+                    <span itemprop="name">Kotlin</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <hr>
+<h2 id="Kotlin的优势"><a href="#Kotlin的优势" class="headerlink" title="Kotlin的优势"></a>Kotlin的优势</h2><p>代码简洁高效、强大的when语法，不用写分号结尾，findViewById光荣退休，空指针安全、强大的扩展功能、函数式编程、支持lambda表达式、流式API等等</p>
+<h2 id="Kotlin基本语法"><a href="#Kotlin基本语法" class="headerlink" title="Kotlin基本语法"></a>Kotlin基本语法</h2><h3 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h3><h4 id="类型和函数定义"><a href="#类型和函数定义" class="headerlink" title="类型和函数定义"></a>类型和函数定义</h4><p>在Kotlin中,常量用<code>val</code>声明，变量用<code>var</code>声明，关键字在前面，类型在后面以冒号:隔开，也可以省略直接赋值(自动进行类型推断):<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">var str: String = &quot;hello&quot;  //字符串</span><br><span class="line">var a: Int = 10  //整形</span><br><span class="line">var array: Array&lt;Int&gt; = arrayOf(1, 2, 3)  //数组</span><br><span class="line">var str2: String? = null  //可空字符串变量</span><br></pre></td></tr></table></figure></p>
+<a id="more"></a>
+<p>定义一个函数接受两个 int 型参数，返回值为 int ：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">fun sum(a: Int, b: Int): Int &#123;</span><br><span class="line">    return a+b</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>该函数只有一个表达式函数体以及一个可以推断类型的返回值，因此可以简写为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fun sum(a: Int, b: Int) = a + b</span><br></pre></td></tr></table></figure></p>
+<p>无返回值的函数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">fun printSum(a: Int, b: Int): Unit &#123;   //一般，Unit可以省略不写</span><br><span class="line">    println(&quot;sum of $a and $b is $&#123;a + b&#125;&quot;)</span><br><span class="line">&#125;</span><br><span class="line">//也可简写为：</span><br><span class="line">fun printSum(a: Int, b: Int) = println(&quot;sum of $a and $b is $&#123;a + b&#125;&quot;)</span><br></pre></td></tr></table></figure></p>
+<p>函数参数可以设置默认值,当参数被忽略时会使用默认值。这样相比其他语言可以减少重载：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fun sum(a: Int, b: Int = 1) = a + b</span><br></pre></td></tr></table></figure></p>
+<p>另外Kotlin还支持扩展函数和中缀表达式，下面是简单的例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">//扩展函数</span><br><span class="line">fun String.isLetter(): Boolean &#123;</span><br><span class="line">    return matches(Regex(&quot;^[a-z|A-Z]$&quot;))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//中缀表达式只能是成员函数或者扩展函数，而且函数只有一个参数</span><br><span class="line">infix fun String.isEqual(that: String): Boolean&#123;</span><br><span class="line">    return this == that</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">fun main(args: Array) &#123;</span><br><span class="line">    var s = &quot;a&quot;.isLetter()</span><br><span class="line">    var a = &quot;aa&quot; isEqual &quot;bb&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>String对象中本没有判断是否是字母的方法，在Java中我们一般会定义一些Utils方法，而在Kotlin中可以定义类的扩展函数。<br>第二个例子是给String类定义了一个扩展函数，并且该拓展函数以中缀表达式表示，给予了开发者定义类似于关键字的权利。</p>
+<p>再比如，我们一般这样创建一个map对象：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val kv = mapOf(&quot;a&quot; to 1, &quot;b&quot; to 2)</span><br></pre></td></tr></table></figure></p>
+<p>这里的to就是一个中缀表达式，定义如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public infix fun&lt;A, B&gt; A.to(that: B): Pair&lt;A, B&gt; = Pair(this, that)</span><br></pre></td></tr></table></figure></p>
+<p>Pair就是Map中存的对象，所以你也可以这样创建:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val kv = mapOf(Pair(&quot;a&quot;, 1), Pair(&quot;b&quot;, 2))</span><br></pre></td></tr></table></figure></p>
+<h3 id="流程控制语句"><a href="#流程控制语句" class="headerlink" title="流程控制语句"></a>流程控制语句</h3><p>流程控制语句是编程语言的核心之一。跟java类似，Kotlin有以下的语句。</p>
+<ul>
+<li>分支语句 if、when</li>
+<li>循环语句 for、while</li>
+<li>跳转语句 return、break、continue、throw</li>
+</ul>
+<h4 id="if表达式"><a href="#if表达式" class="headerlink" title="if表达式"></a>if表达式</h4><p>在Kotlin中，if是一个表达式，即它会返回一个值。if作为代码块时，最后一行作为返回值。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">fun max(x: Int, y: Int): Int &#123;</span><br><span class="line">    return if (x &gt; y) &#123;</span><br><span class="line">        println(&quot;max is $x&quot;)</span><br><span class="line">        x</span><br><span class="line">    &#125;else&#123;</span><br><span class="line">        println(&quot;max is $y&quot;)</span><br><span class="line">        y</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>注意：<strong>Kotlin中没有java的中的2&gt;1?2:1这样的三元表达式。</strong></p>
+<h4 id="when表达式"><a href="#when表达式" class="headerlink" title="when表达式"></a>when表达式</h4><p>Kotlin中没有java中的switch-case表达式，when表达式就是用来代替switch-case的。when会对所有的分支进行检查直到有一个条件满足。但相比switch而言，when语句要更加的强大，灵活：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">fun cases(obj: Any) &#123;</span><br><span class="line">    when (obj) &#123;</span><br><span class="line">        1 -&gt; print(&quot;第一项&quot;)</span><br><span class="line">        &quot;hello&quot; -&gt; print(&quot;这个是字符串hello&quot;)</span><br><span class="line">        is Long -&gt; print(&quot;这是一个Long类型数据&quot;)</span><br><span class="line">        !is String -&gt; print(&quot;这不是String类型的数据&quot;)</span><br><span class="line">        else -&gt; print(&quot;else类似于Java中的default&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>如果我们有很多分支需要用相同的方式处理，则可以把多个分支条件放在一起，用逗号分隔，<br>也可以用任意表达式（而不只是常量）作为分支条件，也可以检测一个值在 in 或者不在 !in 一个区间或者集合中：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">when (x) &#123;</span><br><span class="line">        1 -&gt; print(&quot;x == 1&quot;)</span><br><span class="line">        2 -&gt; print(&quot;x == 2&quot;)</span><br><span class="line">        3, 4 -&gt; print(&quot;x == 3 or x == 4&quot;)</span><br><span class="line">        in 5..9 -&gt; print(&quot;x in [5..9]&quot;)</span><br><span class="line">        is Long -&gt; print(&quot;x is Long&quot;)</span><br><span class="line">        !in 10..20 -&gt; print(&quot;x is outside the range&quot;)</span><br><span class="line">        parseInt(s) -&gt; print(&quot;s encodes x&quot;)</span><br><span class="line">        else -&gt; &#123; </span><br><span class="line">            print(&quot;x is funny&quot;)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>其他for,while,break,continue等，跟Java中用法基本一样。</p>
+<h3 id="NPE空指针的处理"><a href="#NPE空指针的处理" class="headerlink" title="NPE空指针的处理"></a>NPE空指针的处理</h3><p>Kotlin的空指针处理相比于java有着极大的提高，可以说是不用担心出现NullPointerException的错误，kotlin对于对象为null的情况有严格的界定，编码的阶段就需要用代码表明引用是否可以为null，为null的情况需要强制性的判断处理。</p>
+<h4 id="可选型定义"><a href="#可选型定义" class="headerlink" title="可选型定义"></a>可选型定义</h4><h5 id="非空类型"><a href="#非空类型" class="headerlink" title="非空类型"></a>非空类型</h5><p>先说可选型的定义，当我们在Kotlin中定义一个变量时，默认就是非空类型的，当你将一个非空类型置空的时候，编译器会告诉你这不可行。例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var a: String=null //编译器直接报错 Null can not be value of a non null type string</span><br></pre></td></tr></table></figure></p>
+<p><strong>这里注意：Kotlin的成员变量(全局变量)必须要初始化，甚至是基本数据类型都要手动给一个初始值，局部变量可以不用初始化，上面的例子是成员变量的声明。</strong></p>
+<p>编译器直接表示a是一个non null type, 你不可以直接赋一个null值。对于我们java原住民来说声明变量时如果不去赋值，编译器会默认赋null(除去基本数据类型)，但在Kotlin这是不允许的。</p>
+<h5 id="可选型（可空类型）"><a href="#可选型（可空类型）" class="headerlink" title="可选型（可空类型）"></a>可选型（可空类型）</h5><p>在定义可选型的时候，我们只要在非空类型的后面添加一个 ? 就可以了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var b: String? = null  //ok</span><br></pre></td></tr></table></figure></p>
+<p>在使用可选型变量的时候，这个变量就有可能为空，所以在使用前我们应该对其进行空判断（在 Java 中我们经常这样做），这样往往带来带来大量非业务相关的工作，这些空判断代码本身没有什么实际意义，并且让代码的可读性和简洁性带来了巨大的挑战。<br>Kotlin 为了解决这个问题，它并不允许我们直接使用一个可选型的变量去调用方法或者属性。例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">var b: String? = &quot;abc&quot;</span><br><span class="line">val l = b.length // compilation error</span><br></pre></td></tr></table></figure></p>
+<p>你可以和 Java 中一样，在使用变量之前先进行空判断，然后再去调用。如果使用这种方法，那么空判断是必须的。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val length = if (b != null) b.length else -1</span><br></pre></td></tr></table></figure></p>
+<p><strong>注意： 如果你定义的变量是全局变量，即使你做了空判断，依然不能使用变量去调用方法或者属性。</strong><br>Kotlin 为可选型提供了一个安全调用操作符 ?.，使用该操作符可以方便调用可选型的方法或者属性。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var length = b?.length  //length类型是可选型Int?</span><br></pre></td></tr></table></figure></p>
+<p>Kotlin还提供了一个强转的操作符!!，这个操作符能够强行调用变量的方法或者属性，而不管这个变量是否为空，如果这个时候该变量为空时，那么就会发生 NPE。所以如果不想继续陷入NPE 的困境无法自拔，请尽量不要选用该操作符。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var length = b!!.length  //可能会报NPE错误（Caused by: kotlin.KotlinNullPointerException）</span><br></pre></td></tr></table></figure></p>
+<h5 id="Elvis-操作符"><a href="#Elvis-操作符" class="headerlink" title="Elvis 操作符?:"></a>Elvis 操作符?:</h5><p>回到<code>?.</code>的调用上来，这个调用方式存在一个让人不安的处理，就是在变量为null的情况下，会直接返回null，这样空指针的隐患还在。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">var b: String? = &quot;abc&quot;</span><br><span class="line">var length : Int = b?.length //报错类型不匹配 Int? 和 Int</span><br></pre></td></tr></table></figure></p>
+<p>修正的话,需要通过if判断来进行判空处理<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val length = if (b != null) b?.length else -1</span><br></pre></td></tr></table></figure></p>
+<p>这种写法可以简化成Elvis 操作符<code>?:</code>，例如<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val length = b?.length ?: -1</span><br></pre></td></tr></table></figure></p>
+<p><code>b?.length ?: -1</code> 和 <code>if (b != null) b.length else -1</code> 完全等价的。<br>其实你还可以在<code>?:</code> 后面添加任何表达式，比如你可以在后面用<code>return</code>和<code>throw</code>（在 Kotlin 中它们都是表达式）。</p>
+<h2 id="Kotlin函数式编程"><a href="#Kotlin函数式编程" class="headerlink" title="Kotlin函数式编程"></a>Kotlin函数式编程</h2><p>下面是维基百科上对于函数式编程的定义：</p>
+<blockquote>
+<p>函数式编程（英语：functional programming）或称函数程序设计，又称泛函编程，是一种编程范型，它将电脑运算视为数学上的函数计算，并且避免使用程序状态以及易变对象。函数编程语言最重要的基础是λ演算（lambda calculus）。而且λ演算的函数可以接受函数当作输入（引数）和输出（传出值）。</p>
+</blockquote>
+<p>下面是关于高阶函数的定义：</p>
+<blockquote>
+<p>在数学和计算机科学中，高阶函数是至少满足下列一个条件的函数：接受一个或多个函数作为输入，输出一个函数</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">f(x) = x^2</span><br><span class="line">g(x) = x + 1</span><br><span class="line">g(f(x))就是一个高阶函数</span><br></pre></td></tr></table></figure>
+<p>不难推断出函数式编程最重要的基础是高阶函数。也就是支持函数可以接受函数当作输入（引数）和输出（传出值）。</p>
+<p>函数式编程的精髓在于函数本身。在函数式编程中函数是第一等公民，与其他数据类型一样，处于平等地位，可以赋值给其他变量，也可以作为参数，传入另一个函数，或者作为别的函数的返回值。</p>
+<h3 id="从Lambda表达式说起"><a href="#从Lambda表达式说起" class="headerlink" title="从Lambda表达式说起"></a>从Lambda表达式说起</h3><p>Lambda 表达式俗称匿名函数，熟悉Java的大家应该也明白这是个什么概念。Kotlin 的 Lambda表达式更“纯粹”一点， 因为它是真正把Lambda抽象为了一种类型，而 Java 8 的 Lambda 只是单方法匿名接口实现的语法糖罢了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">view.setOnClickListener(new View.OnClickListener() &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void onClick(View v) &#123;</span><br><span class="line">        Toast.makeText(v.getContext(), &quot;Click&quot;, Toast.LENGTH_SHORT).show();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>这可以转换为Kotlin代码（使用Anko库函数toast）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">view.setOnClickListener(object : View.onClickListener &#123;</span><br><span class="line">    override fun onClick(v: View) &#123;</span><br><span class="line">        toast(&quot;Click&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Lambda表达式由箭头左侧函数的参数（小括号里面的内容）定义的，将值返回给箭头右侧。在这里，将得到的View返回给Unit，这样可以对上述代码稍做简化：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">view.setOnClickListener(&#123; view -&gt; toast(&quot;Click&quot;)&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>在定义函数时，必须在箭头左边使用中括号并指定参数值，而函数执行代码在右边。<br>如果左边没有使用参数，甚至可以省去左边部分：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">view.setOnClickListener(&#123; toast(&quot;Click&quot;) &#125;)</span><br></pre></td></tr></table></figure></p>
+<p>如果被执行的函数是当前函数的最后一个参数的话，也可以将这个作为参数的函数放到圆括号外面：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">view.setOnClickListener() &#123; toast(&quot;Click&quot;) &#125;</span><br></pre></td></tr></table></figure></p>
+<p>最后，如果函数是唯一的参数，还可以去掉原来的小括号：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">view.setOnClickListener &#123; toast(&quot;Click&quot;) &#125;</span><br></pre></td></tr></table></figure></p>
+<p>比起起初的Java代码，目前的代码量小于原来的五分之一，且更容易理解。令人印象深刻。Anko给出一个（本质上说是函数名的）简化版本，由之前展示过的扩展函数组成，该函数也由上述形式实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">view.onClick &#123; toast(&quot;Click&quot;) &#125;</span><br></pre></td></tr></table></figure></p>
+<p>以上是Java中的接口映射到Kotlin中Lambda表达式实例。</p>
+<h3 id="Kotlin中Lambda表达式"><a href="#Kotlin中Lambda表达式" class="headerlink" title="Kotlin中Lambda表达式"></a>Kotlin中Lambda表达式</h3><p>下面详细介绍Kotlin中Lambda表达式。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var add = &#123;x: Int, y: Int -&gt; x + y&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们可以这样使用：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">fun main(args: Array) &#123;</span><br><span class="line">val add = &#123;x: Int, y: Int -&gt; x + y&#125;</span><br><span class="line">add.invoke(1, 2)</span><br><span class="line">//或者简写为</span><br><span class="line">add(1, 2)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>它可以像函数一样使用()调用，在kotlin中操作符是可以重载的，()操作符对应的就是类的重载函数invoke()。<br>还可以想下面这样定义一个变量：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val numFun: (a: Int, b: Int) -&gt; Int</span><br></pre></td></tr></table></figure></p>
+<p>它不是一个普通的变量，它必须指向一个函数，并且函数签名必须一致：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">fun main(args: Array) &#123;</span><br><span class="line">    val sumLambda = &#123;a: Int, b: Int -&gt; a + b&#125;</span><br><span class="line">    var numFun: (a: Int, b: Int) -&gt; Int</span><br><span class="line">    numFun = &#123;a: Int, b: Int -&gt; a + b&#125;</span><br><span class="line">    numFun = sumLambda</span><br><span class="line">    numFun = ::sum</span><br><span class="line">    numFun(1,2)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">fun sum(a: Int, b: Int): Int &#123;</span><br><span class="line">    return a + b</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>可以看到这个变量可以等于一个lambda表达式，也可以等于另一个lambda表达式变量，还可以等于一个普通函数，但是在函数名前需要加上(::)来获取函数引用，有点类似于C++中的函数指针。</p>
+<p>我们还可以将一个函数传递给另一个函数，比如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">fun &lt;T&gt; doMap(list: List&lt;T&gt;, function: (it: T) -&gt; Unit) &#123;</span><br><span class="line">        for (item in list) &#123;</span><br><span class="line">            function(item)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>第一个参数是一个List，第二个参数是一个函数，目的就是将List中的每一个元素都执行一次第二个函数。使用方法如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">val strList = listOf(&quot;a&quot; ,&quot;b&quot;, &quot;c&quot;, &quot;d&quot;)</span><br><span class="line">doMap(strList, &#123;item -&gt; println(&quot;item: $item, &quot;) &#125;)</span><br></pre></td></tr></table></figure></p>
+<p>第二个参数直接传进去了一个lambda表达式，当然也可以传一个函数引用：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">doMap(strList, ::printLetter)</span><br><span class="line">fun printLetter(item: String) &#123;</span><br><span class="line">    println(&quot;item: $item, &quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>效果和上面的代码一样。</p>
+<p>另外Kotlin还支持局部函数和函数作为返回值，看下面的代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">fun main(args: Array) &#123;</span><br><span class="line">        val addResult = lateAdd(2, 4)</span><br><span class="line">        addResult()</span><br><span class="line">    &#125;</span><br><span class="line">    //局部函数，函数引用</span><br><span class="line">    fun lateAdd(a: Int, b: Int): ()-&gt;Int &#123;</span><br><span class="line">        fun add(): Int &#123;</span><br><span class="line">            return a + b</span><br><span class="line">        &#125;</span><br><span class="line">        return ::add</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>在lateAdd内部定义了一个局部函数，最后返回了该局部函数的引用，对结果使用()操作符拿到最终的结果，达到延迟计算的目的。</p>
+<p>基于以上函数式编程的特性，Kotlin可以像RxJava一样很方便的进行响应式编程，比如：<br>计算二维数组每一个子列表的乘积，再求和，可以这样写：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">val list = listOf(</span><br><span class="line">        listOf(1, 2, 3),</span><br><span class="line">        listOf(4, 5, 6),</span><br><span class="line">        listOf(7, 8, 9)</span><br><span class="line">)</span><br><span class="line">list.map &#123;it: List&lt;Int&gt; -&gt; it.fold(1)&#123; a, b -&gt; a * b &#125; &#125;  </span><br><span class="line">    .fold(0)&#123; a, b -&gt; a + b &#125;</span><br><span class="line">    .log()</span><br></pre></td></tr></table></figure></p>
+<h3 id="Kotlin函数式编程中常用函数-forEach-filter-map-reduce-fold"><a href="#Kotlin函数式编程中常用函数-forEach-filter-map-reduce-fold" class="headerlink" title="Kotlin函数式编程中常用函数 forEach,filter,map,reduce(fold)"></a>Kotlin函数式编程中常用函数 forEach,filter,map,reduce(fold)</h3><h4 id="forEach"><a href="#forEach" class="headerlink" title="forEach"></a><strong>forEach</strong></h4><p>遍历函数，循环遍历所有元素，元素是it，可对每个元素进行相关操作；<br>假设我们现在需要打印列表中每个的名字：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">val nameList = arrayOf(&quot;Jim&quot;,&quot;Tom&quot;, &quot;Marry&quot;,&quot;Lin&quot;)</span><br><span class="line">nameList.forEach &#123; println(it) &#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="filter"><a href="#filter" class="headerlink" title="filter"></a><strong>filter</strong></h4><p>过滤函数将用户给定的布尔逻辑作用于集合，返回由原集合中符合条件的元素组合的一个子集。假设一个逻辑，将数组中是2的倍数的数筛选出来，使用Kotlin和Java的实现做一个简单的对比。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">int[] all = &#123;1, 2, 3, 4, 5, 6, 7, 8, 9&#125;;</span><br><span class="line">List&lt;Integer&gt; filters = new ArrayList&lt;&gt;();</span><br><span class="line">for (int a : all) &#123;</span><br><span class="line">    if (a % 2 == 0) &#123;</span><br><span class="line">        filters.add(a);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Kotlin代码的实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">val all = arrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9)</span><br><span class="line">val filters = all.filter &#123; it % 2 == 0 &#125;</span><br></pre></td></tr></table></figure></p>
+<p>Kotlin 还提供一系列类似的过滤函数：</p>
+<ul>
+<li>filterIndexed, 同 filter，不过在逻辑判断的方法块中可以拿到当前item的index</li>
+<li>filterNot，与filter相反，只返回不符合条件的元素组合</li>
+<li>针对 Map 类型数据集合，提供了 filterKeys 和 filterValues 方法，方便只做key或者value的判断</li>
+</ul>
+<h4 id="map"><a href="#map" class="headerlink" title="map"></a><strong>map</strong></h4><p>映射函数也是一个高阶函数，将一个集合经过一个传入的变换函数映射成另外一种集合。<br>假设我们现在需要将一系列的名字的字符串长度保存到另一个数组:<br>使用Java实现过程如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">String[] names = &#123;&quot;James&quot;, &quot;Tommy&quot;, &quot;Jim&quot;, &quot;Andy&quot;&#125;;</span><br><span class="line">int[] namesLength = new int[names.length];</span><br><span class="line">for (int i = 0; i &lt; names.length ; i ++) &#123;</span><br><span class="line">    namesLength[i] = names[i].length();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>使用Kotlin实现如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">val names = arrayOf(&quot;James&quot;, &quot;Tommy&quot;, &quot;Jim&quot;, &quot;Andy&quot;);</span><br><span class="line">val namesLength = names.map &#123; it.length &#125;</span><br></pre></td></tr></table></figure></p>
+<p>同 filter 相似，Kotlin 也提供的 mapIndexed 的类似方法方便使用，针对 Map 类型的集合也有 mapKeys 和 mapValues 的封装。</p>
+<h4 id="reduce"><a href="#reduce" class="headerlink" title="reduce"></a><strong>reduce</strong></h4><p>归纳函数将一个数据集合的所有元素通过传入的操作函数实现数据集合的积累叠加。同fold一样，不过fold可以带初始值。<br>假设我们现在需要计算一系列的名字的总字符串长度，使用Java实现如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">String[] names = &#123;&quot;James&quot;, &quot;Tommy&quot;, &quot;Jim&quot;, &quot;Andy&quot;&#125;;</span><br><span class="line">int totalLength = 0;</span><br><span class="line">for (int i = 0; i &lt; names.length ; i ++) &#123;</span><br><span class="line">    totalLength =+ names[i].length();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>使用Kotlin实现如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">val names = arrayOf(&quot;James&quot;, &quot;Tommy&quot;, &quot;Jim&quot;, &quot;Andy&quot;);</span><br><span class="line">val namesLength = names.map &#123; it.length &#125;.reduce &#123; r, s -&gt; r + s &#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="关于Anko"><a href="#关于Anko" class="headerlink" title="关于Anko"></a>关于Anko</h2><p>Jetbrains给Android带来的不仅是Kotlin，还有Anko。从Anko的官方说明来看这是一个雄心勃勃的要代替XML写Layout的新的开发方式。Anko最重要的一点是引入了DSL（Domain Specific Language 领域相关语言）的方式开发Android界面布局。当然，本质是代码实现布局。不过使用Anko完全不用经历Java纯代码写Android的痛苦。</p>
+<p>然而，这个不是我们能在这个库中得到的唯一一个功能。Anko包含了很多的非常有帮助的函数和属性来避免让你写很多的模版代码。多看看Anko源码的实现方式对学习Kotlin语言是非常有帮助的。</p>
+<p>Anko提供了非常简单的DSL来处理异步任务，它能够满足大部分的需求。它提供了一个基本的doAsync函数用于在子线程执行代码，可以选择通过调用uiThread的方式回到主线程。在子线程中执行请求如下这么简单：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">doAsync &#123;</span><br><span class="line">    Thread.sleep(3000)   //耗时操作</span><br><span class="line">    uiThread &#123;</span><br><span class="line">        toast(&quot;background task finish&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>UIThread有一个很不错的一点就是可以依赖于调用者。如果它是被一个Activity调用的，那么如果activity.isFinishing()返回true，则uiThread不会执行，这样就不会在Activity销毁的时候遇到崩溃的情况了。</p>
+<h2 id="Kotlin中的类和对象"><a href="#Kotlin中的类和对象" class="headerlink" title="Kotlin中的类和对象"></a>Kotlin中的类和对象</h2><h3 id="Kotlin-的类特性"><a href="#Kotlin-的类特性" class="headerlink" title="Kotlin 的类特性"></a>Kotlin 的类特性</h3><p>Kotlin中的类与接口和Java中的有些区别：</p>
+<ul>
+<li>Kotlin中接口可以包含属性申明</li>
+<li>Kotlin的类申明，默认是final和public的</li>
+<li>Kotlin的嵌套类并不是默认在内部的。它们不包含外部类的隐式引用</li>
+<li>Kotlin的构造函数，分为主构造函数和次构造函数</li>
+<li>Kotlin中可以使用data关键字来申明一个数据类</li>
+<li>Kotlin中可以使用object关键字来表示单例对象、伴生对象等</li>
+</ul>
+<p>Kotlin类的成员可以包含：</p>
+<ul>
+<li>构造函数和初始化块</li>
+<li>属性</li>
+<li>函数</li>
+<li>嵌套类和内部类</li>
+<li>对象声明</li>
+</ul>
+<h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><p>在Kotlin中可以有一个主构造函数，一个或者多个次构造函数。</p>
+<h4 id="主构造函数"><a href="#主构造函数" class="headerlink" title="主构造函数"></a>主构造函数</h4><p>主构造函数直接跟在类名后面，如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">open class Person constructor(var name: String, var age: Int) : Any() &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>主构造函数中的属性可以是可变的（var）也可以是不变的（val）。如果主构造函数没有任何注解或者可见性修饰符，可以省略constructor关键字（属性默认是val），而且Koltin中的类默认就是继承Any的，也可以省略。所以可以简化成如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">open class Person(name: String, age: Int) &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>主构造函数不能包括任何代码。初始化代码可以放到以init关键字作为前缀的初始化块中：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">open class Person constructor(var name: String, var age: Int)&#123;</span><br><span class="line">    init &#123;</span><br><span class="line">        println(&quot;Student(name = $name, age = $age) created&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>主构造函数的参数可以在初始化块中使用，也可以在类体内申明的属性初始化器中使用。</p>
+<h4 id="次构造函数"><a href="#次构造函数" class="headerlink" title="次构造函数"></a>次构造函数</h4><p>我们也可以在类体中使用constructor申明次构造函数，次构造函数的参数不能使用val或者var申明。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">class Student public constructor(name: String, age: Int) : Person(name, age) &#123;</span><br><span class="line">    var grade: Int = 1</span><br><span class="line"></span><br><span class="line">    init &#123;</span><br><span class="line">        println(&quot;Student(name = $name, age = $age) created&quot;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    constructor(name: String, age: Int, grade: Int) : this(name, age)&#123;</span><br><span class="line">        this.grade = grade</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>如果一个类有主构造函数，那么每个次构造函数都需要委托给主构造函数，委托到同一个类的另一个构造函数可以使用this关键字，如上面这个例子this(name, age)</p>
+<p>如果一个非抽象类没有申明任何构造函数（包括主或者次），它会生成一个不带参数的主构造函数。构造函数的可见性是public。</p>
+<h3 id="抽象类"><a href="#抽象类" class="headerlink" title="抽象类"></a>抽象类</h3><p>下面就是一个抽象类，类需要用abstract修饰，其中也有抽象方法，跟Java有区别的是Kotlin的抽象类可以包含抽象属性：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">abstract class Person(var name: String, var age: Int)&#123;</span><br><span class="line"></span><br><span class="line">    abstract var addr: String</span><br><span class="line">    abstract val weight: Float</span><br><span class="line"></span><br><span class="line">    abstract fun doEat()</span><br><span class="line">    abstract fun doWalk()</span><br><span class="line"></span><br><span class="line">    fun doSwim() &#123;</span><br><span class="line">        println(&quot;I am Swimming ... &quot;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    open fun doSleep() &#123;</span><br><span class="line">        println(&quot;I am Sleeping ... &quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在上面这个抽象类中，有doEat和doWalk抽象函数，同时还有具体的实现函数doSwim，在Kotlin中如果类和方法没有修饰符的化，默认就是final的。这个跟Java是不一样的。所以doSwim其实是final的，也就是说Person的子类不能覆盖这个方法。如果一个类或者类的方法想要设计成被覆盖（override）的，那么就需要加上open修饰符。下面是一个Person的子类：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">class Teacher(name: String, age: Int) : Person(name, age) &#123;</span><br><span class="line"></span><br><span class="line">    override var addr:String = &quot;Guangzhou&quot;</span><br><span class="line">    override val weight: Float = 100.0F</span><br><span class="line"></span><br><span class="line">    override fun doEat() &#123;</span><br><span class="line">        println(&quot;Teacher is Eating ... &quot;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    override fun doWalk() &#123;</span><br><span class="line">        println(&quot;Teacher is Walking ... &quot;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    override fun doSleep() &#123;</span><br><span class="line">        super.doSleep()</span><br><span class="line">        println(&quot;Teacher is Sleeping ... &quot;)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">//    编译错误，doSwim函数默认是final的，需要加上open修饰符才能重写</span><br><span class="line">//    override fun doSwim() &#123;</span><br><span class="line">//        println(&quot;Teacher is Swimming ... &quot;)</span><br><span class="line">//    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>如果子类覆盖了父类的方法或者属性，需要使用override关键字修饰。如果子类没有实现父类的抽象方法，或者没有给抽象属性赋值，则必须把子类也定义成抽象类。</p>
+<p>抽象函数的特征有以下几点：</p>
+<ul>
+<li>抽象函数、抽象属性必须使用abstract关键字修饰</li>
+<li>抽象函数或者抽象类不用手动添加open关键字，默认就是open类型</li>
+<li>抽象函数没有具体的实现，抽象属性不用赋值</li>
+<li>含有抽象函数或者抽象属性的类，必须要使用abstract关键字修饰。抽象类可以有具体实现的函数，这样的函数默认是final的（不能被覆盖）。如果想要被覆盖，需要手工加上open关键字</li>
+</ul>
+<h3 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h3><p>和Java类似，Kotlin使用interface作为接口的关键词，Kotlin 的接口与 Java 8 的接口类似。与抽象类相比，他们都可以包含抽象的方法以及方法的实现:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">interface ProjectService &#123;</span><br><span class="line">    val name: String</span><br><span class="line">    val owner: String</span><br><span class="line">    fun save(project: Project)</span><br><span class="line">    fun print() &#123;</span><br><span class="line">        println(&quot;I am project&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>接口是没有构造函数的，和继承一样，我们也是使用冒号:来实现一个接口，如果要实现多个接口，使用逗号,分开。</p>
+<h3 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h3><p>在Kotlin中，所有的类都默认继承Any这个类，Any并不是跟Java的java.lang.Object一样，因为它只有equals()，hashCode()和toString()这三个方法。<br>除了抽象类和接口默认是可被继承外，其他类默认是不可以被继承的（相当于默认都带有final修饰符）。而类中的方法也是默认不可以被继承的。</p>
+<ul>
+<li>如果你要继承一个类，你需要使用open关键字修饰这个类</li>
+<li>如果你要重写一个类的某个方法，这个方法也需要使用open关键字修饰</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">open class Base(type: String)&#123;</span><br><span class="line">    open fun canBeOverride() &#123;</span><br><span class="line">        println(&quot;I can be override.&quot;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    fun cannotBeOverride() &#123;</span><br><span class="line">        println(&quot;I can&apos;t be override.&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class SubClass(type: String) :Base(type)&#123;</span><br><span class="line">    override fun canBeOverride() &#123;</span><br><span class="line">        super.canBeOverride()</span><br><span class="line">        println(&quot;Override!!!&quot;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">//    override fun cannotBeOverride() &#123;  编译错误。</span><br><span class="line">//        super.cannotBeOverride()</span><br><span class="line">//        println(&quot;Override!!!&quot;)</span><br><span class="line">//    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果Base有构造函数，那么子类的主构造函数必须继承。</p>
+<h3 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h3><p>Kotlin中没有静态属性和方法，但是也提供了实现类似单例的功能，使用object关键字声明一个object对象。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">object StringUtils&#123;</span><br><span class="line">    val separator: String = &quot;&quot;&quot;\&quot;&quot;&quot;</span><br><span class="line">    fun isDigit(value: String): Boolean&#123;</span><br><span class="line">        for (c in value) &#123;</span><br><span class="line">            if (!c.isDigit()) &#123;</span><br><span class="line">                return false</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return true</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">fun main(args: Array&lt;String&gt;) &#123;</span><br><span class="line">    println(&quot;C:$&#123;StringUtils.separator&#125;Users$&#123;StringUtils.separator&#125;Denny&quot;) //打印c:\Users\Denny</span><br><span class="line">    println(StringUtils.isDigit(&quot;12321231231&quot;))  //打印true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们反编译后可以知道StringUtils转成了Java代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">public final class StringUtils &#123;</span><br><span class="line">   @NotNull</span><br><span class="line">   private static final String separator = &quot;\\&quot;;</span><br><span class="line">   public static final StringUtils INSTANCE;</span><br><span class="line"></span><br><span class="line">   @NotNull</span><br><span class="line">   public final String getSeparator() &#123;</span><br><span class="line">      return separator;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   public final boolean isDigit(@NotNull String value) &#123;</span><br><span class="line">      Intrinsics.checkParameterIsNotNull(value, &quot;value&quot;);</span><br><span class="line">      String var4 = value;</span><br><span class="line">      int var5 = value.length();</span><br><span class="line"></span><br><span class="line">      for(int var3 = 0; var3 &lt; var5; ++var3) &#123;</span><br><span class="line">         char c = var4.charAt(var3);</span><br><span class="line">         if (!Character.isDigit(c)) &#123;</span><br><span class="line">            return false;</span><br><span class="line">         &#125;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      return true;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   static &#123;</span><br><span class="line">      StringUtils var0 = new StringUtils();</span><br><span class="line">      INSTANCE = var0;</span><br><span class="line">      separator = &quot;\\&quot;;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>object对象只能通过对象名字来访问，不能使用构造函数。<br>我们在Java中通常会写一些Utils类，这样的类我们在Kotlin中就可以直接使用object对象。</p>
+<h3 id="伴生对象-companion-object"><a href="#伴生对象-companion-object" class="headerlink" title="伴生对象(companion object)"></a>伴生对象(companion object)</h3><p>Kotlin中还提供了伴生对象 ，跟java中的static关键字有些相似，用companion object关键字声明:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">class DataProcessor &#123;</span><br><span class="line">    fun process() &#123;</span><br><span class="line">        println(&quot;Process Data&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    companion object StringUtils &#123;    //StringUtils可以省略</span><br><span class="line">        val TAG = &quot;DataProcessor&quot;</span><br><span class="line">        fun isEmpty(s: String): Boolean &#123;</span><br><span class="line">            return s.isEmpty()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>一个类只能有一个伴生对象，伴生对象的初始化是在相应的类被加载解析时，即使伴生对象的成员看起来像其他语言的静态成员，在运行时他们仍然是真实的对象的实例成员。</p>
+<p>另外，如果想使用Java中的静态成员和静态方法的话，我们可以用：</p>
+<ul>
+<li><strong>@JvmField</strong>注解：生成与该属性相同的静态字段</li>
+<li><p><strong>@JvmStatic</strong>注解：在单例对象和伴生对象中生成对应的静态方法</p>
+<h3 id="嵌套类（Nested-Class）"><a href="#嵌套类（Nested-Class）" class="headerlink" title="嵌套类（Nested Class）"></a>嵌套类（Nested Class）</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">class NestedClassesDemo &#123;</span><br><span class="line">    class Outer &#123;</span><br><span class="line">        private val zero: Int = 0</span><br><span class="line">        val one: Int = 1</span><br><span class="line"></span><br><span class="line">        class Nested &#123;</span><br><span class="line">            fun getTwo() = 2</span><br><span class="line">            class Nested1 &#123;</span><br><span class="line">                val three = 3</span><br><span class="line">                fun getFour() = 4</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>我们可以这样来访问内部类：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">val one = NestedClassesDemo.Outer().one</span><br><span class="line">val two = NestedClassesDemo.Outer.Nested().getTwo()</span><br><span class="line">val three = NestedClassesDemo.Outer.Nested.Nested1().thre</span><br></pre></td></tr></table></figure></p>
+<p>但是普通的嵌套类，并不会持有外部类的引用，如果要持有外部类的引用，那么我们需要把嵌套类标记为内部类，使用inner关键字即可：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">class NestedClassesDemo &#123;</span><br><span class="line">class Outer &#123;</span><br><span class="line">        private val zero: Int = 0</span><br><span class="line">        val one: Int = 1</span><br><span class="line"></span><br><span class="line">        inner class Inner &#123;</span><br><span class="line">            fun accessOuter() = &#123;</span><br><span class="line">                println(zero) // works</span><br><span class="line">                println(one) // works</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="匿名内部类（Annonymous-Inner-Class）"><a href="#匿名内部类（Annonymous-Inner-Class）" class="headerlink" title="匿名内部类（Annonymous Inner Class）"></a>匿名内部类（Annonymous Inner Class）</h3><p>匿名内部类，就是没有名字的内部类。既然是内部类，那么它自然也是可以访问外部类的变量的。<br>我们使用对象表达式创建一个匿名内部类实例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">button.setOnClickListener(object : View.OnClickListener&#123;</span><br><span class="line">    override fun onClick(v: View) &#123;</span><br><span class="line">        println(&quot;Clicked&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>如果对象实例是一个函数接口（Java中只有一个抽象方法的接口），可以使用lambda表达式:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">button.setOnClickListener(&#123;view -&gt; println(&quot;Clicked&quot;)&#125;)</span><br></pre></td></tr></table></figure></p>
+<h3 id="对象表达式（Object-expressions）"><a href="#对象表达式（Object-expressions）" class="headerlink" title="对象表达式（Object expressions）"></a>对象表达式（Object expressions）</h3><p>如果父类型有构造函数，则必须将构造函数的参数赋值；多个父类通过“,”分割：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">open class A(x: Int) &#123;  </span><br><span class="line">    public open val y: Int = x  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line">interface B &#123;...&#125;  </span><br><span class="line">  </span><br><span class="line">val ab: A = object : A(1), B &#123;  </span><br><span class="line">    override val y = 15  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>有时，只需要一个对象表达式，不想继承任何的父类型，实现如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">val adHoc = object &#123;  </span><br><span class="line">  var x: Int = 0  </span><br><span class="line">  var y: Int = 0  </span><br><span class="line">&#125;  </span><br><span class="line">print(adHoc.x + adHoc.y)</span><br></pre></td></tr></table></figure></p>
+<h3 id="对象表达式和对象声明的区别"><a href="#对象表达式和对象声明的区别" class="headerlink" title="对象表达式和对象声明的区别"></a>对象表达式和对象声明的区别</h3><ul>
+<li>对象表达式(Object expressions)，在它们使用的地方，是立即（immediately）执行（或初始化）</li>
+<li>对象声明(Object declarations)，会延迟（lazily）初始化；但第一次访问该对象时才执行</li>
+<li>伴生对象（Companion Objects），当外部类被加载时初始化，跟Java静态代码框初始化相似<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2>以上简单介绍了一下Kotlin的基本语法，函数式编程和Kotlin类和对象的入门知识。由于这只是一篇入门的文章，对于Kolin中更多的知识点，比如泛型，协程，与Java的互调等更深层的内容并没有介绍。各位读者如果想要深入学习Kotlin编程，可以参考下面的Kotlin学习进行学习。</li>
+</ul>
+<hr>
+<blockquote>
+<ul>
+<li>路漫漫其修远兮，吾将上下而求索。</li>
+<li>怕什么真理无穷，进一寸有一寸的欢喜。</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="Kotlin学习资料"><a href="#Kotlin学习资料" class="headerlink" title="Kotlin学习资料"></a>Kotlin学习资料</h2><ol>
+<li><a href="https://alleniverson.gitbooks.io/kotlin-tutorials/content/" target="_blank" rel="noopener">Kotlin基础教程</a></li>
+<li><a href="https://alleniverson.gitbooks.io/kotlin-for-android-developers/content/" target="_blank" rel="noopener">《Kotlin for android developers》中文版翻译</a></li>
+<li><a href="https://www.jianshu.com/p/9c9b0a8ab4cf?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation" target="_blank" rel="noopener">Kotlin的类和对象</a></li>
+<li><a href="https://www.jianshu.com/p/037dd04b3186" target="_blank" rel="noopener">Kotlin面向对象笔记</a></li>
+<li><a href="http://kotlinlang.org/docs/reference/object-declarations.html" target="_blank" rel="noopener">Object Expressions and Declarations</a></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Kotlin/" rel="tag"># Kotlin</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/10/侵入性低扩展性强的Android换肤框架XSkinLoader的用法及原理/" rel="next" title="侵入性低扩展性强的Android换肤框架XSkinLoader的用法及原理">
+                <i class="fa fa-chevron-left"></i> 侵入性低扩展性强的Android换肤框架XSkinLoader的用法及原理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/09/23/Git常用命令详解/" rel="prev" title="Git常用命令详解">
+                Git常用命令详解 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div id="gitalk-container"></div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/my_photo.jpg" alt="Windy">
+            
+              <p class="site-author-name" itemprop="name">Windy</p>
+              <p class="site-description motion-element" itemprop="description">用技术撬动地球</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/WindySha" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/2d35b94de2a4" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-globe"></i>简书</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Kotlin的优势"><span class="nav-number">1.</span> <span class="nav-text">Kotlin的优势</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kotlin基本语法"><span class="nav-number">2.</span> <span class="nav-text">Kotlin基本语法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本用法"><span class="nav-number">2.1.</span> <span class="nav-text">基本用法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#类型和函数定义"><span class="nav-number">2.1.1.</span> <span class="nav-text">类型和函数定义</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#流程控制语句"><span class="nav-number">2.2.</span> <span class="nav-text">流程控制语句</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#if表达式"><span class="nav-number">2.2.1.</span> <span class="nav-text">if表达式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#when表达式"><span class="nav-number">2.2.2.</span> <span class="nav-text">when表达式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NPE空指针的处理"><span class="nav-number">2.3.</span> <span class="nav-text">NPE空指针的处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#可选型定义"><span class="nav-number">2.3.1.</span> <span class="nav-text">可选型定义</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#非空类型"><span class="nav-number">2.3.1.1.</span> <span class="nav-text">非空类型</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#可选型（可空类型）"><span class="nav-number">2.3.1.2.</span> <span class="nav-text">可选型（可空类型）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Elvis-操作符"><span class="nav-number">2.3.1.3.</span> <span class="nav-text">Elvis 操作符?:</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kotlin函数式编程"><span class="nav-number">3.</span> <span class="nav-text">Kotlin函数式编程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#从Lambda表达式说起"><span class="nav-number">3.1.</span> <span class="nav-text">从Lambda表达式说起</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Kotlin中Lambda表达式"><span class="nav-number">3.2.</span> <span class="nav-text">Kotlin中Lambda表达式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Kotlin函数式编程中常用函数-forEach-filter-map-reduce-fold"><span class="nav-number">3.3.</span> <span class="nav-text">Kotlin函数式编程中常用函数 forEach,filter,map,reduce(fold)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#forEach"><span class="nav-number">3.3.1.</span> <span class="nav-text">forEach</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#filter"><span class="nav-number">3.3.2.</span> <span class="nav-text">filter</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#map"><span class="nav-number">3.3.3.</span> <span class="nav-text">map</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#reduce"><span class="nav-number">3.3.4.</span> <span class="nav-text">reduce</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于Anko"><span class="nav-number">4.</span> <span class="nav-text">关于Anko</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kotlin中的类和对象"><span class="nav-number">5.</span> <span class="nav-text">Kotlin中的类和对象</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Kotlin-的类特性"><span class="nav-number">5.1.</span> <span class="nav-text">Kotlin 的类特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构造函数"><span class="nav-number">5.2.</span> <span class="nav-text">构造函数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#主构造函数"><span class="nav-number">5.2.1.</span> <span class="nav-text">主构造函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#次构造函数"><span class="nav-number">5.2.2.</span> <span class="nav-text">次构造函数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#抽象类"><span class="nav-number">5.3.</span> <span class="nav-text">抽象类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#接口"><span class="nav-number">5.4.</span> <span class="nav-text">接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#继承"><span class="nav-number">5.5.</span> <span class="nav-text">继承</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#单例模式"><span class="nav-number">5.6.</span> <span class="nav-text">单例模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#伴生对象-companion-object"><span class="nav-number">5.7.</span> <span class="nav-text">伴生对象(companion object)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#嵌套类（Nested-Class）"><span class="nav-number">5.8.</span> <span class="nav-text">嵌套类（Nested Class）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#匿名内部类（Annonymous-Inner-Class）"><span class="nav-number">5.9.</span> <span class="nav-text">匿名内部类（Annonymous Inner Class）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对象表达式（Object-expressions）"><span class="nav-number">5.10.</span> <span class="nav-text">对象表达式（Object expressions）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对象表达式和对象声明的区别"><span class="nav-number">5.11.</span> <span class="nav-text">对象表达式和对象声明的区别</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kotlin学习资料"><span class="nav-number">7.</span> <span class="nav-text">Kotlin学习资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Windy</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+<span id="busuanzi_container_site_pv" class="theme-info">
+&nbsp;&nbsp;|&nbsp;&nbsp;本站总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+  <span id="busuanzi_container_site_uv" class="theme-info">
+&nbsp;&nbsp;|&nbsp;&nbsp;本站访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="“https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js”"></script>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+  <script src="/js/src/md5.min.js"></script>
+   <script type="text/javascript">
+        var gitalk = new Gitalk({
+          clientID: '74fae1ebd3ed7c477fa3',
+          clientSecret: '6c20e96e69c1d539a3150d1c464977fbcd2ce50e',
+          repo: 'my_hexo_blog_comments',
+          owner: 'WindySha',
+          admin: ['WindySha'],
+          id: md5(location.pathname),
+          distractionFreeMode: 'true'
+        })
+        gitalk.render('gitalk-container')           
+       </script>
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+  </script>
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

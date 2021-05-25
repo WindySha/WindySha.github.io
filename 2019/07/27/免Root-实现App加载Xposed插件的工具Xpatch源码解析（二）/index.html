@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+  <meta name="google-site-verification" content="DriWLHPOSm42mFNpn-8F4QnKrvTt4aj2cqvnOToSeaw">
+
+
+
+
+
+
+
+
+  <meta name="baidu-site-verification" content="l1rAwZtE1v">
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Xposed,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Windy's Journal" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="前言Xpatch是笔者开发的一款破解Android App工具，源码地址： https://github.com/WindySha/Xpatch 本文接着上一篇Xpatch源码解析文章，继续分析Xpatch的实现原理。 Xpatch加载Xposed插件流程查找插件Apk加载Xposed插件之前，首先需要遍历所有安装的应用，根据Xposed插件的特征，找到其中的Xposed插件。   那什么样的应用">
+<meta name="keywords" content="Xposed">
+<meta property="og:type" content="article">
+<meta property="og:title" content="免Root 实现App加载Xposed插件的工具Xpatch源码解析（二）">
+<meta property="og:url" content="http://yoursite.com/2019/07/27/免Root-实现App加载Xposed插件的工具Xpatch源码解析（二）/index.html">
+<meta property="og:site_name" content="Windy&#39;s Journal">
+<meta property="og:description" content="前言Xpatch是笔者开发的一款破解Android App工具，源码地址： https://github.com/WindySha/Xpatch 本文接着上一篇Xpatch源码解析文章，继续分析Xpatch的实现原理。 Xpatch加载Xposed插件流程查找插件Apk加载Xposed插件之前，首先需要遍历所有安装的应用，根据Xposed插件的特征，找到其中的Xposed插件。   那什么样的应用">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy8xNjM5MjM4LWRmZjBmN2YyZDlmYWIyNTkucG5n">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy8xNjM5MjM4LTRkMzM1NzA4ZTFmY2MyNTI">
+<meta property="og:updated_time" content="2021-05-25T16:15:36.407Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="免Root 实现App加载Xposed插件的工具Xpatch源码解析（二）">
+<meta name="twitter:description" content="前言Xpatch是笔者开发的一款破解Android App工具，源码地址： https://github.com/WindySha/Xpatch 本文接着上一篇Xpatch源码解析文章，继续分析Xpatch的实现原理。 Xpatch加载Xposed插件流程查找插件Apk加载Xposed插件之前，首先需要遍历所有安装的应用，根据Xposed插件的特征，找到其中的Xposed插件。   那什么样的应用">
+<meta name="twitter:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy8xNjM5MjM4LWRmZjBmN2YyZDlmYWIyNTkucG5n">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideUpIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/07/27/免Root-实现App加载Xposed插件的工具Xpatch源码解析（二）/">
+
+
+
+
+
+  <title>免Root 实现App加载Xposed插件的工具Xpatch源码解析（二） | Windy's Journal</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Windy's Journal</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/27/免Root-实现App加载Xposed插件的工具Xpatch源码解析（二）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Windy">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/my_photo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Windy's Journal">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">免Root 实现App加载Xposed插件的工具Xpatch源码解析（二）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-27T13:07:55+08:00">
+                2019-07-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Xposed/" itemprop="url" rel="index">
+                    <span itemprop="name">Xposed</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Xposed/Android逆向/" itemprop="url" rel="index">
+                    <span itemprop="name">Android逆向</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Xposed/Android逆向/Xpatch/" itemprop="url" rel="index">
+                    <span itemprop="name">Xpatch</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>Xpatch是笔者开发的一款破解Android App工具，源码地址：</p>
+<p><a href="https://github.com/WindySha/Xpatch" target="_blank" rel="noopener">https://github.com/WindySha/Xpatch</a></p>
+<p>本文接着上一篇Xpatch源码解析文章，继续分析Xpatch的实现原理。</p>
+<h1 id="Xpatch加载Xposed插件流程"><a href="#Xpatch加载Xposed插件流程" class="headerlink" title="Xpatch加载Xposed插件流程"></a>Xpatch加载Xposed插件流程</h1><h2 id="查找插件Apk"><a href="#查找插件Apk" class="headerlink" title="查找插件Apk"></a>查找插件Apk</h2><p>加载Xposed插件之前，首先需要遍历所有安装的应用，根据Xposed插件的特征，找到其中的Xposed插件。  </p>
+<p>那什么样的应用才是Xposed插件呢？  </p>
+<a id="more"></a>
+<p>根据Xposed插件的书写规范中要求，插件Apk的Manifest文件中需要包含<code>android:name=&quot;xposedmodule&quot;</code>这样的<code>meta-data</code>信息：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;application</span><br><span class="line">        &lt;meta-data</span><br><span class="line">                android:name=&quot;xposedmodule&quot;</span><br><span class="line">                android:value=&quot;true&quot;/&gt;</span><br><span class="line">&lt;/application&gt;</span><br></pre></td></tr></table></figure></p>
+<p>根据此特征，我们获取App PackageInfo中的meta data，从而过滤出插件Apk，具体实现源码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">private static List&lt;String&gt; loadAllInstalledModule(Context context) &#123;</span><br><span class="line">        PackageManager pm = context.getPackageManager();</span><br><span class="line">        List&lt;String&gt; modulePathList = new ArrayList&lt;&gt;();</span><br><span class="line">//        modulePathList.add(&quot;mnt/sdcard/app-debug.apk&quot;);</span><br><span class="line"></span><br><span class="line">        List&lt;String&gt; packageNameList = loadPackageNameListFromFile(true);</span><br><span class="line">        List&lt;Pair&lt;String, String&gt;&gt; installedModuleList = new ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">        boolean configFileExist = configFileExist();</span><br><span class="line"></span><br><span class="line">        for (PackageInfo pkg : pm.getInstalledPackages(PackageManager.GET_META_DATA)) &#123;</span><br><span class="line">            ApplicationInfo app = pkg.applicationInfo;</span><br><span class="line">            if (!app.enabled)</span><br><span class="line">                continue;</span><br><span class="line">            if (app.metaData != null &amp;&amp; app.metaData.containsKey(&quot;xposedmodule&quot;)) &#123;</span><br><span class="line">                String apkPath = pkg.applicationInfo.publicSourceDir;</span><br><span class="line">                String apkName = context.getPackageManager().getApplicationLabel(pkg.applicationInfo).toString();</span><br><span class="line">                if (TextUtils.isEmpty(apkPath)) &#123;</span><br><span class="line">                    apkPath = pkg.applicationInfo.sourceDir;</span><br><span class="line">                &#125;</span><br><span class="line">                if (!TextUtils.isEmpty(apkPath) &amp;&amp; (!configFileExist || packageNameList == null || packageNameList</span><br><span class="line">                        .contains(app.packageName))) &#123;</span><br><span class="line">                    XLog.d(TAG, &quot; query installed module path -&gt; &quot; + apkPath);</span><br><span class="line">                    modulePathList.add(apkPath);</span><br><span class="line">                &#125;</span><br><span class="line">                installedModuleList.add(Pair.create(pkg.applicationInfo.packageName, apkName));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        final List&lt;Pair&lt;String, String&gt;&gt; installedModuleListFinal = installedModuleList;</span><br><span class="line"></span><br><span class="line">        // ...</span><br><span class="line">        // ...</span><br><span class="line">        return modulePathList;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="加载插件Apk"><a href="#加载插件Apk" class="headerlink" title="加载插件Apk"></a>加载插件Apk</h2><p>找到了插件Apk之后，就可以得到此Apk的路径（data/app/包名 目录下面），然后就是根据此路径加载插件。<br>加载插件的方法是：<code>com.wind.xposed.entry.XposedModuleLoader.loadModule()</code><br>其主要流程参考了原版Xposed框架中的实现，过程如下：</p>
+<blockquote>
+<ol>
+<li>根据插件Apk文件路径构造DexClassLoader；</li>
+<li>读取Apk asset目录下’’assets/xposed_init’文件中所有的类名；</li>
+<li>根据类名和Classloader构造入口类，并执行类的入口方法<code>handleLoadPackage</code>。  </li>
+</ol>
+</blockquote>
+<p>流程源码和注释：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">public static int loadModule(final String moduleApkPath, String moduleOdexDir, String moduleLibPath,</span><br><span class="line">                                 final ApplicationInfo currentApplicationInfo, ClassLoader appClassLoader) &#123;</span><br><span class="line">        // ...</span><br><span class="line"></span><br><span class="line">        // 创建DexClassLoader</span><br><span class="line">        ClassLoader mcl = new DexClassLoader(moduleApkPath, moduleOdexDir, moduleLibPath, appClassLoader);</span><br><span class="line">        // 读取asset目录中文件里写入的所有类名</span><br><span class="line">        InputStream is = mcl.getResourceAsStream(&quot;assets/xposed_init&quot;);</span><br><span class="line">        // ...</span><br><span class="line"></span><br><span class="line">        BufferedReader moduleClassesReader = new BufferedReader(new InputStreamReader(is));</span><br><span class="line">        try &#123;</span><br><span class="line">            String moduleClassName;</span><br><span class="line">            while ((moduleClassName = moduleClassesReader.readLine()) != null) &#123;</span><br><span class="line">                moduleClassName = moduleClassName.trim();</span><br><span class="line">                if (moduleClassName.isEmpty() || moduleClassName.startsWith(&quot;#&quot;))</span><br><span class="line">                    continue;</span><br><span class="line"></span><br><span class="line">                try &#123;</span><br><span class="line">                    XLog.i(TAG, &quot;  Loading class &quot; + moduleClassName);</span><br><span class="line">                    // 构造对象</span><br><span class="line">                    Class&lt;?&gt; moduleClass = mcl.loadClass(moduleClassName);</span><br><span class="line"></span><br><span class="line">                    if (!XposedHelper.isIXposedMod(moduleClass)) &#123;</span><br><span class="line">                        Log.i(TAG, &quot;    This class doesn&apos;t implement any sub-interface of IXposedMod, skipping it&quot;);</span><br><span class="line">                        continue;</span><br><span class="line">                    &#125; else if (IXposedHookInitPackageResources.class.isAssignableFrom(moduleClass)) &#123;</span><br><span class="line">                        Log.i(TAG, &quot;    This class requires resource-related hooks (which are disabled), skipping it.&quot;);</span><br><span class="line">                        continue;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    final Object moduleInstance = moduleClass.newInstance();</span><br><span class="line">                    if (moduleInstance instanceof IXposedHookZygoteInit) &#123;</span><br><span class="line">                        XposedHelper.callInitZygote(moduleApkPath, moduleInstance);</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                  // 执行对象中的`handleLoadPackage`入口方法，实现hook流程</span><br><span class="line">                    if (moduleInstance instanceof IXposedHookLoadPackage) &#123;</span><br><span class="line">                        // hookLoadPackage(new IXposedHookLoadPackage.Wrapper((IXposedHookLoadPackage) moduleInstance));</span><br><span class="line">                        IXposedHookLoadPackage.Wrapper wrapper = new IXposedHookLoadPackage.Wrapper((IXposedHookLoadPackage) moduleInstance);</span><br><span class="line">                        XposedBridge.CopyOnWriteSortedSet&lt;XC_LoadPackage&gt; xc_loadPackageCopyOnWriteSortedSet = new XposedBridge.CopyOnWriteSortedSet&lt;&gt;();</span><br><span class="line">                        xc_loadPackageCopyOnWriteSortedSet.add(wrapper);</span><br><span class="line">                        XC_LoadPackage.LoadPackageParam lpparam = new XC_LoadPackage.LoadPackageParam(xc_loadPackageCopyOnWriteSortedSet);</span><br><span class="line">                        lpparam.packageName = currentApplicationInfo.packageName;</span><br><span class="line">                        lpparam.processName = currentApplicationInfo.processName;</span><br><span class="line">                        lpparam.classLoader = appClassLoader;</span><br><span class="line">                        lpparam.appInfo = currentApplicationInfo;</span><br><span class="line">                        lpparam.isFirstApplication = true;</span><br><span class="line">                        XC_LoadPackage.callAll(lpparam);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; catch (Throwable t) &#123;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="Apk中注入代码的实现"><a href="#Apk中注入代码的实现" class="headerlink" title="Apk中注入代码的实现"></a>Apk中注入代码的实现</h1><p>往Apk中注入代码，一般来说，有两种主流方法：</p>
+<blockquote>
+<ol>
+<li>最常用的方法，使用ApkTool将Apk反编译为smali代码，修改smali文件，然后再将修改后的文件使用ApkTool打包，从而实现代码的修改；</li>
+<li>修改<a href="https://github.com/pxb1988/dex2jar" target="_blank" rel="noopener">dex2jar</a>工程源码，使得在dex转换为jar过程中能够插入java代码，然后再使用jar2dex工具将修改后的jar转换为dex文件，从而实现代码修改和回编。</li>
+</ol>
+</blockquote>
+<p>这里，我们选取了第二种方法。第二种方法的难点是如何修改dex2jar工程源码实现代码的插入。</p>
+<p>为此，需要先分析其实现原理。<br>Claud大神开源的<a href="https://github.com/pxb1988/dex2jar" target="_blank" rel="noopener">dex2jar</a>工具大致原理是，先根据dex文件格式规则解析dex文件中的所有类信息，然后再利用ASM工具根据这些信息生成Class文件。  </p>
+<p>对Java开发比较熟悉的人，应该很熟悉ASM。ASM是一个Java字节码操作框架。它可以直接对class文件进行增删改的操作，能被用来动态生成类或者增强既有类的功能。Java中许多的框架的实现是基于ASM，比如Java AOP的实现，JavaWeb开发中的Spring框架的实现等等。可以说ASM就是一把利剑，是深入Java必须学习的一个点。  </p>
+<p>这里，我们就不讲解ASM的原理和用法，只讲解如何利用ASM修改dex2jar工程源码，从而实现代码的注入。</p>
+<h2 id="ASM代码生成"><a href="#ASM代码生成" class="headerlink" title="ASM代码生成"></a>ASM代码生成</h2><p>在上一篇源码解析文章中，我们说过，破解Apk，只需要在其Application类中注入这样一段静态代码块:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">package com.test;</span><br><span class="line">import android.app.Application;</span><br><span class="line">import com.wind.xposed.entry.XposedModuleEntry;</span><br><span class="line"></span><br><span class="line">public class MyApplication extends Application &#123;</span><br><span class="line">    static &#123;</span><br><span class="line">        XposedModuleEntry.init();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>那这样的一段代码，如何用ASM工具生成呢。<br>假如对ASM的API熟悉的话，其实很容易就能实现这样一小段代码的生成。<br>假如不熟悉的话，也没关系，我们可以利用Android Studio中的一个插件，查看这段代码的ASM的实现。这个插件的名字是：ASM Bytecode Viewer</p>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy8xNjM5MjM4LWRmZjBmN2YyZDlmYWIyNTkucG5n" alt><br>通过这个插件，我们可以清晰的看到生成这段代码的ASM代码的实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">public class MyApplicationDump implements Opcodes &#123;</span><br><span class="line"></span><br><span class="line">    public static byte[] dump() throws Exception &#123;</span><br><span class="line"></span><br><span class="line">        ClassWriter cw = new ClassWriter(0);</span><br><span class="line">        FieldVisitor fv;</span><br><span class="line">        MethodVisitor mv;</span><br><span class="line">        AnnotationVisitor av0;</span><br><span class="line"></span><br><span class="line">        cw.visit(V1_7, ACC_PUBLIC + ACC_SUPER, &quot;com/test/MyApplication&quot;, null, &quot;android/app/Application&quot;, null);</span><br><span class="line"></span><br><span class="line">        cw.visitSource(&quot;MyApplication.java&quot;, null);</span><br><span class="line"></span><br><span class="line">        &#123;</span><br><span class="line">            mv = cw.visitMethod(ACC_PUBLIC, &quot;&lt;init&gt;&quot;, &quot;()V&quot;, null, null);</span><br><span class="line">            mv.visitCode();</span><br><span class="line">            Label l0 = new Label();</span><br><span class="line">            mv.visitLabel(l0);</span><br><span class="line">            mv.visitLineNumber(7, l0);</span><br><span class="line">            mv.visitVarInsn(ALOAD, 0);</span><br><span class="line">            mv.visitMethodInsn(INVOKESPECIAL, &quot;android/app/Application&quot;, &quot;&lt;init&gt;&quot;, &quot;()V&quot;, false);</span><br><span class="line">            mv.visitInsn(RETURN);</span><br><span class="line">            Label l1 = new Label();</span><br><span class="line">            mv.visitLabel(l1);</span><br><span class="line">            mv.visitLocalVariable(&quot;this&quot;, &quot;Lcom/test/MyApplication;&quot;, null, l0, l1, 0);</span><br><span class="line">            mv.visitMaxs(1, 1);</span><br><span class="line">            mv.visitEnd();</span><br><span class="line">        &#125;</span><br><span class="line">        &#123;</span><br><span class="line">            mv = cw.visitMethod(ACC_STATIC, &quot;&lt;clinit&gt;&quot;, &quot;()V&quot;, null, null);</span><br><span class="line">            mv.visitCode();</span><br><span class="line">            Label l0 = new Label();</span><br><span class="line">            mv.visitLabel(l0);</span><br><span class="line">            mv.visitLineNumber(11, l0);</span><br><span class="line">            mv.visitMethodInsn(INVOKESTATIC, &quot;com/wind/xposed/entry/XposedModuleEntry&quot;, &quot;init&quot;, &quot;()V&quot;, false);</span><br><span class="line">            Label l1 = new Label();</span><br><span class="line">            mv.visitLabel(l1);</span><br><span class="line">            mv.visitLineNumber(12, l1);</span><br><span class="line">            mv.visitInsn(RETURN);</span><br><span class="line">            mv.visitMaxs(0, 0);</span><br><span class="line">            mv.visitEnd();</span><br><span class="line">        &#125;</span><br><span class="line">        cw.visitEnd();</span><br><span class="line"></span><br><span class="line">        return cw.toByteArray();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这段代码中，第一个花括号中代码用来生成这个类的默认构造方法，第二个花括号中是用来生成静态代码块方法，去掉生成标签行数等无关代码后，最终需要的代码仅仅是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mv = cw.visitMethod(ACC_STATIC, &quot;&lt;clinit&gt;&quot;, &quot;()V&quot;, null, null);</span><br><span class="line">mv.visitCode();</span><br><span class="line">mv.visitMethodInsn(INVOKESTATIC, &quot;com/wind/xposed/entry/XposedModuleEntry&quot;, &quot;init&quot;, &quot;()V&quot;, false);</span><br><span class="line">mv.visitInsn(RETURN);</span><br><span class="line">mv.visitMaxs(0, 0);</span><br><span class="line">mv.visitEnd();</span><br></pre></td></tr></table></figure></p>
+<p>下面再分析如何将这段ASM代码加到dex2jar工程中，从而实现代码植入。</p>
+<h2 id="修改dex2jar源码"><a href="#修改dex2jar源码" class="headerlink" title="修改dex2jar源码"></a>修改dex2jar源码</h2><p>通过不断调试dex2jar源码，我们可以找到使用ASM生成字节码的代码位置，在<code>Dex2jar.java</code>文件的<code>doTranslate ()</code>方法中：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">// dex2jar项目源码</span><br><span class="line">// com.googlecode.d2j.dex.Dex2jar.java</span><br><span class="line">private void doTranslate(final Path dist) throws IOException &#123;</span><br><span class="line">    // ...</span><br><span class="line">    new ExDex2Asm(exceptionHandler) &#123;</span><br><span class="line">            public void convertCode(DexMethodNode methodNode, MethodVisitor mv) &#123;</span><br><span class="line">                if ((readerConfig &amp; DexFileReader.SKIP_CODE) != 0 &amp;&amp; methodNode.method.getName().equals(&quot;&lt;clinit&gt;&quot;)) &#123;</span><br><span class="line">                    // also skip clinit</span><br><span class="line">                    return;</span><br><span class="line">                &#125;</span><br><span class="line">                super.convertCode(methodNode, mv);</span><br><span class="line">            &#125;</span><br><span class="line">            @Override</span><br><span class="line">            public void optimize(IrMethod irMethod) &#123;</span><br><span class="line">                // ...</span><br><span class="line">                // ...</span><br><span class="line">            &#125;</span><br><span class="line">            @Override</span><br><span class="line">            public void ir2j(IrMethod irMethod, MethodVisitor mv) &#123;</span><br><span class="line">                new IR2JConverter(0 != (V3.OPTIMIZE_SYNCHRONIZED &amp; v3Config)).convert(irMethod, mv);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;.convertDex(fileNode, cvf);</span><br><span class="line">    // ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>ExDex2Asm</code>方法<code>convertCode</code>是其父类中对外暴露的方法，用于处理每个方法生成。<br>在这里，我们可以判断当前类是不是应用的Application类，以及方法是不是静态代码块方法<code>&lt;clinit&gt;</code>， 是的话，通过<code>visitMethodInsn</code>加上<code>XposedModuleEntry.init();</code>方法，代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">if (methodNode.method.getOwner().equals(applicationName) &amp;&amp; methodNode.method.getName().equals(&quot;&lt;clinit&gt;&quot;)) &#123;</span><br><span class="line">        isApplicationClassFounded = true;</span><br><span class="line">        mv.visitMethodInsn(Opcodes.INVOKESTATIC, XPOSED_ENTRY_CLASS_NAME, &quot;init&quot;, &quot;()V&quot;, false);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>还有另外一种情形，也需要处理，就是当前应用自定义的Application类没有方法静态方法块的情形。对于这种情形的处理，仅修改<code>ExDex2Asm</code>类中的代码，显然无法实现。我们需要在其父类<code>Dex2Asm</code>中增加一个非私有的空方法，暴露给子类<code>ExDex2Asm</code>。这个方法需要包含类的节点信息<code>DexClassNode</code>和ASM代码生成对象<code>ClassVisitor</code>。<br>通过分析<code>Dex2Asm</code>类中代码，最终选择了在其<code>convertClass</code>方法后面的位置调用此方法，代码如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">   <span class="comment">// com.googlecode.d2j.dex.Dex2jar.java</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">convertClass</span><span class="params">(<span class="keyword">int</span> dexVersion, DexClassNode classNode, </span></span></span><br><span class="line"><span class="function"><span class="params">        ClassVisitorFactory cvf, Map&lt;String, Clz&gt; classes)</span> </span>&#123;</span><br><span class="line">accept(classNode.anns, cv);</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        <span class="keyword">if</span> (classNode.fields != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">for</span> (DexFieldNode fieldNode : classNode.fields) &#123;</span><br><span class="line">                convertField(classNode, fieldNode, cv);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">       <span class="comment">// 在这里调用新增加的方法</span></span><br><span class="line">        addMethod(classNode, cv);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (classNode.methods != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">for</span> (DexMethodNode methodNode : classNode.methods) &#123;</span><br><span class="line">                convertMethod(classNode, methodNode, cv);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        cv.visitEnd();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 这是新增加的方法，具体实现在子类中</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addMethod</span><span class="params">(DexClassNode classNode, ClassVisitor cv)</span> </span>&#123;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>在<code>addMethod</code>具体实现中，先判断当前类是Application类，然后再遍历类的所有方法，如果没有静态代码块方法，通过ASM加上静态代码块方法，这段增加方法的ASM代码，就是上面用Android Studio中的ASM插件生成的。<br>最终完整代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">// 修改后的dex2jar项目代码</span><br><span class="line">// com.googlecode.d2j.dex.Dex2jar.java</span><br><span class="line">new ExDex2Asm(exceptionHandler) &#123;</span><br><span class="line">            public void convertCode(DexMethodNode methodNode, MethodVisitor mv) &#123;</span><br><span class="line">                // 增加的代码，用于在Application静态代码块中增加XposedModuleEntry.init();</span><br><span class="line">                if (methodNode.method.getOwner().equals(applicationName) &amp;&amp; methodNode.method.getName().equals(&quot;&lt;clinit&gt;&quot;)) &#123;</span><br><span class="line">                    isApplicationClassFounded = true;</span><br><span class="line">                    mv.visitMethodInsn(Opcodes.INVOKESTATIC, XPOSED_ENTRY_CLASS_NAME, &quot;init&quot;, &quot;()V&quot;, false);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                if ((readerConfig &amp; DexFileReader.SKIP_CODE) != 0 &amp;&amp; methodNode.method.getName().equals(&quot;&lt;clinit&gt;&quot;)) &#123;</span><br><span class="line">                    // also skip clinit</span><br><span class="line">                    return;</span><br><span class="line">                &#125;</span><br><span class="line">                super.convertCode(methodNode, mv);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            // 增加的代码</span><br><span class="line">            @Override</span><br><span class="line">            public void addMethod(com.googlecode.d2j.node.DexClassNode classNode, ClassVisitor cv) &#123;</span><br><span class="line">                // 找到应用的Application类</span><br><span class="line">                if (classNode.className.equals(applicationName)) &#123;</span><br><span class="line">                    isApplicationClassFounded = true;</span><br><span class="line"></span><br><span class="line">                    boolean hasFoundClinitMethod = false;</span><br><span class="line">                    if (classNode.methods != null) &#123;</span><br><span class="line">                         // 判断是否存在静态代码块</span><br><span class="line">                        for (DexMethodNode methodNode : classNode.methods) &#123;</span><br><span class="line">                            if (methodNode.method.getName().equals(&quot;&lt;clinit&gt;&quot;)) &#123;</span><br><span class="line">                                hasFoundClinitMethod = true;</span><br><span class="line">                                break;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    // 通过ASM增加静态代码块方法，并注入初始化方法XposedModuleEntry.init();</span><br><span class="line">                    if (!hasFoundClinitMethod) &#123;</span><br><span class="line">                        MethodVisitor mv = cv.visitMethod(Opcodes.ACC_STATIC, &quot;&lt;clinit&gt;&quot;, &quot;()V&quot;, null, null);</span><br><span class="line">                        mv.visitCode();</span><br><span class="line">                        mv.visitMethodInsn(Opcodes.INVOKESTATIC, XPOSED_ENTRY_CLASS_NAME, &quot;init&quot;, &quot;()V&quot;, false);</span><br><span class="line">                        mv.visitInsn(Opcodes.RETURN);</span><br><span class="line">                        mv.visitMaxs(0, 0);</span><br><span class="line">                        mv.visitEnd();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            @Override</span><br><span class="line">            public void optimize(IrMethod irMethod) &#123;</span><br><span class="line">                // ...</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            @Override</span><br><span class="line">            public void ir2j(IrMethod irMethod, MethodVisitor mv) &#123;</span><br><span class="line">                new IR2JConverter(0 != (V3.OPTIMIZE_SYNCHRONIZED &amp; v3Config)).convert(irMethod, mv);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;.convertDex(fileNode, cvf);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>此外，<code>Dex2Jar</code>类对象<code>applicationName</code>是从外面传入的应用定义的Application类全名，在<code>Dex2jarCmd</code>类中传入，<code>Dex2jarCmd</code>类的修改点如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">//  com.googlecode.dex2jar.tools.Dex2jarCmd.java</span><br><span class="line">public class Dex2jarCmd extends BaseCmd &#123;</span><br><span class="line">    // ...</span><br><span class="line">    // ...</span><br><span class="line">    // 新增的命令行参数，用于传应用的Application全类名</span><br><span class="line">    @Opt(opt = &quot;app&quot;, longOpt = &quot;applicationName&quot;, description = &quot;application full name that method should be insert into&quot;, </span><br><span class="line">        argName = &quot;application-name&quot;)</span><br><span class="line">    private String applicationName;</span><br><span class="line"></span><br><span class="line">    protected void doCommandLine() throws Exception &#123;</span><br><span class="line">        // ...</span><br><span class="line">        // ...</span><br><span class="line">        dex2jar = Dex2jar.from(reader);</span><br><span class="line">        dex2jar.withExceptionHandler(handler).reUseReg(reuseReg).topoLogicalSort()</span><br><span class="line">               .skipDebug(!debugInfo).optimizeSynchronized(this.optmizeSynchronized).printIR(printIR)</span><br><span class="line">                .noCode(noCode).skipExceptions(skipExceptions)</span><br><span class="line">                .setApplicationName(applicationName).to(file);  // 新增的代码</span><br><span class="line">        // ...</span><br><span class="line">        // ...</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    // 新增的方法，用于暴露给外面，判断当前Dex中是否存在应用的Application类</span><br><span class="line">    public boolean isApplicationClassFounded() &#123;</span><br><span class="line">        if (dex2jar == null) &#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125;</span><br><span class="line">        return dex2jar.isApplicationClassFounded();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>Dex2jar</code>类增加的两个成员变量和相关方法如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">// 修改后的dex2jar项目代码</span><br><span class="line">// com.googlecode.d2j.dex.Dex2jar.java</span><br><span class="line">public class Dex2jar &#123;</span><br><span class="line">    // ...</span><br><span class="line">    // ...</span><br><span class="line">    // 新增的两个成员变量</span><br><span class="line">    private String applicationName;</span><br><span class="line">    private boolean isApplicationClassFounded = false;</span><br><span class="line"></span><br><span class="line">   // 增加应用application的名称</span><br><span class="line">    public Dex2jar setApplicationName(String appName) &#123;</span><br><span class="line">        this.applicationName = appName;</span><br><span class="line">        applicationName = applicationName.replace(&apos;.&apos;, &apos;/&apos;);</span><br><span class="line">        if (!applicationName.endsWith(&quot;;&quot;)) &#123;</span><br><span class="line">            applicationName += &quot;;&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">        if (!applicationName.startsWith(&quot;L&quot;)) &#123;</span><br><span class="line">            applicationName = &quot;L&quot; + applicationName;</span><br><span class="line">        &#125;</span><br><span class="line">        return this;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public boolean isApplicationClassFounded() &#123;</span><br><span class="line">        return isApplicationClassFounded;</span><br><span class="line">    &#125;</span><br><span class="line">    // ...</span><br><span class="line">    // ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>至此，我们完成了dex2jar工程的改造，顺利实现了给一个Apk注入代码。</p>
+<h1 id="打包及签名流程"><a href="#打包及签名流程" class="headerlink" title="打包及签名流程"></a>打包及签名流程</h1><p>有了上面的准备工作后，我们来分析Xpatch源码中，调用dex2jar工具修改apk流程，以及对修改后的apk打包签名的流程。</p>
+<p>Xpatch源码的入口类<code>MainCommand</code>，其核心方法是<code>doCommandLine()</code>。<br>在<code>doCommandLine()</code>方法的主流程执行之前，先做了以下准备工作：`</p>
+<blockquote>
+<ol>
+<li>解析命令行参数，主要是包括原Apk路径和生成的Apk路径；</li>
+<li>解析Apk压缩包，读取dex文件的个数；</li>
+<li>通过AxmlPrinter2工具解析Manifest文件中的Application全类名；</li>
+</ol>
+</blockquote>
+<p>以上准备工具完成后，通过三个task处理Apk文件，源码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">// 1. modify the apk dex file to make xposed can run in it</span><br><span class="line">mXpatchTasks.add(new ApkModifyTask(showAllLogs, keepBuildFiles, unzipApkFilePath, applicationName,</span><br><span class="line">        dexFileCount));</span><br><span class="line"></span><br><span class="line">// 2. copy xposed so and dex files into the unzipped apk</span><br><span class="line">mXpatchTasks.add(new SoAndDexCopyTask(dexFileCount, unzipApkFilePath, getXposedModules(xposedModules)));</span><br><span class="line"></span><br><span class="line">// 3. compress all files into an apk and then sign it.</span><br><span class="line">mXpatchTasks.add(new BuildAndSignApkTask(keepBuildFiles, unzipApkFilePath, output));</span><br><span class="line"></span><br><span class="line">// 4. excute these tasks</span><br><span class="line">for (Runnable executor : mXpatchTasks) &#123;</span><br><span class="line">    executor.run();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这三个task的作用分别是：</p>
+<blockquote>
+<ol>
+<li>利用修改后的dex2jar工具和jar2dex工具修改Apk中应用Application类的代码；</li>
+<li>将用于加载Xposed插件的dex文件和so文件复制到Apk解压后的文件目录下；</li>
+<li>将Apk解压后的文件目录重新压缩为zip压缩包，并重新签名。</li>
+</ol>
+</blockquote>
+<p>第二个task和第三个task比较简单，这里就不一一分析。<br>主要分析一下第一个task，修改Apk源码的task:  <code>ApkModifyTask</code>。<br><code>ApkModifyTask</code>的核心流程是遍历Apk解压出来的所有dex文件，对每个dex文件执行<code>Dex2jarCmd</code>，这个cmd的作用就是找到dex中应用的Application类，并插入代码，如果找到，就不继续处理下一个dex文件，因为每个App只有一个Application类，代码细节如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">private String dumpJarFile(int dexFileCount, String dexFilePath, String jarOutputPath, String applicationName) &#123;</span><br><span class="line">     ArrayList&lt;String&gt; dexFileList = createClassesDotDexFileList(dexFileCount);</span><br><span class="line">     for (String dexFileName : dexFileList) &#123;</span><br><span class="line">         String filePath = dexFilePath + dexFileName;</span><br><span class="line">         // 执行dex2jar命令，修改源代码</span><br><span class="line">         boolean isApplicationClassFound = dex2JarCmd(filePath, jarOutputPath, applicationName);</span><br><span class="line">         // 找到了目标应用主application的包名，说明代码注入成功，则返回当前dex文件</span><br><span class="line">         if (isApplicationClassFound) &#123;</span><br><span class="line">             return dexFileName;</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line">     return &quot;&quot;;</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> private boolean dex2JarCmd(String dexPath, String jarOutputPath, String applicationName) &#123;</span><br><span class="line">     Dex2jarCmd cmd = new Dex2jarCmd();</span><br><span class="line">     String[] args = new String[]&#123;</span><br><span class="line">             dexPath,</span><br><span class="line">             &quot;-o&quot;,</span><br><span class="line">             jarOutputPath,</span><br><span class="line">             &quot;-app&quot;,</span><br><span class="line">             applicationName,</span><br><span class="line">             &quot;--force&quot;</span><br><span class="line">     &#125;;</span><br><span class="line">     cmd.doMain(args);</span><br><span class="line"></span><br><span class="line">     // 执行完命令后，会返回查找Application Class的结果</span><br><span class="line">     boolean isApplicationClassFounded = cmd.isApplicationClassFounded();</span><br><span class="line">     if (showAllLogs) &#123;</span><br><span class="line">         System.out.println(&quot;isApplicationClassFounded -&gt;  &quot; + isApplicationClassFounded + &quot;the dexPath is  &quot; +</span><br><span class="line">                 dexPath);</span><br><span class="line">     &#125;</span><br><span class="line">     return isApplicationClassFounded;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></p>
+<p>使用dex2jar修改完Apk的Application类之后，得到的是一个jar文件，再通过jar2dex工具转为dex文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">private void jar2DexCmd(String jarFilePath, String dexOutPath) &#123;</span><br><span class="line">        Jar2Dex cmd = new Jar2Dex();</span><br><span class="line">        String[] args = new String[]&#123;</span><br><span class="line">                jarFilePath,</span><br><span class="line">                &quot;-o&quot;,</span><br><span class="line">                dexOutPath</span><br><span class="line">        &#125;;</span><br><span class="line">        cmd.doMain(args);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>最后删除生成的jar文件，新的dex文件就是完成代码注入后的dex。<br>最后，将这些dex文件和so文件压缩为Apk文件，并签名。</p>
+<p>至此，完成Apk的篡改，并实现App启动时，加载设备上已安装的所有Xposed插件模块。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>最后，归纳一下Xpatch破解App的整体流程：</p>
+<blockquote>
+<ol>
+<li>利用Android Art Hook框架（whale或者SandHook），开发能够加载Xposed模块的Apk，并导出其中的dex和so文件；</li>
+<li>修改dex2jar工具，以实现在dex转换为jar的过程中，查找App的主Application类，并在此类中插入一段静态代码块，实现加载Xposed模块；</li>
+<li>将修改后的dex和加载Xposed模块的dex和so文件一起打包签名，从而完成代码注入，实现Xposed模块的加载。</li>
+</ol>
+</blockquote>
+<p>欢迎扫二维码，关注我的技术公众号<strong>Android葵花宝典</strong>  ，获取高质量的Android干货分享：</p>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy8xNjM5MjM4LTRkMzM1NzA4ZTFmY2MyNTI" alt="image"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Xposed/" rel="tag"># Xposed</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/27/免Root-实现App加载Xposed插件的工具Xpatch源码解析（一）/" rel="next" title="免Root 实现App加载Xposed插件的工具Xpatch源码解析（一）">
+                <i class="fa fa-chevron-left"></i> 免Root 实现App加载Xposed插件的工具Xpatch源码解析（一）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/05/28/非Root环境下使用Frida的一种方案/" rel="prev" title="非Root环境下使用Frida的一种方案">
+                非Root环境下使用Frida的一种方案 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div id="gitalk-container"></div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/my_photo.jpg" alt="Windy">
+            
+              <p class="site-author-name" itemprop="name">Windy</p>
+              <p class="site-description motion-element" itemprop="description">用技术撬动地球</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/WindySha" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/2d35b94de2a4" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-globe"></i>简书</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Xpatch加载Xposed插件流程"><span class="nav-number">2.</span> <span class="nav-text">Xpatch加载Xposed插件流程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#查找插件Apk"><span class="nav-number">2.1.</span> <span class="nav-text">查找插件Apk</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#加载插件Apk"><span class="nav-number">2.2.</span> <span class="nav-text">加载插件Apk</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Apk中注入代码的实现"><span class="nav-number">3.</span> <span class="nav-text">Apk中注入代码的实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ASM代码生成"><span class="nav-number">3.1.</span> <span class="nav-text">ASM代码生成</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改dex2jar源码"><span class="nav-number">3.2.</span> <span class="nav-text">修改dex2jar源码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#打包及签名流程"><span class="nav-number">4.</span> <span class="nav-text">打包及签名流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Windy</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+<span id="busuanzi_container_site_pv" class="theme-info">
+&nbsp;&nbsp;|&nbsp;&nbsp;本站总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+  <span id="busuanzi_container_site_uv" class="theme-info">
+&nbsp;&nbsp;|&nbsp;&nbsp;本站访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="“https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js”"></script>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+  <script src="/js/src/md5.min.js"></script>
+   <script type="text/javascript">
+        var gitalk = new Gitalk({
+          clientID: '74fae1ebd3ed7c477fa3',
+          clientSecret: '6c20e96e69c1d539a3150d1c464977fbcd2ce50e',
+          repo: 'my_hexo_blog_comments',
+          owner: 'WindySha',
+          admin: ['WindySha'],
+          id: md5(location.pathname),
+          distractionFreeMode: 'true'
+        })
+        gitalk.render('gitalk-container')           
+       </script>
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+  </script>
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

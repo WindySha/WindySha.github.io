@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+  <meta name="google-site-verification" content="DriWLHPOSm42mFNpn-8F4QnKrvTt4aj2cqvnOToSeaw">
+
+
+
+
+
+
+
+
+  <meta name="baidu-site-verification" content="l1rAwZtE1v">
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="全面屏,虚拟导航键,NavigationBar,沉浸式全屏,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Windy's Journal" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="关于全面屏全面屏是手机业界对于超高屏占比手机设计的一个宽泛的定义。从字面上解释就是，手机的正面全部都是屏幕，四个边框位置都是采用无边框设计，追求接近100%的屏占比。但受限于目前的技术，还不能做到手机正面屏占比100%的手机。现在业内所说的全面屏手机是指真实屏占比可以达到80%以上，拥有超窄边框设计的手机。 全面屏手机屏幕的宽高比例比较特殊，不再是以前的16:9了。比如三星的Galaxy S8屏幕">
+<meta name="keywords" content="全面屏,虚拟导航键,NavigationBar,沉浸式全屏">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android APP适配全面屏手机的技术要点">
+<meta property="og:url" content="http://yoursite.com/2018/02/07/Android-APP适配全面屏手机的技术要点/index.html">
+<meta property="og:site_name" content="Windy&#39;s Journal">
+<meta property="og:description" content="关于全面屏全面屏是手机业界对于超高屏占比手机设计的一个宽泛的定义。从字面上解释就是，手机的正面全部都是屏幕，四个边框位置都是采用无边框设计，追求接近100%的屏占比。但受限于目前的技术，还不能做到手机正面屏占比100%的手机。现在业内所说的全面屏手机是指真实屏占比可以达到80%以上，拥有超窄边框设计的手机。 全面屏手机屏幕的宽高比例比较特殊，不再是以前的16:9了。比如三星的Galaxy S8屏幕">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://static.zybuluo.com/Wind729/1cs1otfllbsf4zd2kioc6kaw/device-2017-12-01-161415.png">
+<meta property="og:image" content="http://static.zybuluo.com/Wind729/1cns150ulsfao411ebcmfhn6/device-2017-12-01-114607%20-%20%E5%89%AF%E6%9C%AC.png">
+<meta property="og:updated_time" content="2021-05-25T16:15:36.402Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android APP适配全面屏手机的技术要点">
+<meta name="twitter:description" content="关于全面屏全面屏是手机业界对于超高屏占比手机设计的一个宽泛的定义。从字面上解释就是，手机的正面全部都是屏幕，四个边框位置都是采用无边框设计，追求接近100%的屏占比。但受限于目前的技术，还不能做到手机正面屏占比100%的手机。现在业内所说的全面屏手机是指真实屏占比可以达到80%以上，拥有超窄边框设计的手机。 全面屏手机屏幕的宽高比例比较特殊，不再是以前的16:9了。比如三星的Galaxy S8屏幕">
+<meta name="twitter:image" content="http://static.zybuluo.com/Wind729/1cs1otfllbsf4zd2kioc6kaw/device-2017-12-01-161415.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideUpIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/02/07/Android-APP适配全面屏手机的技术要点/">
+
+
+
+
+
+  <title>Android APP适配全面屏手机的技术要点 | Windy's Journal</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Windy's Journal</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/07/Android-APP适配全面屏手机的技术要点/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Windy">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/my_photo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Windy's Journal">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android APP适配全面屏手机的技术要点</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-07T21:45:33+08:00">
+                2018-02-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/全面屏适配/" itemprop="url" rel="index">
+                    <span itemprop="name">全面屏适配</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="关于全面屏"><a href="#关于全面屏" class="headerlink" title="关于全面屏"></a><strong>关于全面屏</strong></h2><p>全面屏是手机业界对于超高屏占比手机设计的一个宽泛的定义。从字面上解释就是，手机的正面全部都是屏幕，四个边框位置都是采用无边框设计，追求接近100%的屏占比。但受限于目前的技术，还不能做到手机正面屏占比100%的手机。现在业内所说的全面屏手机是指真实屏占比可以达到80%以上，拥有超窄边框设计的手机。</p>
+<p>全面屏手机屏幕的宽高比例比较特殊，不再是以前的16:9了。比如三星的Galaxy S8屏幕分辨率是：2960×1440，对应的屏幕比例为:18.5:9。VIVO X20手机屏幕分辨率是2160x1080，对应的屏幕比例:18:9。对于这种奇葩的屏幕比例，APP开发者该如何去优化自己的应用，才能在这些手机上显示的更加完美呢？下面，从以下两个方面来探究APP完美适配全面屏手机的方法。</p>
+<ul>
+<li>更大的屏幕高宽比例</li>
+<li>虚拟导航键（NavigationBar）</li>
+</ul>
+<a id="more"></a>
+<h2 id="更大的屏幕高宽比例"><a href="#更大的屏幕高宽比例" class="headerlink" title="更大的屏幕高宽比例"></a><strong>更大的屏幕高宽比例</strong></h2><h3 id="在AndroidManifest-xml声明max-aspect值"><a href="#在AndroidManifest-xml声明max-aspect值" class="headerlink" title="在AndroidManifest.xml声明max_aspect值"></a>在AndroidManifest.xml声明max_aspect值</h3><p>由于全面屏手机的高宽比比之前大，如果不适配的话，Android默认为最大的宽高比是1.86，小于全面屏手机的宽高比，因此，在全面屏手机上打开部分App时，上下就会留有空间，显示为黑条。这样非常影响视觉体验，另外全面屏提供的额外空间也没有得以利用，因此，这样的应用需要做相关适配。</p>
+<p>针对此问题，Android官方提供了适配方案，即提高App所支持的最大屏幕纵横比，实现起来也比较简单，在AndroidManifest.xml中做如下配置即可：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;meta-data android:name=&quot;android.max_aspect&quot;  android:value=&quot;ratio_float&quot;/&gt;</span><br></pre></td></tr></table></figure></p>
+<p>其中ratio_float为浮点数，官方建议为2.1或更大，因为18.5：9=2.055555555……，如果日后出现纵横比更大的手机，此值将需要设为更大。<br>因此，建议开发者在自己App AndroidManifest的Application标签下面增加下面一段代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;meta-data android:name=&quot;android.max_aspect&quot; android:value=&quot;2.1&quot; /&gt;</span><br></pre></td></tr></table></figure></p>
+<p>另外，在AndroidManifest中针对Activity标签添加<code>android:resizeableActivity = “true”</code>，也可以实现全屏显示，但此设置只针对Activity生效，且增加了此属性该activity也会支持分屏显示。</p>
+<p>关于这方面的适配，更详细的内容可以参考google官方文档：<br><a href="https://android-developers.googleblog.com/2017/03/update-your-app-to-take-advantage-of.html" target="_blank" rel="noopener">Update your app to take advantage of the larger aspect ratio on new Android flagship devices</a></p>
+<p>max_aspect值也可以在Java代码中动态地设置，通过下面的方法即可实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public void setMaxAspect() &#123;</span><br><span class="line">        ApplicationInfo applicationInfo = null;</span><br><span class="line">        try &#123;</span><br><span class="line">            applicationInfo = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);</span><br><span class="line">        &#125; catch (PackageManager.NameNotFoundException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        if(applicationInfo == null)&#123;</span><br><span class="line">            throw new IllegalArgumentException(&quot; get application info = null, has no meta data! &quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        applicationInfo.metaData.putString(&quot;android.max_aspect&quot;, &quot;2.1&quot;);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="更换部分被拉伸的图片资源文件"><a href="#更换部分被拉伸的图片资源文件" class="headerlink" title="更换部分被拉伸的图片资源文件"></a>更换部分被拉伸的图片资源文件</h3><p>屏幕比例从16:9变成18:9，对于全屏铺满显示的图片，往往被会拉伸导致变形，比如下面的淘宝启动页图片，有一些被拉伸的样子。针对这种问题，开发者需要新增一些图片资源，以适应不同的屏幕比例。</p>
+<p><img src="http://static.zybuluo.com/Wind729/1cs1otfllbsf4zd2kioc6kaw/device-2017-12-01-161415.png" alt="device-2017-12-01-161415.png-71.5kB"></p>
+<p>针对这种问题，我们以分辨率为2160X1080，像素密度为480dpi的VIVO X20Plus手机为例，可以在资源目录下面增加一个文件夹，<code>drawable-h642dp-port-xxhdpi</code>，并将GUI切好的分辨率为2160X1080资源图片放在这个目录下，系统就能自动使用这种图片，便不会出现拉伸的问题。关于<code>h&lt;N&gt;dp</code>的详细用法，google开发者文档也有详细介绍：<br><a href="https://developer.android.com/guide/practices/screens_support.html" target="_blank" rel="noopener">https://developer.android.com/guide/practices/screens_support.html</a></p>
+<h3 id="布局文件的优化建议"><a href="#布局文件的优化建议" class="headerlink" title="布局文件的优化建议"></a>布局文件的优化建议</h3><p>在布局文件中，我们一般是使用dp来作为单位，我们先来看下dp的定义：</p>
+<blockquote>
+<p>Density-independent pixel (dp)独立像素密度。标准是160dpi，即1dp对应1个pixel，计算公式如：<br>    px = dp * (dpi / 160)，屏幕密度越大，1dp对应 的像素点越多。<br>上面的公式中有个dpi，dpi为DPI是Dots Per Inch（每英寸所打印的点数），也就是当设备的dpi为160的时候1px=1dp；</p>
+</blockquote>
+<p>使用dp来布局非常方便，但是，使用dp并不能够解决所有的适配问题：</p>
+<blockquote>
+<ul>
+<li>呈现效果仍旧会有差异，仅仅是相近而已,</li>
+<li>当设备的物理尺寸存在差异的时候，dp就显得无能为力了。为4.3寸屏幕准备的UI，运行在5.0寸的屏幕上，很可能在右侧和下侧存在大量的空白。而5.0寸的UI运行到4.3寸的设备上，很可能显示不下。</li>
+</ul>
+</blockquote>
+<p>总结下，dp能够让同一数值在不同的分辨率展示出大致相同的尺寸大小。但是当设备的尺寸差异较大的时候，显示效果就差强人意了。</p>
+<p>全面屏手机与相对于传统尺寸的手机相比，屏幕尺寸差异较大，因此使用dp来布局界面，在全面屏手机上展示效果并不好。</p>
+<p>有没有比dp更好的布局方案呢？</p>
+<p>有的，那就是<strong>百分比布局方案</strong>。</p>
+<p>比如，在<code>LinearLayout</code>中使用<code>layout_weight</code>来按照比例分配各个子view，这样，无论屏幕高度是多少，因为每一个子<code>view</code>在屏幕中占的比例都是相同的，所以在各种分辨率手机上看起来也是一样的。</p>
+<p>使用<code>RelativeLayout</code>或者<code>FrameLayut</code>来布局的话，推荐使用<code>android-percent-support</code>这个库，google官方有一个项目，专门介绍这种布局库，<a href="https://github.com/JulienGenoud/android-percent-support-lib-sample" target="_blank" rel="noopener">android-percent-support-lib-sample</a>。</p>
+<p>在android studio中使用，只用在build.gradle中添加下面的依赖：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">compile &apos;com.android.support:percent:23.0.1&apos;</span><br></pre></td></tr></table></figure></p>
+<p>这个库提供了两种布局供大家使用:</p>
+<blockquote>
+<p><code>PercentRelativeLayout</code>、<code>PercentFrameLayout</code>，</p>
+</blockquote>
+<p>通过名字就可以看出，这是继承自<code>FrameLayout</code>和<code>RelativeLayout</code>两个容器类；<br>支持的属性有：</p>
+<blockquote>
+<p><code>layout_widthPercent</code>、<code>layout_heightPercent</code>、 <code>layout_marginPercent</code>、<code>layout_marginLeftPercent</code>、 <code>layout_marginTopPercent</code>、<code>layout_marginRightPercent</code>、<code>layout_marginBottomPercent</code>、<br><code>layout_marginStartPercent</code>、<code>layout_marginEndPercent</code></p>
+</blockquote>
+<p>具体的使用方法本文就不详细介绍了，可以参考官方的sample: <a href="https://github.com/JulienGenoud/android-percent-support-lib-sample" target="_blank" rel="noopener">android-percent-support-lib-sample</a><br>或者这个博客：<a href="https://mrfu.me/android/2015/08/31/percent_support_library/" target="_blank" rel="noopener">百分比布局支持库</a></p>
+<hr>
+<p><strong>还有</strong>一个布局方式，比上面说的两种布局方法更加强大好用，那就是<code>ConstraintLayout</code>，大家发现没有，每次使用android studio创建一个默认工程的时候，默认给我们的布局就是使用<code>ConstraintLayout</code>，也就是说，google也在大力推行<code>ConstraintLayout</code>。Why？<br>因为<code>ConstraintLayout</code>有以下三大优势：</p>
+<blockquote>
+<ul>
+<li>可以极大地减少布局的嵌套，提升界面渲染性能</li>
+<li>可以使用可视化的方式来编写Android布局文件，非常方便</li>
+<li>跟上面介绍的几种布局对比，可以更方便地实现百分比布局，适配全面屏也毫无压力</li>
+</ul>
+</blockquote>
+<p>所以，强烈推荐大家学习和使用<code>ConstraintLayout</code>。不会<code>ConstraintLayout</code>，那你就OUT了。</p>
+<hr>
+<p>　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 <em>2018.04.27 updated</em></p>
+<h2 id="虚拟导航键-NavigationBar-适配"><a href="#虚拟导航键-NavigationBar-适配" class="headerlink" title="虚拟导航键(NavigationBar)适配"></a><strong>虚拟导航键(NavigationBar)适配</strong></h2><h3 id="判断虚拟导航键是否存在"><a href="#判断虚拟导航键是否存在" class="headerlink" title="判断虚拟导航键是否存在"></a><strong>判断虚拟导航键是否存在</strong></h3><p>由于不同手机厂商对系统做了不同的修改，对系统界面底部的NavigationBar处理方式也就各不相同，有些手机系统有NavigationBar，有些手机没有，还有则是在设置增加开关，让用户选择是否启用NavigationBar。因此，对弈APP开发者来说，完美适配虚拟导航键也是一件比较有挑战性的事。</p>
+<p>首先，我们来看看android源码有没有提供公共API来判断当前系统是否存在NavigationBar。</p>
+<h4 id="分析源码"><a href="#分析源码" class="headerlink" title="分析源码"></a><strong>分析源码</strong></h4><p>通过查阅Android源码，我们发现在WindowManagerService.java下面有一个方法是<code>hasNavigationBar</code>:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">public boolean hasNavigationBar() &#123;</span><br><span class="line">    return mPolicy.hasNavigationBar();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>但是，WindowManagerService是系统服务，我们无法直接调用这个方法。那我继续看这个方法的具体实现。<br><code>mPolicy</code>是什么呢？看源码：<code>final WindowManagerPolicy mPolicy;</code>，<code>WindowManagerPolicy</code>只是一个接口，具体的实现是在哪里呢？<br>它的实现类是<code>PhoneWindowManager</code>，所以最终是调到了<code>PhoneWindowManager</code>的<code>hasNavigationBar()</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// Use this instead of checking config_showNavigationBar so that it can be consistently</span><br><span class="line">// overridden by qemu.hw.mainkeys in the emulator.</span><br><span class="line">@Override</span><br><span class="line">public boolean hasNavigationBar() &#123;</span><br><span class="line">    return mHasNavigationBar;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>再看看<code>PhoneWindowManager</code>中给<code>mHasNavigationBar</code>赋值的地方在哪里：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public void setInitialDisplaySize(Display display, int width, int height, int density) &#123;</span><br><span class="line">        ...</span><br><span class="line">        ...</span><br><span class="line">        mHasNavigationBar = res.getBoolean(com.android.internal.R.bool.config_showNavigationBar);</span><br><span class="line"></span><br><span class="line">        // Allow a system property to override this. Used by the emulator.</span><br><span class="line">        // See also hasNavigationBar().</span><br><span class="line">        String navBarOverride = SystemProperties.get(&quot;qemu.hw.mainkeys&quot;);</span><br><span class="line">        if (&quot;1&quot;.equals(navBarOverride)) &#123;</span><br><span class="line">            mHasNavigationBar = false;</span><br><span class="line">        &#125; else if (&quot;0&quot;.equals(navBarOverride)) &#123;</span><br><span class="line">            mHasNavigationBar = true;</span><br><span class="line">        &#125;</span><br><span class="line">        ...</span><br><span class="line">        ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>从上面代码可以看到<code>mHasNavigationBar</code>的值的设定是由两处决定的：<br>1.首先从系统的资源文件中取设定值<code>config_showNavigationBar</code>, 这个值的设定的文件路径是<code>frameworks/base/core/res/res/values/config.xml</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- Whether a software navigation bar should be shown. NOTE: in the future this may be  </span><br><span class="line">     autodetected from the Configuration. --&gt;  </span><br><span class="line">&lt;bool name=&quot;config_showNavigationBar&quot;&gt;false&lt;/bool&gt;</span><br></pre></td></tr></table></figure></p>
+<p>2.然后系统要获取“<code>qemu.hw.mainkeys</code>”的值，这个值可能会覆盖上面获取到的<code>mHasNavigationBar</code>的值。如果“<code>qemu.hw.mainkeys</code>”获取的值不为空的话，不管值是<code>true</code>还是<code>false</code>,都要依据后面的情况来设定。<br>所以上面的两处设定共同决定了NavigationBar的显示与隐藏。</p>
+<h4 id="实现判断NavigationBar的方法"><a href="#实现判断NavigationBar的方法" class="headerlink" title="实现判断NavigationBar的方法"></a><strong>实现判断NavigationBar的方法</strong></h4><p>通过上面对源码的分析，我们可以仿照<code>PhoneWindowManager</code>给<code>mHasNavigationBar</code>赋值的方法，自己去实现一个判断NavigationBar的方法，具体代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">//判断是否存在NavigationBar</span><br><span class="line">public static boolean hasNavigationBar(Context context) &#123;</span><br><span class="line">    boolean hasNavigationBar = false;</span><br><span class="line">    Resources rs = context.getResources();</span><br><span class="line">    int id = rs.getIdentifier(&quot;config_showNavigationBar&quot;, &quot;bool&quot;, &quot;android&quot;);</span><br><span class="line">    if (id &gt; 0) &#123;</span><br><span class="line">        hasNavigationBar = rs.getBoolean(id);</span><br><span class="line">    &#125;</span><br><span class="line">    try &#123;</span><br><span class="line">        //反射获取SystemProperties类，并调用它的get方法</span><br><span class="line">        Class systemPropertiesClass = Class.forName(&quot;android.os.SystemProperties&quot;);</span><br><span class="line">        Method m = systemPropertiesClass.getMethod(&quot;get&quot;, String.class);</span><br><span class="line">        String navBarOverride = (String) m.invoke(systemPropertiesClass, &quot;qemu.hw.mainkeys&quot;);</span><br><span class="line">        if (&quot;1&quot;.equals(navBarOverride)) &#123;</span><br><span class="line">            hasNavigationBar = false;</span><br><span class="line">        &#125; else if (&quot;0&quot;.equals(navBarOverride)) &#123;</span><br><span class="line">            hasNavigationBar = true;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; catch (Exception e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">    return hasNavigationBar;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>其实，假如我们能够获取系统服务<code>WindowManagerService</code>在应用进程的代理的话，直接调用其<code>hasNavigationBar</code>方法来判断，是不是会更简单呢？但问题是如何获取<code>WindowManagerService</code>在应用进程的代理呢？</p>
+<p>查阅源码，我们发现，<code>android.view.WindowManagerGlobal</code>中有一个静态方法就是获取<code>WindowManagerService</code>在本地的代理实现：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public static IWindowManager getWindowManagerService() &#123;</span><br><span class="line">    synchronized (WindowManagerGlobal.class) &#123;</span><br><span class="line">        if (sWindowManagerService == null) &#123;</span><br><span class="line">            sWindowManagerService = IWindowManager.Stub.asInterface(</span><br><span class="line">                    ServiceManager.getService(&quot;window&quot;));</span><br><span class="line">            try &#123;</span><br><span class="line">                if (sWindowManagerService != null) &#123;</span><br><span class="line">                    ValueAnimator.setDurationScale(</span><br><span class="line">                            sWindowManagerService.getCurrentAnimatorScale());</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; catch (RemoteException e) &#123;</span><br><span class="line">                throw e.rethrowFromSystemServer();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return sWindowManagerService;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>因此，我们可以通过反射调用此方法获取<code>IWindowManager</code>，再调用<code>IWindowManager</code>的<code>hasNavigationBar</code>方法来判断<code>NavigationBar</code>存在与否，具体请看代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 判断设备是否存在NavigationBar</span><br><span class="line"> *</span><br><span class="line"> * @return true 存在, false 不存在</span><br><span class="line"> */</span><br><span class="line">public static boolean deviceHasNavigationBar() &#123;</span><br><span class="line">    boolean haveNav = false;</span><br><span class="line">    try &#123;</span><br><span class="line">        //1.通过WindowManagerGlobal获取windowManagerService</span><br><span class="line">        // 反射方法：IWindowManager windowManagerService = WindowManagerGlobal.getWindowManagerService();</span><br><span class="line">        Class&lt;?&gt; windowManagerGlobalClass = Class.forName(&quot;android.view.WindowManagerGlobal&quot;);</span><br><span class="line">        Method getWmServiceMethod = windowManagerGlobalClass.getDeclaredMethod(&quot;getWindowManagerService&quot;);</span><br><span class="line">        getWmServiceMethod.setAccessible(true);</span><br><span class="line">        //getWindowManagerService是静态方法，所以invoke null</span><br><span class="line">        Object iWindowManager = getWmServiceMethod.invoke(null);  </span><br><span class="line"></span><br><span class="line">        //2.获取windowMangerService的hasNavigationBar方法返回值</span><br><span class="line">        // 反射方法：haveNav = windowManagerService.hasNavigationBar();</span><br><span class="line">        Class&lt;?&gt; iWindowManagerClass = iWindowManager.getClass();</span><br><span class="line">        Method hasNavBarMethod = iWindowManagerClass.getDeclaredMethod(&quot;hasNavigationBar&quot;);</span><br><span class="line">        hasNavBarMethod.setAccessible(true);</span><br><span class="line">        haveNav = (Boolean) hasNavBarMethod.invoke(iWindowManager);</span><br><span class="line">    &#125; catch (Exception e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">    return haveNav;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="关于VIVO全面屏手机虚拟导航键的开关"><a href="#关于VIVO全面屏手机虚拟导航键的开关" class="headerlink" title="关于VIVO全面屏手机虚拟导航键的开关"></a>关于VIVO全面屏手机虚拟导航键的开关</h3><p>由于全面屏手机都没有底部的Home,Back等实体按键，因此，大多数全面屏手机都是支持虚拟导航键，即通过上面的方法<code>hasNavigationBar</code>获取的返回值都是<code>true</code>。<br>但是，底部的NavigationBar会占用一些屏幕空间，一直显示出来，就是失去了全面屏的意义了，用户体验并不好。因此，在VIVO X20和VIVO X20Plus全面屏手机中，设置里增加了是否启用NavigationBar的开关，开关的路径是：<strong>设置 —&gt;  导航键</strong></p>
+<p><img src="http://static.zybuluo.com/Wind729/1cns150ulsfao411ebcmfhn6/device-2017-12-01-114607%20-%20%E5%89%AF%E6%9C%AC.png" alt="device-2017-12-01-114607 - 副本.png-28.5kB"></p>
+<p>当隐藏虚拟导航键时，用户可以通过底部上滑的手势实现导航键同样的功能，非常便利。</p>
+<p>但这对APP开发者来说，适配起来就比较麻烦了。在VIVO全面屏手机上，仅仅通过上面给出的<code>hasNavigationBar</code>是无法准确判断NavigationBar存在与否的，<code>hasNavigationBar</code>这个方法一直都是返回<code>true</code>。</p>
+<p>那是否有其他方法来判断呢？必须有! 那就是获取<code>Setting</code>中这个手势导航开关的值，请看代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">private static final String NAVIGATION_GESTURE = &quot;navigation_gesture_on&quot;;</span><br><span class="line">private static final int NAVIGATION_GESTURE_OFF = 0;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 获取vivo手机设置中的&quot;navigation_gesture_on&quot;值，判断当前系统是使用导航键还是手势导航操作</span><br><span class="line"> * @param context app Context</span><br><span class="line"> * @return false 表示使用的是虚拟导航键(NavigationBar)， true 表示使用的是手势， 默认是false</span><br><span class="line"> */</span><br><span class="line">public static boolean vivoNavigationGestureEnabled(Context context) &#123;</span><br><span class="line">    int val = Settings.Secure.getInt(context.getContentResolver(), NAVIGATION_GESTURE, NAVIGATION_GESTURE_OFF);</span><br><span class="line">    return val != NAVIGATION_GESTURE_OFF;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这样，判断当前系统是否存在并开启了<code>NavigationBar</code>，就要结合上面给出的两个方法一起判断才准确：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//vivoNavigationGestureEnabled()从设置中取不到值的话，返回false，因此也不会影响在其他手机上的判断</span><br><span class="line">boolean hasNavigationBar = hasNavigationBar(this) &amp;&amp; !vivoNavigationGestureEnabled(this);</span><br></pre></td></tr></table></figure></p>
+<h3 id="配置虚拟导航键的属性"><a href="#配置虚拟导航键的属性" class="headerlink" title="配置虚拟导航键的属性"></a>配置虚拟导航键的属性</h3><p>对于大多数视频播放类的应用，在播放视频的时候，肯定希望能够隐藏<code>NavigationBar</code>和<code>StatusBar</code>。对于这种需求，在Android 4.1以上的系统里也有很好的支持，google官方给出下面的Example:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">View decorView = getWindow().getDecorView();</span><br><span class="line">// Hide both the navigation bar and the status bar.</span><br><span class="line">// SYSTEM_UI_FLAG_FULLSCREEN is only available on Android 4.1 and higher, but as</span><br><span class="line">// a general rule, you should design your app to hide the status bar whenever you</span><br><span class="line">// hide the navigation bar.</span><br><span class="line">int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN;</span><br><span class="line">decorView.setSystemUiVisibility(uiOptions);</span><br></pre></td></tr></table></figure></p>
+<p>但是这么做是有缺陷的，Google共给出了5个注意事项：</p>
+<ul>
+<li>使用这种设置flag的方式虽然暂时隐藏了NavigationBar，但是用户触摸屏幕的任何地方flags将会被清除，也就是说你的设置，在用户触摸屏幕后会失效</li>
+<li>一但你设置的flags被清除后，如果你再想隐藏Navigation Bar，需要重新设置，这个需要监听一个事件</li>
+<li>在不同的地方设置UI标签是有所区别的。如果你在activity的onCreate()方法中隐藏系统栏，当用户按下home键系统栏就会重新显示。当用户再重新打开activity的时候，onCreate()不会被调用，所以系统栏还会保持可见。如果你想让在不同activity之间切换时，系统UI保持不变，你需要在onReasume()与onWindowFocusChaned()里设定UI标签。</li>
+<li>setSystemUiVisibility()仅仅在被调用的View显示的时候才会生效。</li>
+<li>当从View导航到别的地方时，用setSystemUiVisibility()设置的标签会被清除。</li>
+</ul>
+<p>详细的注意事项可以参考google开发者文档：<a href="https://developer.android.com/training/system-ui/navigation.html" target="_blank" rel="noopener">Hiding the Navigation Bar</a></p>
+<p>显然，<code>View.SYSTEM_UI_FLAG_HIDE_NAVIGATION</code>和<code>View.SYSTEM_UI_FLAG_FULLSCREEN</code>这个两个属性使用起来根本无法满足我们需要在应用中隐藏NavigationBar的需求，那该如何？</p>
+<p>还好，Android 4.4中，google给我们带来了<code>Immersive Mode</code>,即“沉浸式全屏”的概念。</p>
+<p>沉浸式全屏是什么意思？就是支持沉浸式全屏的应用在Android4.4的手机上会自动全屏显示，并不会出现恼人的虚拟键，而当我们需要虚拟键的时候，只要在屏幕底部轻轻滑动一下即可调出虚拟键，而且虚拟键是以透明的状态显示的。 按照 Google 的说法， 给用户一种 “身临其境” 的体验。</p>
+<p>Android 4.4 中提供了<code>View.SYSTEM_UI_FLAG_IMMERSIVE</code>和<code>View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY</code>标签， 这两个标签都必须和与<code>View.SYSTEM_UI_FLAG_HIDE_NAVIGATION</code>和<code>View.SYSTEM_UI_FLAG_FULLSCREEN</code>一起使用, 才能实现沉浸模式。</p>
+<p>下面分为三种情况来介绍用法：</p>
+<blockquote>
+<p>1、<strong>只使用<code>SYSTEM_UI_FLAG_HIDE_NAVIGATION</code>和<code>SYSTEM_UI_FLAG_FULLSCREEN</code></strong><br>这种情况下，在进入全屏模式后，用户有任何操作，<code>SYSTEM_UI_FLAG_HIDE_NAVIGATION</code>和<code>SYSTEM_UI_FLAG_FULLSCREEN</code>就会被清除。状态栏和虚拟按键会一直可见。除非再次设置<code>SYSTEM_UI_FLAG_HIDE_NAVIGATION</code>和<code>SYSTEM_UI_FLAG_FULLSCREEN</code>。在状态栏和虚拟按键显示变化时会调用<code>View.OnSystemUiVisibilityChangeListener</code>。</p>
+</blockquote>
+<blockquote>
+<p>2、<strong><code>SYSTEM_UI_FLAG_IMMERSIVE</code>配合<code>SYSTEM_UI_FLAG_HIDE_NAVIGATION</code>和<code>SYSTEM_UI_FLAG_FULLSCREEN</code>使用</strong><br>用户操作不会清除<code>SYSTEM_UI_FLAG_HIDE_NAVIGATION</code>和<code>SYSTEM_UI_FLAG_FULLSCREEN</code>，会一直保持全屏模式。显示切换时也会触发<code>View.OnSystemUiVisibilityChangeListener</code>。还有一个区别就是，全屏模式时，从原本状态栏或者虚拟按键的位置响屏幕内部滑动，会清除<code>SYSTEM_UI_FLAG_HIDE_NAVIGATION</code>和<code>SYSTEM_UI_FLAG_FULLSCREEN</code>，保持可见状态，并且也会触发<code>OnSystemUiVisibilityChangeListener</code>监听。</p>
+</blockquote>
+<blockquote>
+<p>3、<strong><code>SYSTEM_UI_FLAG_IMMERSIVE_STICKY</code>配合<code>SYSTEM_UI_FLAG_HIDE_NAVIGATION</code>和<code>SYSTEM_UI_FLAG_FULLSCREEN</code>使用</strong><br>用户操作不会清除<code>SYSTEM_UI_FLAG_HIDE_NAVIGATION</code>和<code>SYSTEM_UI_FLAG_FULLSCREEN</code>。会一直保持全屏模式。显示切换时也会触发<code>View.OnSystemUiVisibilityChangeListener</code>，全屏模式时，从原本状态栏或者虚拟按键的位置 响屏幕内部滑动，状态栏和虚拟按键栏会暂时可见，一段时间后自动隐藏。与<code>SYSTEM_UI_FLAG_IMMERSIVE</code>不同的是，因为是临时的显示，所以不会触发<code>OnSystemUiVisibilityChangeListener</code>。</p>
+</blockquote>
+<p>通过下面的两个方法，可以简单实现<strong><code>SYSTEM_UI_FLAG_IMMERSIVE_STICKY</code>模式</strong>下，全屏和非全屏之间的切换：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">public void showBar()&#123;  </span><br><span class="line">    int uiOptions = getWindow().getDecorView().getSystemUiVisibility();  </span><br><span class="line">    int newUiOptions = uiOptions;  </span><br><span class="line">    boolean isImmersiveModeEnabled =  </span><br><span class="line">            ((uiOptions | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY) == uiOptions);  </span><br><span class="line">    if (isImmersiveModeEnabled) &#123;  </span><br><span class="line">        Log.i(TAG, &quot;Turning immersive mode mode off. &quot;);  </span><br><span class="line">        //先取 非 后再 与， 把对应位置的1 置成0，原本为0的还是0  </span><br><span class="line">        if (Build.VERSION.SDK_INT &gt;= 14) &#123;  </span><br><span class="line">            newUiOptions &amp;= ~View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;  </span><br><span class="line">        &#125;</span><br><span class="line">        if (Build.VERSION.SDK_INT &gt;= 16) &#123;  </span><br><span class="line">            newUiOptions &amp;= ~View.SYSTEM_UI_FLAG_FULLSCREEN;  </span><br><span class="line">        &#125;</span><br><span class="line">        if (Build.VERSION.SDK_INT &gt;= 18) &#123;  </span><br><span class="line">            newUiOptions &amp;= ~View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;  </span><br><span class="line">        &#125;  </span><br><span class="line">        getWindow().getDecorView().setSystemUiVisibility(newUiOptions);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">public void hideBar() &#123;  </span><br><span class="line">    // The UI options currently enabled are represented by a bitfield.  </span><br><span class="line">    // getSystemUiVisibility() gives us that bitfield.  </span><br><span class="line">    int uiOptions = getWindow().getDecorView().getSystemUiVisibility();  </span><br><span class="line">    int newUiOptions = uiOptions;  </span><br><span class="line">    boolean isImmersiveModeEnabled =  </span><br><span class="line">            ((uiOptions | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY) == uiOptions);  </span><br><span class="line">    if (!isImmersiveModeEnabled) &#123;  </span><br><span class="line">        Log.i(TAG, &quot;Turning immersive mode mode on. &quot;);  </span><br><span class="line">        if (Build.VERSION.SDK_INT &gt;= 14) &#123;  </span><br><span class="line">            newUiOptions |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;  </span><br><span class="line">        &#125;</span><br><span class="line">        if (Build.VERSION.SDK_INT &gt;= 16) &#123;  </span><br><span class="line">            newUiOptions |= View.SYSTEM_UI_FLAG_FULLSCREEN;  </span><br><span class="line">        &#125;  </span><br><span class="line">        if (Build.VERSION.SDK_INT &gt;= 18) &#123;  </span><br><span class="line">            newUiOptions |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;  </span><br><span class="line">        &#125;</span><br><span class="line">        getWindow().getDecorView().setSystemUiVisibility(newUiOptions);  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>google官方Example中给出了只调一个方法就能实现全屏和非全屏之间切换的思路：<br><a href="https://github.com/googlesamples/android-ImmersiveMode/tree/ac8083e45ce881d6629a63ffb78c3058adb3346d" target="_blank" rel="noopener">googlesamples/android-ImmersiveMode</a><br>具体代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">/** </span><br><span class="line"> * Detects and toggles immersive mode (also known as &quot;hidey bar&quot; mode). </span><br><span class="line"> */  </span><br><span class="line">public void toggleHideyBar() &#123;  </span><br><span class="line">  </span><br><span class="line">    // BEGIN_INCLUDE (get_current_ui_flags)  </span><br><span class="line">    // The UI options currently enabled are represented by a bitfield.  </span><br><span class="line">    // getSystemUiVisibility() gives us that bitfield.  </span><br><span class="line">    int uiOptions = getActivity().getWindow().getDecorView().getSystemUiVisibility();  </span><br><span class="line">    int newUiOptions = uiOptions;  </span><br><span class="line">    // END_INCLUDE (get_current_ui_flags)  </span><br><span class="line">    // BEGIN_INCLUDE (toggle_ui_flags)  </span><br><span class="line">    boolean isImmersiveModeEnabled =  </span><br><span class="line">            ((uiOptions | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY) == uiOptions);  </span><br><span class="line">    if (isImmersiveModeEnabled) &#123;  </span><br><span class="line">        Log.i(TAG, &quot;Turning immersive mode mode off. &quot;);  </span><br><span class="line">    &#125; else &#123;  </span><br><span class="line">        Log.i(TAG, &quot;Turning immersive mode mode on.&quot;);  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    // Navigation bar hiding:  Backwards compatible to ICS.  </span><br><span class="line">    if (Build.VERSION.SDK_INT &gt;= 14) &#123;  </span><br><span class="line">        newUiOptions ^= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    // Status bar hiding: Backwards compatible to Jellybean  </span><br><span class="line">    if (Build.VERSION.SDK_INT &gt;= 16) &#123;  </span><br><span class="line">        newUiOptions ^= View.SYSTEM_UI_FLAG_FULLSCREEN;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    // Immersive mode: Backward compatible to KitKat.  </span><br><span class="line">    // Note that this flag doesn&apos;t do anything by itself, it only augments the behavior  </span><br><span class="line">    // of HIDE_NAVIGATION and FLAG_FULLSCREEN.  For the purposes of this sample  </span><br><span class="line">    // all three flags are being toggled together.  </span><br><span class="line">    // Note that there are two immersive mode UI flags, one of which is referred to as &quot;sticky&quot;.  </span><br><span class="line">    // Sticky immersive mode differs in that it makes the navigation and status bars  </span><br><span class="line">    // semi-transparent, and the UI flag does not get cleared when the user interacts with  </span><br><span class="line">    // the screen.  </span><br><span class="line">    if (Build.VERSION.SDK_INT &gt;= 18) &#123;  </span><br><span class="line">        newUiOptions ^= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    getActivity().getWindow().getDecorView().setSystemUiVisibility(newUiOptions);  </span><br><span class="line">    //END_INCLUDE (set_ui_flags)  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>关于沉浸式全屏更加详细的使用方法，可以参考google开发者文档：<br><a href="https://developer.android.com/training/system-ui/immersive.html" target="_blank" rel="noopener">Using Immersive Full-Screen Mode</a></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>以上就是app适配全面屏手机的一个总结。如果客官碰到相关app适配全面屏问题，可以参考上述的一些方法来解决问题，假使能够给带来一些帮助，It is my pleasure。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/全面屏/" rel="tag"># 全面屏</a>
+          
+            <a href="/tags/虚拟导航键/" rel="tag"># 虚拟导航键</a>
+          
+            <a href="/tags/NavigationBar/" rel="tag"># NavigationBar</a>
+          
+            <a href="/tags/沉浸式全屏/" rel="tag"># 沉浸式全屏</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/18/Android-AOP编程的四种策略探讨：Aspectj，cglib-dexmaker，Javassist，epic-dexposed/" rel="next" title="Android AOP编程的四种策略探讨：Aspectj，cglib+dexmaker，Javassist，epic+dexposed">
+                <i class="fa fa-chevron-left"></i> Android AOP编程的四种策略探讨：Aspectj，cglib+dexmaker，Javassist，epic+dexposed
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/02/10/侵入性低扩展性强的Android换肤框架XSkinLoader的用法及原理/" rel="prev" title="侵入性低扩展性强的Android换肤框架XSkinLoader的用法及原理">
+                侵入性低扩展性强的Android换肤框架XSkinLoader的用法及原理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div id="gitalk-container"></div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/my_photo.jpg" alt="Windy">
+            
+              <p class="site-author-name" itemprop="name">Windy</p>
+              <p class="site-description motion-element" itemprop="description">用技术撬动地球</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/WindySha" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/2d35b94de2a4" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-globe"></i>简书</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#关于全面屏"><span class="nav-number">1.</span> <span class="nav-text">关于全面屏</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更大的屏幕高宽比例"><span class="nav-number">2.</span> <span class="nav-text">更大的屏幕高宽比例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#在AndroidManifest-xml声明max-aspect值"><span class="nav-number">2.1.</span> <span class="nav-text">在AndroidManifest.xml声明max_aspect值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#更换部分被拉伸的图片资源文件"><span class="nav-number">2.2.</span> <span class="nav-text">更换部分被拉伸的图片资源文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#布局文件的优化建议"><span class="nav-number">2.3.</span> <span class="nav-text">布局文件的优化建议</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#虚拟导航键-NavigationBar-适配"><span class="nav-number">3.</span> <span class="nav-text">虚拟导航键(NavigationBar)适配</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#判断虚拟导航键是否存在"><span class="nav-number">3.1.</span> <span class="nav-text">判断虚拟导航键是否存在</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#分析源码"><span class="nav-number">3.1.1.</span> <span class="nav-text">分析源码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#实现判断NavigationBar的方法"><span class="nav-number">3.1.2.</span> <span class="nav-text">实现判断NavigationBar的方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关于VIVO全面屏手机虚拟导航键的开关"><span class="nav-number">3.2.</span> <span class="nav-text">关于VIVO全面屏手机虚拟导航键的开关</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置虚拟导航键的属性"><span class="nav-number">3.3.</span> <span class="nav-text">配置虚拟导航键的属性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Windy</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+<span id="busuanzi_container_site_pv" class="theme-info">
+&nbsp;&nbsp;|&nbsp;&nbsp;本站总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+  <span id="busuanzi_container_site_uv" class="theme-info">
+&nbsp;&nbsp;|&nbsp;&nbsp;本站访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="“https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js”"></script>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+  <script src="/js/src/md5.min.js"></script>
+   <script type="text/javascript">
+        var gitalk = new Gitalk({
+          clientID: '74fae1ebd3ed7c477fa3',
+          clientSecret: '6c20e96e69c1d539a3150d1c464977fbcd2ce50e',
+          repo: 'my_hexo_blog_comments',
+          owner: 'WindySha',
+          admin: ['WindySha'],
+          id: md5(location.pathname),
+          distractionFreeMode: 'true'
+        })
+        gitalk.render('gitalk-container')           
+       </script>
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+  </script>
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

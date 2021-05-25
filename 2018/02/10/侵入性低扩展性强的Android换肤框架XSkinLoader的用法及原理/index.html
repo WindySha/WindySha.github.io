@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+  <meta name="google-site-verification" content="DriWLHPOSm42mFNpn-8F4QnKrvTt4aj2cqvnOToSeaw">
+
+
+
+
+
+
+
+
+  <meta name="baidu-site-verification" content="l1rAwZtE1v">
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="换肤框架,XSkinLoader,插件化开发,LayoutInflater,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Windy's Journal" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="前言Android发展到现在，很多成熟的应用上已经集成了插件式换肤的功能，比如网易云音乐，手机QQ，QQ音乐等等。但是，成熟稳定易用的开源换肤框架并没有出现。 国内最早的插件式换肤框架是Android-Skin-Loader。后面也出现了一些在此基础上的改进版，比如：hongyang的ChangeSkin，andSkin，Android-skin-support，injor，QSkinLoader">
+<meta name="keywords" content="换肤框架,XSkinLoader,插件化开发,LayoutInflater">
+<meta property="og:type" content="article">
+<meta property="og:title" content="侵入性低扩展性强的Android换肤框架XSkinLoader的用法及原理">
+<meta property="og:url" content="http://yoursite.com/2018/02/10/侵入性低扩展性强的Android换肤框架XSkinLoader的用法及原理/index.html">
+<meta property="og:site_name" content="Windy&#39;s Journal">
+<meta property="og:description" content="前言Android发展到现在，很多成熟的应用上已经集成了插件式换肤的功能，比如网易云音乐，手机QQ，QQ音乐等等。但是，成熟稳定易用的开源换肤框架并没有出现。 国内最早的插件式换肤框架是Android-Skin-Loader。后面也出现了一些在此基础上的改进版，比如：hongyang的ChangeSkin，andSkin，Android-skin-support，injor，QSkinLoader">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2021-05-25T16:15:36.406Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="侵入性低扩展性强的Android换肤框架XSkinLoader的用法及原理">
+<meta name="twitter:description" content="前言Android发展到现在，很多成熟的应用上已经集成了插件式换肤的功能，比如网易云音乐，手机QQ，QQ音乐等等。但是，成熟稳定易用的开源换肤框架并没有出现。 国内最早的插件式换肤框架是Android-Skin-Loader。后面也出现了一些在此基础上的改进版，比如：hongyang的ChangeSkin，andSkin，Android-skin-support，injor，QSkinLoader">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideUpIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/02/10/侵入性低扩展性强的Android换肤框架XSkinLoader的用法及原理/">
+
+
+
+
+
+  <title>侵入性低扩展性强的Android换肤框架XSkinLoader的用法及原理 | Windy's Journal</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Windy's Journal</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/10/侵入性低扩展性强的Android换肤框架XSkinLoader的用法及原理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Windy">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/my_photo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Windy's Journal">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">侵入性低扩展性强的Android换肤框架XSkinLoader的用法及原理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-10T17:12:33+08:00">
+                2018-02-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/换肤框架/" itemprop="url" rel="index">
+                    <span itemprop="name">换肤框架</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a><strong>前言</strong></h2><p>Android发展到现在，很多成熟的应用上已经集成了插件式换肤的功能，比如网易云音乐，手机QQ，QQ音乐等等。但是，成熟稳定易用的开源换肤框架并没有出现。</p>
+<p>国内最早的插件式换肤框架是<a href="https://github.com/fengjundev/Android-Skin-Loader" target="_blank" rel="noopener">Android-Skin-Loader</a>。后面也出现了一些在此基础上的改进版，比如：hongyang的<a href="https://github.com/hongyangAndroid/ChangeSkin" target="_blank" rel="noopener">ChangeSkin</a>，<a href="https://github.com/RrtoyewxXu/andSkin" target="_blank" rel="noopener">andSkin</a>，<a href="http://blog.csdn.net/ximsfei/article/details/54586827" target="_blank" rel="noopener">Android-skin-support</a>，<a href="https://github.com/hackware1993/injor" target="_blank" rel="noopener">injor</a>，<a href="http://blog.csdn.net/u013478336/article/details/53083054" target="_blank" rel="noopener">QSkinLoader</a>等等。大家都对<strong>Android-Skin-Loader</strong>做了一些改进，以使换肤过程侵入性更低，扩展性更强，使用更简单。但是还是会有一些不足之处，因此，XSkinLoader就诞生了。</p>
+<p>XSkinLoader是在Android-Skin-Loader和QSkinLoader的基础上又进行了一次重大改进，主要的改进点有如下：</p>
+<blockquote>
+<ol>
+<li>侵入性更低，换肤Activity并不用实现某个接口或者继承某个BaseActivity</li>
+<li>支持布局里style中定义的属性换肤，默认支持了TextView的textColor和ProgressBar的indeterminateDrawable，并支持扩展；</li>
+<li>更好地支持了AppCompatActivity中的控件换肤，由于AppCompatActivity中的TextView，ImageView等控件会被转为AppCompatTextView,AppCompatImageView，XSkinLoader换肤时并不会覆盖此转换，其他换肤框架会覆盖；</li>
+<li>支持状态栏颜色换肤，并可以通过相似方法扩展支持标题栏和虚拟导航栏的换肤；</li>
+<li>支持xml中指定的属性换肤</li>
+</ol>
+</blockquote>
+<p>XSkinLoader项目源码地址为：<strong><a href="https://github.com/WindySha/XSkinLoader" target="_blank" rel="noopener">https://github.com/WindySha/XSkinLoader</a></strong></p>
+<a id="more"></a>
+<p>下面，先简单介绍XSkinLoader的基本用法，再通过分析源码来解析这些改进点的实现原理。</p>
+<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><p>代码已经上传到Jcenter<br>gradle:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation &apos;com.windysha.xskinloader:xskinloader:0.1.0&apos;</span><br></pre></td></tr></table></figure></p>
+<p>maven:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">	&lt;groupId&gt;com.windysha.xskinloader&lt;/groupId&gt;</span><br><span class="line">	&lt;artifactId&gt;xskinloader&lt;/artifactId&gt;</span><br><span class="line">	&lt;version&gt;0.1.0&lt;/version&gt;</span><br><span class="line">	&lt;type&gt;pom&lt;/type&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure></p>
+<h1 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h1><h2 id="加载资源Apk"><a href="#加载资源Apk" class="headerlink" title="加载资源Apk"></a>加载资源Apk</h2><p>只需要将资源Apk拷贝到sdcard下面，调用loadSkin进行加载：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String skinApkPath = &quot;mnt/sdcard/skin.apk&quot;;</span><br><span class="line">SkinManager.get().loadSkin(skinApkPath);</span><br></pre></td></tr></table></figure></p>
+<p>如果需要恢复到默认皮肤（使用宿主Apk资源），调用restoreToDefaultSkin()即可：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SkinManager.get().restoreToDefaultSkin();</span><br></pre></td></tr></table></figure></p>
+<h2 id="Activity中布局文件换肤"><a href="#Activity中布局文件换肤" class="headerlink" title="Activity中布局文件换肤"></a>Activity中布局文件换肤</h2><p>对于需要换肤的Activity，在Activity的setContentView方法调用之前，设置其LayoutInflater的Factory接口：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SkinInflaterFactory.setFactory(this);</span><br></pre></td></tr></table></figure></p>
+<p>这样，使用Activity的LayoutInflater加载的xml布局就可以支持换肤了。</p>
+<h2 id="设置Application的LayoutInflater"><a href="#设置Application的LayoutInflater" class="headerlink" title="设置Application的LayoutInflater"></a>设置Application的LayoutInflater</h2><p>如果使用Application Context的LayoutInflater加载View也需要换肤，在Application的onCreate中加上这样一行代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SkinInflaterFactory.setFactory(LayoutInflater.from(this));</span><br></pre></td></tr></table></figure></p>
+<p>如此，使用LayoutInflater.from(context.getApplicationContext()).inflate()加载的view也是可以换肤。</p>
+<h3 id="XML换肤"><a href="#XML换肤" class="headerlink" title="XML换肤"></a><strong>XML换肤</strong></h3><p>xml布局中的View需要换肤的，只需要在布局文件中相关View标签下添加<code>skin:enable=&quot;true&quot;</code>即可,例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&lt;RelativeLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</span><br><span class="line">    xmlns:skin=&quot;http://schemas.android.com/android/skin&quot;</span><br><span class="line">    android:layout_width=&quot;match_parent&quot;</span><br><span class="line">    android:layout_height=&quot;match_parent&quot;</span><br><span class="line">    android:orientation=&quot;vertical&quot;&gt;</span><br><span class="line"></span><br><span class="line">    &lt;TextView</span><br><span class="line">        android:id=&quot;@+id/status_bar&quot;</span><br><span class="line">        android:layout_width=&quot;match_parent&quot;</span><br><span class="line">        android:layout_height=&quot;match_parent&quot;</span><br><span class="line">        skin:enable=&quot;true&quot;</span><br><span class="line">        android:background=&quot;@color/title_color&quot;&gt;</span><br><span class="line">    &lt;/TextView&gt;</span><br><span class="line">&lt;RelativeLayout/&gt;</span><br></pre></td></tr></table></figure></p>
+<p>能换肤的前提是解析这个xml的LayoutInflater设置Factory接口：SkinInflaterFactory<br>因此，在相关activity的<code>onCreate()</code>中<code>setContentView()</code>方法之前添加：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//干涉xml中view的创建，实现xml中资源换肤</span><br><span class="line">SkinInflaterFactory.setFactory(this);  //for skin change in XML</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p><strong>PS:</strong> 对于AppCompatActivity，务必要在<code>onCreate()</code>的<code>super.onCreate()</code>之前添加，否则不会使用AppComt包装的控件，比如：AppCompatTextView等。</p>
+</blockquote>
+<p>某些view的资源是在代码中动态设置的，使用以下方式来设置资源，才能实现换肤效果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">//设置imageView的src资源</span><br><span class="line">SkinManager.get().setImageDrawable(imageView, R.drawable.ic_action);</span><br><span class="line">//设置imageView的backgroud资源</span><br><span class="line">SkinManager.get().setViewBackground(imageView, R.drawable.ic_action);</span><br><span class="line">//设置textVie的color资源</span><br><span class="line">SkinManager.get().setTextViewColor(textView, R.color.title_color);</span><br><span class="line">//设置Activity的statusBarColor</span><br><span class="line">SkinManager.get().setWindowStatusBarColor(MainActivity.this.getWindow(), R.color.title_color);</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<h3 id="xml中指定换肤属性"><a href="#xml中指定换肤属性" class="headerlink" title="xml中指定换肤属性"></a><strong>xml中指定换肤属性</strong></h3><p>xml中假如出现了多个可换肤属性，但只需要换其中部分属性，而不是全部属性，比如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;Button</span><br><span class="line">        android:id=&quot;@+id/use_sdcard_skin&quot;</span><br><span class="line">        android:layout_width=&quot;180dp&quot;</span><br><span class="line">        android:layout_height=&quot;40dp&quot;</span><br><span class="line">        skin:enable=&quot;true&quot;</span><br><span class="line">        android:background=&quot;@drawable/confirm_skin_btn_border&quot;</span><br><span class="line">        android:textColor=&quot;@color/music_skin_change_button_color&quot; /&gt;</span><br></pre></td></tr></table></figure></p>
+<p>这个布局中，包含两个换肤属性：<code>background</code>，<code>textColor</code>，假如只想换<code>textColor</code>,那该怎么办？<br>此处，借鉴了<a href="https://github.com/RrtoyewxXu/andSkin" target="_blank" rel="noopener">andSkin</a>中的一个办法，增加一个属性<code>attrs</code>，在此属性中声明需要换肤的属性。<br>具体到上面的例子，只需要增加这样一行代码<code>skin:attrs=&quot;textColor&quot;</code>就行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;Button</span><br><span class="line">        android:id=&quot;@+id/use_sdcard_skin&quot;</span><br><span class="line">        android:layout_width=&quot;180dp&quot;</span><br><span class="line">        android:layout_height=&quot;40dp&quot;</span><br><span class="line">        skin:enable=&quot;true&quot;</span><br><span class="line">        skin:attrs=&quot;textColor&quot;</span><br><span class="line">        android:background=&quot;@drawable/confirm_skin_btn_border&quot;</span><br><span class="line">        android:textColor=&quot;@color/music_skin_change_button_color&quot; /&gt;</span><br></pre></td></tr></table></figure></p>
+<p>如果支持多个属性，使用<code>|</code>分割就行：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">skin:attrs=&quot;textColor|background&quot;</span><br></pre></td></tr></table></figure></p>
+<p>其实，大多数情况下并不用在Xml中加此属性来控制，如若不想此属性换肤，也可以在相应的皮肤apk中去掉此属性指定的资源。</p>
+<h3 id="新增换肤属性"><a href="#新增换肤属性" class="headerlink" title="新增换肤属性"></a><strong>新增换肤属性</strong></h3><p>对已经成型的大型项目来说，XSkinLoader中提供的换肤属性是不够用的，需要额外增加的换肤属性该怎么办？<br>在sample中写好了相应的模板，具体参考ExtraAttrRegister.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public static final String CUSTIOM_VIEW_TEXT_COLOR = &quot;titleTextColor&quot;;</span><br><span class="line"></span><br><span class="line">    static &#123;</span><br><span class="line">        //增加自定义控件的自定义属性的换肤支持</span><br><span class="line">        SkinResDeployerFactory.registerDeployer(CUSTIOM_VIEW_TEXT_COLOR, new CustomViewTextColorResDeployer());</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="新增style中的换肤属性"><a href="#新增style中的换肤属性" class="headerlink" title="新增style中的换肤属性"></a><strong>新增style中的换肤属性</strong></h3><p>假如style中的换肤属性不够用，需要新增，该怎么办？<br>sample中也写了一个模板，在ExtraAttrRegister.java中:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">static &#123;</span><br><span class="line">        //增加xml里的style中指定的View background属性换肤</span><br><span class="line">        StyleParserFactory.addStyleParser(new ViewBackgroundStyleParser());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="XSKinLoader的实现原理分析"><a href="#XSKinLoader的实现原理分析" class="headerlink" title="XSKinLoader的实现原理分析"></a><strong>XSKinLoader的实现原理分析</strong></h2><p>换肤框架核心的技术原理和Android-skim-loader以及由此衍生出来的那些框架都差不多。主要就是实现<code>LayoutInflater.Factory</code>接口干涉xml中view解析的过程，并将解析出来的熟悉和view保存到list(map)中，换肤的时候，遍历此list(map)，重新设置此view的换肤属性对应的资源（用皮肤包对应的Resources来设置）。</p>
+<p>具体细节，如若不清楚可以参考QSkinLoader的源码解析：<br><a href="http://blog.csdn.net/u013478336/article/details/53083054" target="_blank" rel="noopener">Android换肤功能实现与换肤框架QSkinLoader使用方式介绍</a><br>或者 andSkin的源码解析：<br><a href="http://blog.csdn.net/zhi184816/article/details/53436761" target="_blank" rel="noopener">Android 换肤原理分析和总结</a><br>核心原理都差不多，都来自于Android-skin-loader，此处就不再啰嗦。</p>
+<p>这里，主要讲XSkinLoader的改进点。</p>
+<h3 id="使用WeakHashMap"><a href="#使用WeakHashMap" class="headerlink" title="使用WeakHashMap"></a><strong>使用WeakHashMap</strong></h3><p>将View和对应的换肤属性保存在全局的WeakHashMap中，这样activity退出后，WeakHashMap中的view会被GC回收掉，因此不会出现内存泄漏的问题。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//使用这个map保存所有需要换肤的view和其对应的换肤属性及资源</span><br><span class="line">//使用WeakHashMap两个作用，1.避免内存泄漏，2.避免重复的view被添加</span><br><span class="line">//使用HashMap存SkinAttr，为了避免同一个属性值存了两次</span><br><span class="line">private WeakHashMap&lt;View, HashMap&lt;String, SkinAttr&gt;&gt; mSkinAttrMap = new WeakHashMap&lt;&gt;();</span><br></pre></td></tr></table></figure></p>
+<p>WeakHashMap中键值对的值使用HashMap&lt;String, SkinAttr&gt;，是为了避免view的属性重复添加，比如，在xml中设置了TextView的textColor换肤资源，在代码中又设置了textColor换肤资源<br><code>SkinManager.get().setTextViewColor(textView, R.color.title_color);</code><br>这样代码中设置的换肤资源会覆盖掉xml中设置的。（xml中设置的属性资源也会覆盖style中设置的属性资源）</p>
+<h3 id="支持AppCompatActivity换肤"><a href="#支持AppCompatActivity换肤" class="headerlink" title="支持AppCompatActivity换肤"></a><strong>支持AppCompatActivity换肤</strong></h3><p>由于AppCompatActivity会设置LayoutInflater.Factory，干涉view的创建过程，并将TextView,ImageView等替换为AppCompatTextView,AppCompatImageView。假如不做特殊处理，会覆盖掉AppCompatActivity中设置的Factory，因此，没有兼容到AppCompatActivity的一些属性。</p>
+<p>查阅AppCompatActivity，可知，为了兼容不同的android版本，它是通过AppCompatDelegate来设置LayoutInflater的Factory,代码细节如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">protected void onCreate(@Nullable Bundle savedInstanceState) &#123;</span><br><span class="line">    final AppCompatDelegate delegate = getDelegate();</span><br><span class="line">    delegate.installViewFactory();</span><br><span class="line">    delegate.onCreate(savedInstanceState);</span><br><span class="line">    ...</span><br><span class="line">    ...</span><br><span class="line">    super.onCreate(savedInstanceState);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>delegate.installViewFactory();</code>最终调到了<code>AppCompatDelegateImplV9.java</code>中的<code>installViewFactory()</code>。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">public void installViewFactory() &#123;</span><br><span class="line">    LayoutInflater layoutInflater = LayoutInflater.from(mContext);</span><br><span class="line">    if (layoutInflater.getFactory() == null) &#123;</span><br><span class="line">        LayoutInflaterCompat.setFactory2(layoutInflater, this);</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        if (!(layoutInflater.getFactory2() instanceof AppCompatDelegateImplV9)) &#123;</span><br><span class="line">            Log.i(TAG, &quot;The Activity&apos;s LayoutInflater already has a Factory installed&quot;</span><br><span class="line">                    + &quot; so we can not install AppCompat&apos;s&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>AppCompatDelegateImplV9.java</code>中的Factory2的接口实现为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * From &#123;@link LayoutInflater.Factory2&#125;.</span><br><span class="line"> */</span><br><span class="line">@Override</span><br><span class="line">public final View onCreateView(View parent, String name, Context context, AttributeSet attrs) &#123;</span><br><span class="line">    // First let the Activity&apos;s Factory try and inflate the view</span><br><span class="line">    final View view = callActivityOnCreateView(parent, name, context, attrs);</span><br><span class="line">    if (view != null) &#123;</span><br><span class="line">        return view;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // If the Factory didn&apos;t handle it, let our createView() method try</span><br><span class="line">    return createView(parent, name, context, attrs);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在<code>createView</code>中使用<code>AppCompatViewInflater</code>来创建View，并将TextView,ImageView等替换为AppCompatTextView,AppCompatImageView：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">public final View createView(View parent, final String name, @NonNull Context context,</span><br><span class="line">        @NonNull AttributeSet attrs, boolean inheritContext,</span><br><span class="line">        boolean readAndroidTheme, boolean readAppTheme, boolean wrapContext) &#123;</span><br><span class="line">    ...</span><br><span class="line">    ...</span><br><span class="line">    switch (name) &#123;</span><br><span class="line">        case &quot;TextView&quot;:</span><br><span class="line">            view = new AppCompatTextView(context, attrs);</span><br><span class="line">            break;</span><br><span class="line">        case &quot;ImageView&quot;:</span><br><span class="line">            view = new AppCompatImageView(context, attrs);</span><br><span class="line">            break;</span><br><span class="line">        case &quot;Button&quot;:</span><br><span class="line">            view = new AppCompatButton(context, attrs);</span><br><span class="line">            break;</span><br><span class="line">        case &quot;EditText&quot;:</span><br><span class="line">            view = new AppCompatEditText(context, attrs);</span><br><span class="line">            break;</span><br><span class="line">        case &quot;Spinner&quot;:</span><br><span class="line">            view = new AppCompatSpinner(context, attrs);</span><br><span class="line">            break;</span><br><span class="line">        case &quot;ImageButton&quot;:</span><br><span class="line">            view = new AppCompatImageButton(context, attrs);</span><br><span class="line">            break;</span><br><span class="line">        ...</span><br><span class="line">        ...</span><br><span class="line"></span><br><span class="line">    return view;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>为了使我们的SkinInflaterFactory不干涉AppCompatActivity的view创建过程，我们可以这样做：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">public static void setFactory(Activity activity) &#123;</span><br><span class="line">    LayoutInflater inflater = activity.getLayoutInflater();</span><br><span class="line">    SkinInflaterFactory factory = new SkinInflaterFactory();</span><br><span class="line">    if (activity instanceof AppCompatActivity) &#123;</span><br><span class="line">        //AppCompatActivity本身包含一个factory,将TextView等转换为AppCompatTextView.java, 参考：AppCompatDelegateImplV9.java</span><br><span class="line">        final AppCompatDelegate delegate = ((AppCompatActivity) activity).getDelegate();</span><br><span class="line">        factory.setInterceptFactory(new Factory() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public View onCreateView(String name, Context context, AttributeSet attrs) &#123;</span><br><span class="line">                //创建view的过程还是交给AppCompatDelegate来做</span><br><span class="line">                return delegate.createView(null, name, context, attrs);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    inflater.setFactory(factory);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//因为LayoutInflater的setFactory方法只能调用一次，当框架外需要处理view的创建时，可以调用此方法</span><br><span class="line">public void setInterceptFactory(Factory factory) &#123;</span><br><span class="line">    mViewCreateFactory = factory;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@Override</span><br><span class="line">public View onCreateView(String name, Context context, AttributeSet attrs) &#123;</span><br><span class="line">    View view = null;</span><br><span class="line">    if (mViewCreateFactory != null) &#123;</span><br><span class="line">        //给框架外提供创建View的机会</span><br><span class="line">        view = mViewCreateFactory.onCreateView(name, context, attrs);</span><br><span class="line">    &#125;</span><br><span class="line">    if (isSupportSkin(attrs)) &#123;</span><br><span class="line">        if (view == null) &#123;</span><br><span class="line">            view = createView(context, name, attrs);</span><br><span class="line">        &#125;</span><br><span class="line">        if (view != null) &#123;</span><br><span class="line">            parseAndSaveSkinAttr(attrs, view);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return view;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="Activity的statusBar颜色换肤"><a href="#Activity的statusBar颜色换肤" class="headerlink" title="Activity的statusBar颜色换肤"></a><strong>Activity的statusBar颜色换肤</strong></h3><p>首先将Activity对应的Window传过来，然后获取Window对应的DecorView，对DecorView实施换肤：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public void setWindowStatusBarColor(Window window, @ColorRes int resId) &#123;</span><br><span class="line">    View decorView = window.getDecorView();</span><br><span class="line">    setSkinViewResource(decorView, SkinResDeployerFactory.ACTIVITY_STATUS_BAR_COLOR, resId);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>正真换肤的时候，又通过DecorView反射获取其对应的Window，然后设置window的StatusBarColor：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public class ActivityStatusBarColorResDeployer implements ISkinResDeployer &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public void deploy(View view, SkinAttr skinAttr, ISkinResourceManager resource) &#123;</span><br><span class="line">        //the view is the window&apos;s DecorView</span><br><span class="line">        Window window = (Window) ReflectUtils.getField(view, &quot;mWindow&quot;);</span><br><span class="line">        if (window == null) &#123;</span><br><span class="line">            throw new IllegalArgumentException(&quot;view is not a DecorView, cannot get the window&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        if (SkinConfig.RES_TYPE_NAME_COLOR.equals(skinAttr.attrValueTypeName)) &#123;</span><br><span class="line">            window.setStatusBarColor(resource.getColor(skinAttr.attrValueRefId));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="支持style中的换肤属性"><a href="#支持style中的换肤属性" class="headerlink" title="支持style中的换肤属性"></a><strong>支持style中的换肤属性</strong></h3><p>style中的换肤属性支持方法主要是根据传入的<code>AttributeSet</code>和控件的styleable列表获取控件中属性对应的资源id，并将view，属性，资源id保存起来。以TextView的textColor为例，具体实现细节如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">public class TextViewTextColorStyleParser implements ISkinStyleParser&#123;</span><br><span class="line"></span><br><span class="line">    private static int[] sTextViewStyleList;</span><br><span class="line">    private static int sTextViewTextColorStyleIndex;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void parseXmlStyle(View view, AttributeSet attrs, Map&lt;String, SkinAttr&gt; viewAttrs, String[] specifiedAttrList) &#123;</span><br><span class="line">        if (!TextView.class.isAssignableFrom(view.getClass())) &#123;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        Context context = view.getContext();</span><br><span class="line">        int[] textViewStyleable = getTextViewStyleableList();</span><br><span class="line">        int textViewStyleableTextColor = getTextViewTextColorStyleableIndex();</span><br><span class="line"></span><br><span class="line">        TypedArray a = context.obtainStyledAttributes(attrs, textViewStyleable, 0, 0);</span><br><span class="line">        if (a != null) &#123;</span><br><span class="line">            int n = a.getIndexCount();</span><br><span class="line">            for (int j = 0; j &lt; n; j++) &#123;</span><br><span class="line">                int attr = a.getIndex(j);</span><br><span class="line">                if (attr == textViewStyleableTextColor &amp;&amp;</span><br><span class="line">                        SkinConfig.isCurrentAttrSpecified(SkinResDeployerFactory.TEXT_COLOR, specifiedAttrList)) &#123;</span><br><span class="line">                    int colorResId = a.getResourceId(attr, -1);</span><br><span class="line">                    SkinAttr skinAttr = SkinAttributeParser.parseSkinAttr(context, SkinResDeployerFactory.TEXT_COLOR, colorResId);</span><br><span class="line">                    if (skinAttr != null) &#123;</span><br><span class="line">                        viewAttrs.put(skinAttr.attrName, skinAttr);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            a.recycle();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static int[] getTextViewStyleableList() &#123;</span><br><span class="line">        if (sTextViewStyleList == null || sTextViewStyleList.length == 0) &#123;</span><br><span class="line">            sTextViewStyleList = (int[]) ReflectUtils.getField(&quot;com.android.internal.R$styleable&quot;, &quot;TextView&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        return sTextViewStyleList;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private static int getTextViewTextColorStyleableIndex() &#123;</span><br><span class="line">        if (sTextViewTextColorStyleIndex == 0) &#123;</span><br><span class="line">            Object o = ReflectUtils.getField(&quot;com.android.internal.R$styleable&quot;, &quot;TextView_textColor&quot;);</span><br><span class="line">            if (o != null) &#123;</span><br><span class="line">                sTextViewTextColorStyleIndex = (int) o;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return sTextViewTextColorStyleIndex;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>具体细节如若不明白，可以参考<code>TextView.java</code>第四个构造方法中对<code>AttributeSet</code>和<code>style</code>的处理。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h2><p>XSkinLoader虽然说已经很完美了，但是还有一些不足之处：</p>
+<ol>
+<li>无法支持Theme中定义的属性换肤，无论是Activity中的Theme还是Application还是控件中指定的Theme，都是无法支持换肤。暂时没能找到解决方法，而且其他的换肤框架也没有解决这个问题，比较坑。</li>
+<li>暂时没能支持Glide控件设置默认图片的换肤，一般使用Glide设置默认图是这样：<br><code>Glide.with(context).load(url).placeholder(R.drawable.default).into(imageView);</code><br>暂时不能支持<code>R.drawable.default</code>的换肤，不过，此问题应该可解，毕竟Glide的扩展性非常强。</li>
+<li>RecyclerView的缓存问题，可能会导致换肤RecyclerView的item换肤失败，不过暂时未碰到。假如遇到此问题，可以参考<strong><a href="http://blog.csdn.net/u013478336/article/details/53083054" target="_blank" rel="noopener">QSkinLoader</a></strong>的清除缓存的方法。</li>
+<li>可能存在的性能问题.</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/换肤框架/" rel="tag"># 换肤框架</a>
+          
+            <a href="/tags/XSkinLoader/" rel="tag"># XSkinLoader</a>
+          
+            <a href="/tags/插件化开发/" rel="tag"># 插件化开发</a>
+          
+            <a href="/tags/LayoutInflater/" rel="tag"># LayoutInflater</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/07/Android-APP适配全面屏手机的技术要点/" rel="next" title="Android APP适配全面屏手机的技术要点">
+                <i class="fa fa-chevron-left"></i> Android APP适配全面屏手机的技术要点
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/04/28/Kotlin入门指南/" rel="prev" title="Kotlin入门指南">
+                Kotlin入门指南 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div id="gitalk-container"></div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/my_photo.jpg" alt="Windy">
+            
+              <p class="site-author-name" itemprop="name">Windy</p>
+              <p class="site-description motion-element" itemprop="description">用技术撬动地球</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/WindySha" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/2d35b94de2a4" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-globe"></i>简书</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#引用"><span class="nav-number"></span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用"><span class="nav-number"></span> <span class="nav-text">使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#加载资源Apk"><span class="nav-number">1.</span> <span class="nav-text">加载资源Apk</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Activity中布局文件换肤"><span class="nav-number">2.</span> <span class="nav-text">Activity中布局文件换肤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设置Application的LayoutInflater"><span class="nav-number">3.</span> <span class="nav-text">设置Application的LayoutInflater</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#XML换肤"><span class="nav-number">3.1.</span> <span class="nav-text">XML换肤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#xml中指定换肤属性"><span class="nav-number">3.2.</span> <span class="nav-text">xml中指定换肤属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#新增换肤属性"><span class="nav-number">3.3.</span> <span class="nav-text">新增换肤属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#新增style中的换肤属性"><span class="nav-number">3.4.</span> <span class="nav-text">新增style中的换肤属性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#XSKinLoader的实现原理分析"><span class="nav-number">4.</span> <span class="nav-text">XSKinLoader的实现原理分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用WeakHashMap"><span class="nav-number">4.1.</span> <span class="nav-text">使用WeakHashMap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#支持AppCompatActivity换肤"><span class="nav-number">4.2.</span> <span class="nav-text">支持AppCompatActivity换肤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Activity的statusBar颜色换肤"><span class="nav-number">4.3.</span> <span class="nav-text">Activity的statusBar颜色换肤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#支持style中的换肤属性"><span class="nav-number">4.4.</span> <span class="nav-text">支持style中的换肤属性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Windy</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+<span id="busuanzi_container_site_pv" class="theme-info">
+&nbsp;&nbsp;|&nbsp;&nbsp;本站总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+  <span id="busuanzi_container_site_uv" class="theme-info">
+&nbsp;&nbsp;|&nbsp;&nbsp;本站访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="“https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js”"></script>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+  <script src="/js/src/md5.min.js"></script>
+   <script type="text/javascript">
+        var gitalk = new Gitalk({
+          clientID: '74fae1ebd3ed7c477fa3',
+          clientSecret: '6c20e96e69c1d539a3150d1c464977fbcd2ce50e',
+          repo: 'my_hexo_blog_comments',
+          owner: 'WindySha',
+          admin: ['WindySha'],
+          id: md5(location.pathname),
+          distractionFreeMode: 'true'
+        })
+        gitalk.render('gitalk-container')           
+       </script>
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+  </script>
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

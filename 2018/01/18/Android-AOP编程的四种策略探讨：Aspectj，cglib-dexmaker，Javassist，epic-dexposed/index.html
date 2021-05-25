@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+  <meta name="google-site-verification" content="DriWLHPOSm42mFNpn-8F4QnKrvTt4aj2cqvnOToSeaw">
+
+
+
+
+
+
+
+
+  <meta name="baidu-site-verification" content="l1rAwZtE1v">
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Aspectj,AOP,cglib,epic,dexposed,Xposed,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Windy's Journal" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="前言AOP:面向切面编程(Aspect-Oriented Programming)。 它和我们平时接触到的OOP都是编程的不同思想，OOP，即『面向对象编程』，它提倡的是将功能模块化，对象化，而AOP的思想，则不太一样，它提倡的是针对同一类问题的统一处理。 利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可重用性，提高开发效率。 那么AOP这种编程思">
+<meta name="keywords" content="Aspectj,AOP,cglib,epic,dexposed,Xposed">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android AOP编程的四种策略探讨：Aspectj，cglib+dexmaker，Javassist，epic+dexposed">
+<meta property="og:url" content="http://yoursite.com/2018/01/18/Android-AOP编程的四种策略探讨：Aspectj，cglib-dexmaker，Javassist，epic-dexposed/index.html">
+<meta property="og:site_name" content="Windy&#39;s Journal">
+<meta property="og:description" content="前言AOP:面向切面编程(Aspect-Oriented Programming)。 它和我们平时接触到的OOP都是编程的不同思想，OOP，即『面向对象编程』，它提倡的是将功能模块化，对象化，而AOP的思想，则不太一样，它提倡的是针对同一类问题的统一处理。 利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可重用性，提高开发效率。 那么AOP这种编程思">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2021-05-25T16:15:36.401Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android AOP编程的四种策略探讨：Aspectj，cglib+dexmaker，Javassist，epic+dexposed">
+<meta name="twitter:description" content="前言AOP:面向切面编程(Aspect-Oriented Programming)。 它和我们平时接触到的OOP都是编程的不同思想，OOP，即『面向对象编程』，它提倡的是将功能模块化，对象化，而AOP的思想，则不太一样，它提倡的是针对同一类问题的统一处理。 利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可重用性，提高开发效率。 那么AOP这种编程思">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideUpIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/01/18/Android-AOP编程的四种策略探讨：Aspectj，cglib-dexmaker，Javassist，epic-dexposed/">
+
+
+
+
+
+  <title>Android AOP编程的四种策略探讨：Aspectj，cglib+dexmaker，Javassist，epic+dexposed | Windy's Journal</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Windy's Journal</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/18/Android-AOP编程的四种策略探讨：Aspectj，cglib-dexmaker，Javassist，epic-dexposed/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Windy">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/my_photo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Windy's Journal">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android AOP编程的四种策略探讨：Aspectj，cglib+dexmaker，Javassist，epic+dexposed</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-18T21:06:30+08:00">
+                2018-01-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/Aspectj/" itemprop="url" rel="index">
+                    <span itemprop="name">Aspectj</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <hr>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a><strong>前言</strong></h2><p>AOP:面向切面编程(Aspect-Oriented Programming)。</p>
+<p>它和我们平时接触到的OOP都是编程的不同思想，OOP，即『面向对象编程』，它提倡的是将功能模块化，对象化，而AOP的思想，则不太一样，它提倡的是针对同一类问题的统一处理。</p>
+<p>利用AOP可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可重用性，提高开发效率。</p>
+<p>那么AOP这种编程思想有什么用呢，一般来说，主要用于不想侵入原有代码的场景中，例如SDK需要无侵入的在宿主中插入一些代码，做日志埋点、性能监控、动态权限控制、甚至是代码调试等等。</p>
+<p>下面介绍Android开发中四种实践AOP编程的方案。</p>
+<a id="more"></a>
+<h2 id="AspectJ"><a href="#AspectJ" class="headerlink" title="AspectJ"></a><strong>AspectJ</strong></h2><p>AspectJ是一个基于Java语言的AOP框架，提供了强大的AOP功能，其他很多AOP框架都借鉴或采纳其中的一些思想。在Java编程中，AspectJ算是最有名的AOP编程工具，具体有以下几个原因：</p>
+<ul>
+<li>功能强大</li>
+<li>支持编译期和加载时代码注入</li>
+<li>易于使用</li>
+</ul>
+<p>AspectJ官网为：<strong><a href="https://eclipse.org/aspectj/" target="_blank" rel="noopener">https://eclipse.org/aspectj/</a></strong></p>
+<p>AspectJ是Java上的项目，并不能直接用在Android上。最早将AspectJ在Android项目的上使用的大神Jake Wharton的这个日志打印工具项目<strong><a href="https://github.com/JakeWharton/hugo" target="_blank" rel="noopener">Jake Wharton’s Hugo Library</a></strong>。</p>
+<p>AspectJ要想在项目中使用，就必须使用AspectJ的编译器（ajc，一个java编译器的扩展）, 对所有受 aspect影响的类进行织入。为了要在Android上使用，我们需要在Gradle的编译task中增加一些额外配置，使之能正确编译运行。</p>
+<p>还好，在AS中集成Gradle编译插件的工作有人已经帮忙做好了，我们直接使用就行。<br>这个就是沪江网的开源项目：<strong><a href="https://github.com/HujiangTechnology/gradle_plugin_android_aspectjx" target="_blank" rel="noopener">gradle_plugin_android_aspectjx</a></strong><br>这个库的接入方法也非常简单，具体可以参考《Android群英传》一书作者徐宜生（在沪江网就职）的这个博客：<strong><a href="https://www.jianshu.com/p/5c9f1e8894ec" target="_blank" rel="noopener">看AspectJ在Android中的强势插入</a></strong><br>他的这篇博客中也详细介绍了AspectJ的各种注解的用法，包括@Before，@After，@Around等等，使用起来并不会太复杂，非常适合在项目中接入使用。</p>
+<p>AspectJ的原理其实很简单，就是在代码编译期间，将需要集成的代码插入到目标代码的前面或者后面，以实现代码的AOP。我们通过反编译集成了aspectJ的Apk可以很清楚的知道这一点，具体细节在<strong><a href="https://www.jianshu.com/p/5c9f1e8894ec" target="_blank" rel="noopener">看AspectJ在Android中的强势插入</a></strong>这个博客中有详细的介绍。</p>
+<p>关于AspectJ在实际项目中的应用案例，有两篇博客值得一读。</p>
+<p>第一篇是<strong><a href="https://www.jianshu.com/p/b96a68ba50db" target="_blank" rel="noopener">安卓AOP实战：面向切片编程</a></strong><br>这篇博客通过几个小例子，讲解在Android开发中，如何运用AOP的方式，进行全局切片管理，达到简洁优雅，一劳永逸的效果。里面介绍了这几种全局切片：</p>
+<blockquote>
+<ol>
+<li>SingleClickAspect，防止View被连续点击出发多次事件</li>
+<li>CheckLoginAspect 拦截未登录用户的权限</li>
+<li>MemoryCacheAspect内存缓存切片</li>
+<li>TimeLogAspect 自动打印方法的耗时</li>
+<li>SysPermissionAspect运行时权限申请 </li>
+</ol>
+</blockquote>
+<p>第二篇是<strong><a href="http://blog.csdn.net/woshimalingyi/article/details/73252013" target="_blank" rel="noopener">AOP之@AspectJ技术原理详解</a></strong><br>这篇博客对AspectJ的介绍更加详尽，从使用方法，到反编译源码分析原理，到项目中的应用方式，都有详细的介绍。具体在项目应用上，介绍了这个方面的应用：</p>
+<blockquote>
+<ol>
+<li>日志打印</li>
+<li>方法耗时监控</li>
+<li>监控Activity页面的停留时间 </li>
+<li>异常处理</li>
+<li>降级替代方案——吐司 </li>
+</ol>
+</blockquote>
+<p>假如不使用上面介绍的沪江网gradle插件，是否有其他方法在Android项目中实现AspectJ的编译时代码注入呢？<br>有的，国外有个开发者写了一篇文章对此有专门的介绍，主要是在build.gradle文件中添加了一些脚本，也能够在AS中使用，但是脚本的编写有点麻烦，需要熟悉Gradle脚本语言才能比较熟练地掌握好：<br><strong><a href="https://www.jianshu.com/p/0fa8073fd144" target="_blank" rel="noopener">【翻译】Android中的AOP编程</a></strong><br>针对这种方法，国内也有人专门实践过：<strong><a href="http://blog.csdn.net/woshimalingyi/article/details/51519851" target="_blank" rel="noopener">Android 基于AOP监控之——AspectJ使用指南</a></strong></p>
+<h2 id="cglib-dexmaker"><a href="#cglib-dexmaker" class="headerlink" title="cglib + dexmaker"></a><strong>cglib + dexmaker</strong></h2><p><strong><a href="https://github.com/cglib/cglib" target="_blank" rel="noopener">cglib</a></strong>是一个功能强大，高性能的代码生成包。在Java开发中，动态代码可以使用Proxy类来通过反射代理接口(interface)实现，但cglib不仅仅能够代理接口，它能够为类的非final方法提供代理，为JDK的动态代理提供了很好的补充。</p>
+<p>cglib原理是通过字节码技术为一个类创建子类，并在子类中采用方法拦截的技术拦截所有父类方法的调用，顺势织入横切逻辑。由于是通过子类来代理父类，因此不能代理被final字段修饰的方法。</p>
+<p>cglib如此强大，但是，它有一个很致命的缺点是：cglib底层是采用著名的ASM字节码生成框架，使用字节码技术生成代理类，也就是通过操作字节码来生成的新的.class文件，（关于class文件以及ASM的介绍可以参考我的博客<strong><a href="http://blog.csdn.net/weelyy/article/details/78969412" target="_blank" rel="noopener">深入理解JVM之Java字节码（.class）文件详解</a></strong>），而我们在android中加载的是优化后的.dex文件，也就是说我们需要可以动态生成.dex文件代理类，因此cglib在android中是不能使用的。不过，网上已经有人根据dexmaker框架（dex代码生成工具）来仿照cglib库动态生成.dex文件，实现了类似于cglib的AOP的功能。 </p>
+<p>详细的用法可以参考这篇博客：<strong><a href="http://blog.csdn.net/zhangke3016/article/details/71437287" target="_blank" rel="noopener">将cglib动态代理思想带入Android开发</a></strong><br>项目的源码为：<strong><a href="https://github.com/zhangke3016/MethodInterceptProxy" target="_blank" rel="noopener">MethodInterceptProxy</a></strong></p>
+<p>它的这个项目是在在<strong><a href="https://github.com/linkedin/dexmaker" target="_blank" rel="noopener">dexmaker</a></strong>和<strong><a href="https://github.com/leo-ouyang/CGLib-for-Android" target="_blank" rel="noopener">cglib-for-android</a></strong>库的基础上，修改部分代码后形成的类似cglib框架。很有参考学习的价值！</p>
+<h2 id="Javassist-For-Android"><a href="#Javassist-For-Android" class="headerlink" title="Javassist For Android"></a><strong>Javassist For Android</strong></h2><p>Javassist是什么？</p>
+<p>Javassist是一个开源的分析、编辑和创建Java字节码的类库。是由东京工业大学的数学和计算机科学系的 Shigeru Chiba （千叶滋）所创建的。</p>
+<p>关于java字节码的处理，目前有很多工具，如BCEL，ASM。不过这些都需要直接跟JVM的操作和指令打交道。相比而言，Javassist要简单的多，完全是基于Java的API，但其性能相比前二者要差一些。尽管如此，在性能要求相对低的场合，Javassist仍然十分有用。</p>
+<p>Javassist的官网为：<strong><a href="http://jboss-javassist.github.io/javassist/" target="_blank" rel="noopener">http://jboss-javassist.github.io/javassist/</a></strong><br>Javassist的使用方法可以参考：<strong><a href="https://www.ibm.com/developerworks/cn/java/j-dyn0916/" target="_blank" rel="noopener">用 Javassist 进行类转换</a></strong> &nbsp;&nbsp;&nbsp;<strong><a href="http://blog.csdn.net/top_code/article/details/51708043" target="_blank" rel="noopener">Java动态编程之javassist</a></strong></p>
+<p>要想在Android中使用Javassist来实现AOP功能，需要自定义gradle plugin，在plugin中使用Javassist工具实现代码的插入，然后在项目中引用这个gradle plugin。这里，就涉及到自定义gradle plugin的知识了，这就需要对Gradle语法比较了解。</p>
+<p>关于自定义gradle插件以及集成Javassist的方法，此处不作详细介绍，感兴趣的话，可以参阅以下博客，：<br><strong><a href="http://blog.csdn.net/Deemons/article/details/78473874" target="_blank" rel="noopener">Android 中使用Javassist</a></strong><br><strong><a href="https://www.jianshu.com/p/417589a561da" target="_blank" rel="noopener">通过自定义Gradle插件修改编译后的class文件</a></strong><br><strong><a href="http://blog.csdn.net/yulong0809/article/details/77752098?locationNum=9&amp;fps=1" target="_blank" rel="noopener">Android动态编译技术:Plugin Transform Javassist操作Class文件</a></strong></p>
+<h2 id="epic-dexposed"><a href="#epic-dexposed" class="headerlink" title="epic + dexposed"></a><strong>epic + dexposed</strong></h2><p>田维术的<strong><a href="https://github.com/tiann/epic" target="_blank" rel="noopener">epic</a></strong>这个项目的AOP原理完全不同于以上几个方案，以上几个方案都是Java开发中已有的技术方案，只不过是移植到了Android中来。它们的根本原理是修改编译生成的字节码文件，对原本的代码进行替换，从而实现了方法的AOP。它们都是在编译时就对代码实现动态代理，而epic这个项目是在运行对代码实现动态代理的，是不是很牛逼！它的主要思想是在native层修改java method对应的native指针。</p>
+<p><strong><a href="https://github.com/tiann/epic" target="_blank" rel="noopener">epic</a></strong>项目是基于阿里巴巴热更新项目<strong><a href="https://github.com/alibaba/dexposed" target="_blank" rel="noopener">Dexposed</a></strong>，而Dexposed是一个基于久负盛名的开源<strong><a href="https://github.com/rovo89/Xposed" target="_blank" rel="noopener">Xposed</a></strong>框架实现的Android平台上功能强大的无侵入式运行时AOP框架。</p>
+<p>在Xposed这个框架下，我们可以加载很多插件App，这些插件App可以直接或间接操纵系统层面的东西，比如操纵一些本来只对系统厂商才open的功能。有了Xposed后，理论上我们的插件APP可以hook到系统任意一个Java进程（zygote，systemserver，systemui等等）。功能太强大，自然也有缺点。Xposed需要系统已经root，所以并不适合在项目中使用。</p>
+<p>因此，Dexposed对其进行改进，将其中核心方法（处理java方法指针的native方法）抠出来，集成在APP开发中，实现对APP代码的AOP。Dexposed的AOP实现是完全非侵入式的，没有使用任何注解处理器，编织器或者字节码重写器，这一点跟以上几个框架完全不一样。Dexposed实现的hooking，不仅可以hook应用中的自定义方法，也可以hook应用中调用的Android框架的方法。</p>
+<p>那既然Dexposed这么强大，使用Dexposed进行AOP就行了，为啥还出来一个epic？？？</p>
+<p>Dexposed虽然很强大，但是但是但是，它有个致命的缺点，就是它只能支持Android Dalvik虚拟机！what? 现在的Android虚拟机都是Art虚拟机了，它居然只能支持Dalvik虚拟机，太不实用了！！</p>
+<p>那它为啥Dexposed没能支持Art呢？</p>
+<p>这是由于Art虚拟机和Dalvik虚拟机差别非常大，而且Art比Dalvik复杂太多，所以Dexposed项目一直没能够成功适配Art虚拟机。而xposed项目也是最近才成功适配上了Art虚拟机，而且适配的方法比较粗鲁，直接修改Art虚拟机的源代码，侵入性非常强。<strong><a href="https://github.com/rovo89/android_art" target="_blank" rel="noopener">rovo89/android_art</a></strong></p>
+<p>技术的道路上，总有人愿意去披荆斩棘，冲破迷雾。</p>
+<p><strong><a href="http://weishu.me/" target="_blank" rel="noopener">田维术</a></strong>在他的<strong><a href="https://github.com/tiann/epic" target="_blank" rel="noopener">epic</a></strong>项目终于实现了在Art虚拟机上的运行时Method AOP功能（Dexposed的Art版本）！</p>
+<p>他的实现方案主要借鉴了一篇国外的科技论文，这个论文就是Wißfeld, Marvin 的<strong><a href="http://publications.cispa.saarland/143/" target="_blank" rel="noopener">ArtHook: Callee-side Method Hook Injection on the New Android Runtime ART</a></strong>。这篇文章很精彩，讲述了各种Hook的原理，并且还在ART上实现了 dynamic callee-side rewriting 的Hook技术，而且提供了实现的源代码，代码在github上：<strong><a href="https://github.com/mar-v-in/ArtHook" target="_blank" rel="noopener">ArtHook</a></strong></p>
+<p>关于epic的实现原细节，可以阅读田维术的博客：<strong><a href="http://weishu.me/2017/11/23/dexposed-on-art/" target="_blank" rel="noopener">我为Dexposed续一秒——论ART上运行时Method AOP实现</a></strong></p>
+<p>讲的非常精彩，是一篇很有价值的文章！</p>
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h2><p>以上就是Android开发中常见的AOP框架的介绍，通过分析对比，可知，最成熟最易用的应该是AsepctJ了，这个框架在Java中已经已经被广泛应用了，移植到android中可以直接上项目使用，并无风险。</p>
+<p>cglib + dexmaker的方案也是比较稳定，其主要用来实现方法的动态代理，但功能性和易容性上比AsepctJ稍差一些，不建议在Android项目中使用。</p>
+<p>Javassist For Android使用起来比较麻烦，而且效率可能并不会太高。</p>
+<p>至于最后一个运行时AOP方案（epic），在这里提出来只是为了开拓一下思路，它暂时只适合在开发调试中来使用，并不适合在Android中直接上项目，毕竟涉及到了Art虚拟机的操作，各个手机厂商可能会对Art做修改，因此，在没有经过各种手机的严苛测试前提下，并不太适合上项目。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Aspectj/" rel="tag"># Aspectj</a>
+          
+            <a href="/tags/AOP/" rel="tag"># AOP</a>
+          
+            <a href="/tags/cglib/" rel="tag"># cglib</a>
+          
+            <a href="/tags/epic/" rel="tag"># epic</a>
+          
+            <a href="/tags/dexposed/" rel="tag"># dexposed</a>
+          
+            <a href="/tags/Xposed/" rel="tag"># Xposed</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/18/深入理解JVM之Java字节码（-class）文件详解/" rel="next" title="深入理解JVM之Java字节码（.class）文件详解">
+                <i class="fa fa-chevron-left"></i> 深入理解JVM之Java字节码（.class）文件详解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/02/07/Android-APP适配全面屏手机的技术要点/" rel="prev" title="Android APP适配全面屏手机的技术要点">
+                Android APP适配全面屏手机的技术要点 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div id="gitalk-container"></div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/my_photo.jpg" alt="Windy">
+            
+              <p class="site-author-name" itemprop="name">Windy</p>
+              <p class="site-description motion-element" itemprop="description">用技术撬动地球</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/WindySha" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/2d35b94de2a4" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-globe"></i>简书</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AspectJ"><span class="nav-number">2.</span> <span class="nav-text">AspectJ</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cglib-dexmaker"><span class="nav-number">3.</span> <span class="nav-text">cglib + dexmaker</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Javassist-For-Android"><span class="nav-number">4.</span> <span class="nav-text">Javassist For Android</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#epic-dexposed"><span class="nav-number">5.</span> <span class="nav-text">epic + dexposed</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Windy</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+<span id="busuanzi_container_site_pv" class="theme-info">
+&nbsp;&nbsp;|&nbsp;&nbsp;本站总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+  <span id="busuanzi_container_site_uv" class="theme-info">
+&nbsp;&nbsp;|&nbsp;&nbsp;本站访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="“https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js”"></script>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+  <script src="/js/src/md5.min.js"></script>
+   <script type="text/javascript">
+        var gitalk = new Gitalk({
+          clientID: '74fae1ebd3ed7c477fa3',
+          clientSecret: '6c20e96e69c1d539a3150d1c464977fbcd2ce50e',
+          repo: 'my_hexo_blog_comments',
+          owner: 'WindySha',
+          admin: ['WindySha'],
+          id: md5(location.pathname),
+          distractionFreeMode: 'true'
+        })
+        gitalk.render('gitalk-container')           
+       </script>
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+  </script>
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
