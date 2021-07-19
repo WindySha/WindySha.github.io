@@ -307,6 +307,165 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/07/20/另一种绕过 Android 9以上非SDK接口调用限制的方法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Windy">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/my_photo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Windy's Journal">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/07/20/另一种绕过 Android 9以上非SDK接口调用限制的方法/" itemprop="url">另一种绕过Android 9以上非SDK接口调用限制的方法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-07-20T13:07:43+08:00">
+                2021-07-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/非SDK接口/" itemprop="url" rel="index">
+                    <span itemprop="name">非SDK接口</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/非SDK接口/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>从Android9开始，Google开始在Android平台限制对非SDK接口的调用。只要应用使用非SDK接口，或尝试使用反射或JNI来调用非SDK接口，都会收到某些限制。而且随着Android版本的升级，这种限制越来越强，被限制的接口也越来越多。这些限制对于Android平台上的一些黑科技来说(插件化，热修复，App双开，性能监控，Art Hook等)，简直就是致命的。所以，各路大神都纷纷寻找绕过这个限制的手段。</p>
+<p>最近在翻阅Android ART虚拟机源码时，发现另外一种简单绕过限制的方法。经测试，能够在Android 9-12上稳定运行。</p>
+<p>下面先介绍主流的绕过限制的原理，再详细介绍这种全新的绕过策略，并在最后给出完整的源码实现。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/07/20/另一种绕过 Android 9以上非SDK接口调用限制的方法/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/05/26/另一种绕过Android系统库访问限制的方法/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -951,153 +1110,6 @@
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2019/07/27/免Root-实现App加载Xposed插件的工具Xpatch源码解析（一）/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/23/免Root环境，破解爱奇艺和腾讯视频广告的一个简易方法/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Windy">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/my_photo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Windy's Journal">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/06/23/免Root环境，破解爱奇艺和腾讯视频广告的一个简易方法/" itemprop="url">免Root环境，破解爱奇艺和腾讯视频广告的一个简易方法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-23T00:19:20+08:00">
-                2019-06-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Android/" itemprop="url" rel="index">
-                    <span itemprop="name">Android</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>笔者推出免Root破解App工具<a href="[https://github.com/WindySha/Xpatch](https://github.com/WindySha/Xpatch">Xpatch</a>也有一段时间了，但一直没有介绍详细的应用案例。本文介绍如何利用Xpatch实现一个非常实用的功能，腾讯视频App和爱奇艺App去广告功能。 </p>
-<h1 id="如何去广告"><a href="#如何去广告" class="headerlink" title="如何去广告"></a>如何去广告</h1><p>为了破解腾讯视频，首先我们需要反编译Apk，获取Java源码。庆幸的是腾讯视频没有做加固处理，使用jadx工具可以反编译成功。<br>获取到源码后，通过分析源码，我们发现一个叫做<code>VideoInfo</code>的类:</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/06/23/免Root环境，破解爱奇艺和腾讯视频广告的一个简易方法/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1971,7 +1983,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-count">20</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
