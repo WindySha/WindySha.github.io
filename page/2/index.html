@@ -307,6 +307,175 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/10/侵入性低扩展性强的Android换肤框架XSkinLoader的用法及原理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Windy">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/my_photo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Windy's Journal">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/02/10/侵入性低扩展性强的Android换肤框架XSkinLoader的用法及原理/" itemprop="url">侵入性低扩展性强的Android换肤框架XSkinLoader的用法及原理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-10T17:12:33+08:00">
+                2018-02-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/换肤框架/" itemprop="url" rel="index">
+                    <span itemprop="name">换肤框架</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a><strong>前言</strong></h2><p>Android发展到现在，很多成熟的应用上已经集成了插件式换肤的功能，比如网易云音乐，手机QQ，QQ音乐等等。但是，成熟稳定易用的开源换肤框架并没有出现。</p>
+<p>国内最早的插件式换肤框架是<a href="https://github.com/fengjundev/Android-Skin-Loader" target="_blank" rel="noopener">Android-Skin-Loader</a>。后面也出现了一些在此基础上的改进版，比如：hongyang的<a href="https://github.com/hongyangAndroid/ChangeSkin" target="_blank" rel="noopener">ChangeSkin</a>，<a href="https://github.com/RrtoyewxXu/andSkin" target="_blank" rel="noopener">andSkin</a>，<a href="http://blog.csdn.net/ximsfei/article/details/54586827" target="_blank" rel="noopener">Android-skin-support</a>，<a href="https://github.com/hackware1993/injor" target="_blank" rel="noopener">injor</a>，<a href="http://blog.csdn.net/u013478336/article/details/53083054" target="_blank" rel="noopener">QSkinLoader</a>等等。大家都对<strong>Android-Skin-Loader</strong>做了一些改进，以使换肤过程侵入性更低，扩展性更强，使用更简单。但是还是会有一些不足之处，因此，XSkinLoader就诞生了。</p>
+<p>XSkinLoader是在Android-Skin-Loader和QSkinLoader的基础上又进行了一次重大改进，主要的改进点有如下：</p>
+<blockquote>
+<ol>
+<li>侵入性更低，换肤Activity并不用实现某个接口或者继承某个BaseActivity</li>
+<li>支持布局里style中定义的属性换肤，默认支持了TextView的textColor和ProgressBar的indeterminateDrawable，并支持扩展；</li>
+<li>更好地支持了AppCompatActivity中的控件换肤，由于AppCompatActivity中的TextView，ImageView等控件会被转为AppCompatTextView,AppCompatImageView，XSkinLoader换肤时并不会覆盖此转换，其他换肤框架会覆盖；</li>
+<li>支持状态栏颜色换肤，并可以通过相似方法扩展支持标题栏和虚拟导航栏的换肤；</li>
+<li>支持xml中指定的属性换肤</li>
+</ol>
+</blockquote>
+<p>XSkinLoader项目源码地址为：<strong><a href="https://github.com/WindySha/XSkinLoader" target="_blank" rel="noopener">https://github.com/WindySha/XSkinLoader</a></strong></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/02/10/侵入性低扩展性强的Android换肤框架XSkinLoader的用法及原理/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/07/Android-APP适配全面屏手机的技术要点/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1375,7 +1544,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1386,7 +1555,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-count">23</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -1457,7 +1626,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

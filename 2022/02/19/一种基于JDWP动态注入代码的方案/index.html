@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+  <meta name="google-site-verification" content="DriWLHPOSm42mFNpn-8F4QnKrvTt4aj2cqvnOToSeaw">
+
+
+
+
+
+
+
+
+  <meta name="baidu-site-verification" content="l1rAwZtE1v">
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Android,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Windy's Journal" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="前言在逆向开发中，一般都需要对目标App进行代码注入。主流的代码注入工具是Frida，这个工具能稳定高效实现java代码hook和native代码hook，不过缺点是需要使用Root设备，而且用js开发，入门门槛较高。最近发现一种非Root环境下对Debug App进行代码注入的方案，原理是利用Java调试框架，通过调试器与目标虚拟机之间通讯，实现对虚拟机进程的修改。">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一种基于JDWP动态注入代码的方案">
+<meta property="og:url" content="http://yoursite.com/2022/02/19/一种基于JDWP动态注入代码的方案/index.html">
+<meta property="og:site_name" content="Windy&#39;s Journal">
+<meta property="og:description" content="前言在逆向开发中，一般都需要对目标App进行代码注入。主流的代码注入工具是Frida，这个工具能稳定高效实现java代码hook和native代码hook，不过缺点是需要使用Root设备，而且用js开发，入门门槛较高。最近发现一种非Root环境下对Debug App进行代码注入的方案，原理是利用Java调试框架，通过调试器与目标虚拟机之间通讯，实现对虚拟机进程的修改。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2022-02-19T09:34:11.831Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一种基于JDWP动态注入代码的方案">
+<meta name="twitter:description" content="前言在逆向开发中，一般都需要对目标App进行代码注入。主流的代码注入工具是Frida，这个工具能稳定高效实现java代码hook和native代码hook，不过缺点是需要使用Root设备，而且用js开发，入门门槛较高。最近发现一种非Root环境下对Debug App进行代码注入的方案，原理是利用Java调试框架，通过调试器与目标虚拟机之间通讯，实现对虚拟机进程的修改。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideUpIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2022/02/19/一种基于JDWP动态注入代码的方案/">
+
+
+
+
+
+  <title>一种基于JDWP动态注入代码的方案 | Windy's Journal</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Windy's Journal</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/02/19/一种基于JDWP动态注入代码的方案/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Windy">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/my_photo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Windy's Journal">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">一种基于JDWP动态注入代码的方案</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-02-19T13:07:43+08:00">
+                2022-02-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Hook注入/" itemprop="url" rel="index">
+                    <span itemprop="name">Hook注入</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Hook注入/Xposed/" itemprop="url" rel="index">
+                    <span itemprop="name">Xposed</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Hook注入/Xposed/JDWP/" itemprop="url" rel="index">
+                    <span itemprop="name">JDWP</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在逆向开发中，一般都需要对目标App进行代码注入。主流的代码注入工具是<a href="https://github.com/frida/frida" target="_blank" rel="noopener">Frida</a>，这个工具能稳定高效实现java代码hook和native代码hook，不过缺点是需要使用Root设备，而且用js开发，入门门槛较高。最近发现一种非Root环境下对Debug App进行代码注入的方案，原理是利用Java调试框架，通过调试器与目标虚拟机之间通讯，实现对虚拟机进程的修改。</p>
+<a id="more"></a>
+<h1 id="JPDA框架和JDWP协议"><a href="#JPDA框架和JDWP协议" class="headerlink" title="JPDA框架和JDWP协议"></a>JPDA框架和JDWP协议</h1><p>Java SE从1.2.2版本以后推出了<a href="http://download.oracle.com/otn_hosted_doc/jdeveloper/904preview/jdk14doc/docs/guide/jpda/" target="_blank" rel="noopener">JPDA框架</a>（Java Platform Debugger Architecture，Java平台调试体系结构）。JPDA定义了一套独立且完整的调试体系，它由三个相对独立的模块组成，分别为：</p>
+<ul>
+<li><a href="https://docs.oracle.com/javase/7/docs/platform/jvmti/jvmti.html#whatIs" target="_blank" rel="noopener">JVM TI</a>：Java虚拟机工具接口（被调试者）。被调试者运行在我们想要调试的虚拟机上，它可以通过JVM TI这个标准接口监控当前虚拟机的信息。</li>
+<li><a href="http://download.oracle.com/otn_hosted_doc/jdeveloper/904preview/jdk14doc/docs/guide/jpda/jdwp-spec.html" target="_blank" rel="noopener">JDWP</a>：Java Debug Wire Protocol，Java调试协议（通道）。在调试者和被调试者之间，通过JDWP传输层传输消息。</li>
+<li><a href="http://download.oracle.com/otn_hosted_doc/jdeveloper/904preview/jdk14doc/docs/guide/jpda/jdi/index.html" target="_blank" rel="noopener">JDI</a>：Java Debug Interface，Java调试接口（调试者）。调试者定义了用户可以使用的调试接口，用户可以通过这些接口对被调试虚拟机发送调试命令，同时显示调试结果。</li>
+</ul>
+<p>其中，JDWP协议是用于调试器与目标虚拟机之间进行调试交互的通信协议。</p>
+<p>JDWP 大致分为两个阶段：握手和应答。握手是在传输层连接建立完成后，做的第一件事：<br>调试器发送 14 bytes 的字符串“JDWP-Handshake”到目标虚拟机，虚拟机回复“JDWP-Handshake”，从而完成握手。</p>
+<p>握手完成后，调试器就可以向虚拟机发送命令了。JDWP 是通过命令（command）和回复（reply）进行通信，这与 HTTP 有些相似。JDWP 本身是无状态的，因此对 command 出现的顺序并不受限制。</p>
+<p>JDWP 有两种基本的包（packet）类型：命令包（command packet）和回复包（reply packet）。</p>
+<p>调试器和目标虚拟机都有可能发送 command packet。调试器通过发送 command packet 获取虚拟机的信息以及控制程序的执行。虚拟机通过发送 command packet 通知调试器某些事件的发生，如到达断点或是产生异常。</p>
+<p>Reply packet 是用来回复 command packet 该命令是否执行成功，如果成功 reply packet 还有可能包含 command packet 请求的数据，比如当前的线程信息或者变量的值。从虚拟机发送的事件消息是不需要回复的。</p>
+<p>数据包部分JDWP协议按照功能大致分为<a href="http://download.oracle.com/otn_hosted_doc/jdeveloper/904preview/jdk14doc/docs/guide/jpda/jdwp-protocol.html" target="_blank" rel="noopener">18组命令</a>，包含了虚拟机、引用类型、对象、线程、方法、堆栈、事件等不同类型的操作命令。<br>ART虚拟机对JDWP协议的支持基本是完整的，具体信息可以参考<a href="https://android.googlesource.com/platform/art/+/android-cts-7.0_r9/runtime/jdwp/jdwp_handler.cc#1443" target="_blank" rel="noopener">ART-JDWP</a>中所支持的消息。</p>
+<h1 id="JDWP协议的实现"><a href="#JDWP协议的实现" class="headerlink" title="JDWP协议的实现"></a>JDWP协议的实现</h1><p>JDWP协议内容比较多，要自行实现协议内容工作量还是比较大。庆幸的是，国外已有大神将JDWP协议大部分用python实现好了，我们只需要直接使用即可，非常方便。  </p>
+<p>python实现的jdwp协议源码地址：<a href="https://github.com/IOActive/jdwp-shellifier" target="_blank" rel="noopener">jdwp-shellifier</a></p>
+<h1 id="基于JDWP的代码注入方案"><a href="#基于JDWP的代码注入方案" class="headerlink" title="基于JDWP的代码注入方案"></a>基于JDWP的代码注入方案</h1><h2 id="Native代码注入"><a href="#Native代码注入" class="headerlink" title="Native代码注入"></a>Native代码注入</h2><p>既然利用JDWP可以让调试器跟虚拟机进行交互，我们可以通过调用基于JDWP协议的相关接口，向虚拟机进程中注入代码。假如只是注入c/c++代码的话，实现起来很轻松，我们在App进程启动时加上一个断点，在断点处执行加载so的代码即可， 流程如下：</p>
+<ol>
+<li>利用JDWP的命令，在App进程启流程的某个方法中添加断点，使得App启动前能执行到我们注入的指令。为了使注入的代码尽早执行，这里选择<code>android.app.LoadedApk.makeApplication</code>方法处加断点；</li>
+<li><p>在断点处通过jdwp协议执行下面的Java代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Runtime.getRuntime().load(&quot;data/data/package_name/libnative_injecter.so&quot;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>注入的so加载完成后，继续App的启动流程;</p>
+</li>
+</ol>
+<p>这样native代码就注入到了目标App中。</p>
+<h2 id="Java代码注入"><a href="#Java代码注入" class="headerlink" title="Java代码注入"></a>Java代码注入</h2><p>通过jdwp协议封装的接口可以实现java代码的注入，通过这种方式注入少量Java代码还比较轻松，大量java代码都用jdwp来实现，难度将会非常大。</p>
+<p>我们可以将java代码编译成的是dex文件，然后用c/c++实现dex文件的加载以及dex方法的执行，便可实现java代码的注入。</p>
+<p>在插件化开发中，加载dex文件大致有两种方案，一种是多ClassLoader方案，一种是单ClassLoader方案。多ClassLoader方案就是根据插件dex路径，每个插件构造自己的<code>DexClassLoader</code>，然后用这个classLoader加载插件中的类。单ClassLoader就是将插件的ClassLoader里的Element合并到App的ClassLoader中，然后使用App的ClassLoader来加载插件里的类。</p>
+<p>这里我们选择单ClassLoader的方案，具体步骤如下:</p>
+<ol>
+<li>根据插件dex或者Apk路径，反射调用<code>DexPathList.java</code>的<code>makePathElements</code>静态方法，构造出来一个用于类加载的<code>Element</code>数组；</li>
+<li>获取App的Classloader，这是一个<code>BaseDexClassLoader</code>对象，反射获取成员变量<code>pathList</code>，其类型时<code>DexPathList</code>，再反射获取成员变量<code>dexElements</code>，得到一个<code>Element</code>数组；</li>
+<li>将第一步获取到的<code>Element</code>数组合并到第二步获取到的<code>dexElements</code>对象对应的<code>Element</code>数组中;</li>
+<li>最后用App的<code>classLoader</code>加载插件Apk中的类，并执行插件入口方法；</li>
+</ol>
+<p>以上流程需要用c/c++来实现。</p>
+<h2 id="Xposed模块加载器的注入"><a href="#Xposed模块加载器的注入" class="headerlink" title="Xposed模块加载器的注入"></a>Xposed模块加载器的注入</h2><p>为了在注入的代码中更方便地修改被注入App Java代码，我们希望注入的代码能够给App代码加钩子。因此，在注入代码中接入了稳定性较好的一个Android Art Hook库: <a href="https://github.com/asLody/SandHook" target="_blank" rel="noopener">SandHook</a>。</p>
+<p>接入这个Hook库的方法有两种： </p>
+<ol>
+<li>方法一：在每个需要动态注入的插件工程中接入SandHook，然后在插件工程中使用Xposed Api来Hook Java代码；</li>
+<li>方法二：将Xposed Api的SandHook所有Java代码(dex文件)和Native代码(so文件)注入到目标App中，并增加加载Xposed插件的相关逻辑。注入的插件工程就可以按照一个Xposed Module工程模式来开发，这样能显著降低插件工程的接入成本。</li>
+</ol>
+<p>方案二优势更明显，因此这里采用了方案二来实现。</p>
+<p>最终，在利用JDWP协议注入的so文件中，需要实现以下功能：</p>
+<ol>
+<li>将加载Xposed插件的功能编译出dex文件，用dex构造出来新的Element合并到App的ClassLoader中，同时so路径也要合并到App的ClassLoader nativeBianryPath中；</li>
+<li>调用dex文件中的加载指定Xposed模块的方法，完成外置插件的动态注入；</li>
+</ol>
+<p>整体流程大致如此，不过其中还有不少细节需要处理，比如，SandHook初始化时需要传App Context，但是我们这个注入流程是在LoadedApk.makeApplication之前，此时App的Context并没有创建出来，因此，需要通过反射主动构造出一个Context对象：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">LoadedApk loadedApk = ActivityThread.currentActivityThread().mBoundApplication.info;</span><br><span class="line">ContextImpl appContext = ContextImpl.createAppContext(activityThread, loadedApk);</span><br></pre></td></tr></table></figure></p>
+<p>还有，为了能够加载Xposed插件中的so库，在加载插件Apk之前，需要将Apk中的so文件拷贝到data/data目录下，并将so路径传给<code>DexClassLoader</code>构造方法的最后一个参数。为了更高效地拷贝so，这里反射调用了Framework里的内部类<code>NativeLibraryHelper</code>。App安装时的so拷贝就是用<code>NativeLibraryHelper</code>实现的，具体拷贝操作在native层完成，效率更高。</p>
+<p>另外，Android9及以上的系统限制了App对隐藏Api的调用。我们可以在注入so的JNI_Onload函数中加入以下代码，便可简单绕过这种限制：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">static void BypassHiddenApi(JNIEnv *env) &#123;</span><br><span class="line">    jclass vmRumtime_class = env-&gt;FindClass(&quot;dalvik/system/VMRuntime&quot;);</span><br><span class="line">    void *getRuntime_art_method = env-&gt;GetStaticMethodID(vmRumtime_class,</span><br><span class="line">                                              &quot;getRuntime&quot;,</span><br><span class="line">                                              &quot;()Ldalvik/system/VMRuntime;&quot;);</span><br><span class="line">    jobject vmRuntime_instance = env-&gt;CallStaticObjectMethod(vmRumtime_class, (jmethodID)getRuntime_art_method);</span><br><span class="line"></span><br><span class="line">    jstring mystring = env-&gt;NewStringUTF(&quot;L&quot;);</span><br><span class="line">    jclass cls = env-&gt;FindClass(&quot;java/lang/String&quot;);</span><br><span class="line">    jobjectArray jarray = env-&gt;NewObjectArray(1, cls, nullptr);</span><br><span class="line">    env-&gt;SetObjectArrayElement(jarray, 0, mystring);</span><br><span class="line"></span><br><span class="line">    void *setHiddenApiExemptions_art_method = env-&gt;GetMethodID(vmRumtime_class,</span><br><span class="line">                                                          &quot;setHiddenApiExemptions&quot;,</span><br><span class="line">                                                          &quot;([Ljava/lang/String;)V&quot;);</span><br><span class="line">    env-&gt;CallVoidMethod(vmRuntime_instance, (jmethodID)setHiddenApiExemptions_art_method, jarray);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h1><p>以上流程的完整实现已经上传到github上：<a href="https://github.com/WindySha/jdwp-xposed-injector" target="_blank" rel="noopener">jdwp-xposed-injector</a></p>
+<p>使用方法：</p>
+<ol>
+<li>git clone <a href="https://github.com/WindySha/jdwp-xposed-injector.git，下载工具文件；" target="_blank" rel="noopener">https://github.com/WindySha/jdwp-xposed-injector.git，下载工具文件；</a></li>
+<li>下载插件模板仓库：<a href="https://github.com/WindySha/XposedModuleSample" target="_blank" rel="noopener">XposedModuleSample</a>,将工程导入到Android Studio中，打开插件工程；</li>
+<li>在插件AS工程中加入自己需要注入的业务代码并编译出插件Apk。注入的代码可以是：Hook某些java方法，Hook某些c/c++函数，添加魔改ART虚拟机的逻辑等。</li>
+<li>连接android设备，在命令行中执行以下命令：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// 第一个参数是需要注入的Debug App的包名，第二个参数是需要注入的插件Apk路径</span><br><span class="line">$ injector.sh  com.pkg.test  ../XposedModuleSample.apk</span><br><span class="line"></span><br><span class="line">// 对于同一个App，第二次执行命令时，可以加上fast_mode参数，避免了重复复制dex和so文件到data/data目录下，提升启动速度</span><br><span class="line">$ injector.sh  com.pkg.test  ../XposedModuleSample.apk  fast_mode</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>最终，我们在Android设备上启动了目标App，并且Xposed插件Apk中的代码被注入到目标App中。</p>
+<h1 id="Debuggable-App"><a href="#Debuggable-App" class="headerlink" title="Debuggable App"></a>Debuggable App</h1><p>本工具唯一的要求是App必须是Debuggable的，那么如何让一个App变成Debuggable的？大致总结了以下几种方式：</p>
+<ol>
+<li>对于项目开发中的App，打出Debug包即可；</li>
+<li>利用<a href="https://github.com/iBotPeaches/Apktool" target="_blank" rel="noopener">ApkTool</a>对Release包进行反编译，得到AndroidManifest.xml文本文件，直接修改这个文本文件，在application标签下添加<code>android:debuggable=&quot;true&quot;</code>，然后将再用Apktool将修改后的包打包成Apk并签名即可；</li>
+<li>直接解压Apk文件，利用<a href="https://github.com/WindySha/ManifestEditor" target="_blank" rel="noopener">ManifestEditor</a>或者其他Axml二进制修改器直接修改解压出来的AndroidManifest.xml二进制文件，然后再压缩成Apk文件并重新签名。</li>
+<li>对于已Root的设备，可以通过设置系统属性ro.debuggable的值为1，将设备中所有App都设置为Debuggable的，具体方法可以参考这个文章: <a href="https://www.cxyzjd.com/article/jinmie0193/111355867" target="_blank" rel="noopener">Android修改ro.debuggable 的四种方法</a>。</li>
+</ol>
+<h1 id="Some-Issues"><a href="#Some-Issues" class="headerlink" title="Some Issues"></a>Some Issues</h1><ol>
+<li>在已启动Android studio的情况下，执行注入命令会偶现jdwp传输数据解析失败的问题，一般重新注入一次都可以恢复正常；</li>
+<li>目前仅支持arm,arm64处理器，仅测试了android 5及以上的部分机器，未对多种机型做测试，可能存在部分机型兼容性问题。</li>
+</ol>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ol>
+<li><a href="https://github.com/IOActive/jdwp-shellifier" target="_blank" rel="noopener">jdwp-shellifier</a></li>
+<li><a href="https://github.com/asLody/SandHook" target="_blank" rel="noopener">SandHook</a></li>
+<li><a href="https://github.com/WindySha/xposed_module_loader" target="_blank" rel="noopener">xposed_module_loader</a></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/07/20/另一种绕过 Android 9以上非SDK接口调用限制的方法/" rel="next" title="另一种绕过Android 9以上非SDK接口调用限制的方法">
+                <i class="fa fa-chevron-left"></i> 另一种绕过Android 9以上非SDK接口调用限制的方法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div id="gitalk-container"></div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/my_photo.jpg" alt="Windy">
+            
+              <p class="site-author-name" itemprop="name">Windy</p>
+              <p class="site-description motion-element" itemprop="description">用技术撬动地球</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">23</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/WindySha" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/2d35b94de2a4" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-globe"></i>简书</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JPDA框架和JDWP协议"><span class="nav-number">2.</span> <span class="nav-text">JPDA框架和JDWP协议</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JDWP协议的实现"><span class="nav-number">3.</span> <span class="nav-text">JDWP协议的实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基于JDWP的代码注入方案"><span class="nav-number">4.</span> <span class="nav-text">基于JDWP的代码注入方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Native代码注入"><span class="nav-number">4.1.</span> <span class="nav-text">Native代码注入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java代码注入"><span class="nav-number">4.2.</span> <span class="nav-text">Java代码注入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Xposed模块加载器的注入"><span class="nav-number">4.3.</span> <span class="nav-text">Xposed模块加载器的注入</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用方法"><span class="nav-number">5.</span> <span class="nav-text">使用方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Debuggable-App"><span class="nav-number">6.</span> <span class="nav-text">Debuggable App</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Some-Issues"><span class="nav-number">7.</span> <span class="nav-text">Some Issues</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">8.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Windy</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+<span id="busuanzi_container_site_pv" class="theme-info">
+&nbsp;&nbsp;|&nbsp;&nbsp;本站总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+  <span id="busuanzi_container_site_uv" class="theme-info">
+&nbsp;&nbsp;|&nbsp;&nbsp;本站访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="“https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js”"></script>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+  <script src="/js/src/md5.min.js"></script>
+   <script type="text/javascript">
+        var gitalk = new Gitalk({
+          clientID: '74fae1ebd3ed7c477fa3',
+          clientSecret: '6c20e96e69c1d539a3150d1c464977fbcd2ce50e',
+          repo: 'my_hexo_blog_comments',
+          owner: 'WindySha',
+          admin: ['WindySha'],
+          id: md5(location.pathname),
+          distractionFreeMode: 'true'
+        })
+        gitalk.render('gitalk-container')           
+       </script>
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+  </script>
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
