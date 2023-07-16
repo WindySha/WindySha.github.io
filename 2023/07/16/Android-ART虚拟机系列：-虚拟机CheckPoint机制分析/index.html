@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+  <meta name="google-site-verification" content="DriWLHPOSm42mFNpn-8F4QnKrvTt4aj2cqvnOToSeaw">
+
+
+
+
+
+
+
+
+  <meta name="baidu-site-verification" content="l1rAwZtE1v">
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Android,ART,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Windy's Journal" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="背景在Android ART虚拟机中，GC的部分流程中会执行stop the world的操作，那么，STW在虚拟机中如何实现呢？本文就深入到ART虚拟机源码中，探寻STW的实现过程。【本文基于android12源码分析】 CheckPoint机制ART虚拟机中采用的是主动式挂起暂停某个线程的执行。也就是说，当GC或者其他操作需要挂起线程的时候，不直接对线程进行操作，而仅仅是简单地给线程设置一个标">
+<meta name="keywords" content="Android,ART">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android ART虚拟机系列： 虚拟机CheckPoint机制分析">
+<meta property="og:url" content="http://yoursite.com/2023/07/16/Android-ART虚拟机系列：-虚拟机CheckPoint机制分析/index.html">
+<meta property="og:site_name" content="Windy&#39;s Journal">
+<meta property="og:description" content="背景在Android ART虚拟机中，GC的部分流程中会执行stop the world的操作，那么，STW在虚拟机中如何实现呢？本文就深入到ART虚拟机源码中，探寻STW的实现过程。【本文基于android12源码分析】 CheckPoint机制ART虚拟机中采用的是主动式挂起暂停某个线程的执行。也就是说，当GC或者其他操作需要挂起线程的时候，不直接对线程进行操作，而仅仅是简单地给线程设置一个标">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/d96455c0-b8db-40cb-bef7-7eb085b11f09.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/1d74bd8d-d442-4c1b-a22f-07f99fa0fb9b.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/83061ba9-d4f0-4040-8ae7-ec1abd303afc.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/1bc3398a-745c-406c-bc7a-82c8756799c5.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/830edd07-def1-4427-a9a9-89698358b1fb.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/12be2e56-53c7-4526-8a73-f8a7e252d3f9.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/bad90a13-556a-45e3-aa99-af5744b8e5bd.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/900bfeef-fa74-47c0-b0b0-5f2a88a3fcd1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/0de81a29-cf5c-4ea5-8b86-a35c438ec955.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/e5b51ce2-932c-40a9-bc57-1c285855d570.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/94869a59-4894-49ee-aa2a-801096e30a3e.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/8476c470-4a66-4ad8-b3ce-7cb8f7ccd9fd.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/f0597830-253a-473c-8b9b-03a9132de820.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/9265b80a-83ea-46b4-b2dd-9bb2bc692800.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/e61ee1c5-0ee9-47b7-912f-2e612e3c411c.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/db2b88e6-b1ae-4153-a37e-4f82e344aaf4.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/54424c22-5c79-4890-952e-4380b4dde900.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/5038cdd7-2b0a-4cd3-a960-ae84eb25ebb4.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/2a27dacd-ecfc-40f7-afc7-a54e7b397517.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/8fbc42a9-a0c8-44d9-b414-6942fbed87af.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/a3aa5567-eb0f-432a-a4b3-19913e8cea2e.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/fbb4e2f5-507c-4c2d-81d3-0b77667b8c33.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/acbe5ed2-36b4-4ad2-8b1d-4d0adefe84b8.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/40aab672-f808-4dff-a326-51d7e22ebf84.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/4a70826b-cc5c-4fb3-87f3-ccf870db8cb0.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/5d2b0c35-6e50-49de-900a-8b4dcfc9b7c0.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/328b44a5-c6f9-463c-85b3-913b7098c22f.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/%E6%B5%81%E7%A8%8B%E5%9B%BE123211223.jpg">
+<meta property="og:updated_time" content="2023-07-16T10:53:34.531Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android ART虚拟机系列： 虚拟机CheckPoint机制分析">
+<meta name="twitter:description" content="背景在Android ART虚拟机中，GC的部分流程中会执行stop the world的操作，那么，STW在虚拟机中如何实现呢？本文就深入到ART虚拟机源码中，探寻STW的实现过程。【本文基于android12源码分析】 CheckPoint机制ART虚拟机中采用的是主动式挂起暂停某个线程的执行。也就是说，当GC或者其他操作需要挂起线程的时候，不直接对线程进行操作，而仅仅是简单地给线程设置一个标">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/d96455c0-b8db-40cb-bef7-7eb085b11f09.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideUpIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2023/07/16/Android-ART虚拟机系列：-虚拟机CheckPoint机制分析/">
+
+
+
+
+
+  <title>Android ART虚拟机系列： 虚拟机CheckPoint机制分析 | Windy's Journal</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Windy's Journal</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2023/07/16/Android-ART虚拟机系列：-虚拟机CheckPoint机制分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Windy">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/my_photo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Windy's Journal">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android ART虚拟机系列： 虚拟机CheckPoint机制分析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-07-16T17:47:37+08:00">
+                2023-07-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ART/" itemprop="url" rel="index">
+                    <span itemprop="name">ART</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ART/CheckPoint/" itemprop="url" rel="index">
+                    <span itemprop="name">CheckPoint</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ART/CheckPoint/挂起/" itemprop="url" rel="index">
+                    <span itemprop="name">挂起</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>在Android ART虚拟机中，GC的部分流程中会执行stop the world的操作，那么，STW在虚拟机中如何实现呢？本文就深入到ART虚拟机源码中，探寻STW的实现过程。<br>【本文基于android12源码分析】</p>
+<h1 id="CheckPoint机制"><a href="#CheckPoint机制" class="headerlink" title="CheckPoint机制"></a>CheckPoint机制</h1><p>ART虚拟机中采用的是主动式挂起暂停某个线程的执行。也就是说，当GC或者其他操作需要挂起线程的时候，不直接对线程进行操作，而仅仅是简单地给线程设置一个标志，线程执行过程中主动去轮询这个标志，发现这个标志是挂起状态时，主动暂停本线程的执行。轮训检查这个标志的位置就叫做检查点（Check Point）。在JVM虚拟机（HotSpot VM）中，叫做安全点（Safe Point）。</p>
+<a id="more"></a>
+<p>虚拟机的Check Point机制主要包括三个部分内容：</p>
+<blockquote>
+<ol>
+<li>有一个标志位控制变量，外部可以设置它；</li>
+<li>无论是解释执行还是机器码执行过程中，需要经常去检查这个标志位是否有变化，检查标志位的地方就是Check Point;</li>
+<li>如果检查到标志位有变化，则执行其他操作，这个操作包括：暂停线程执行，遍历堆栈，调用垃圾回收等等；</li>
+</ol>
+</blockquote>
+<h1 id="CheckPoint标志位和线程状态"><a href="#CheckPoint标志位和线程状态" class="headerlink" title="CheckPoint标志位和线程状态"></a>CheckPoint标志位和线程状态</h1><p>每个Java线程都需要有一个存储线程是否需要挂起的标志位变量，由于Java线程在ART虚拟机中都对应了一个art::Thread指针，因此，这个变量就保存在art::Thread类的<code>state_and_flags</code>成员变量中。<br>这个成员变量的值由两个枚举类<code>ThreadFlag</code>和<code>ThreadState</code>组成。</p>
+<p><code>ThreadFlag</code>枚举类中定义了CheckPoint相关的线程状态。</p>
+<p>先看标志位的枚举类型：</p>
+<p><a href="http://aospxref.com/android-12.0.0_r3/xref/art/runtime/thread.h#122" target="_blank" rel="noopener">art/runtime/thread.h</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">enum ThreadFlag &#123;</span><br><span class="line">  kSuspendRequest   = 1,  // If set implies that suspend_count_ &gt; 0 and the Thread should enter the</span><br><span class="line">                          // safepoint handler.</span><br><span class="line">  kCheckpointRequest = 2,  // Request that the thread do some checkpoint work and then continue.</span><br><span class="line">  kEmptyCheckpointRequest = 4,  // Request that the thread do empty checkpoint and then continue.</span><br><span class="line">  kActiveSuspendBarrier = 8,  // Register that at least 1 suspend barrier needs to be passed.</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>ThreadFlag中的几个枚举值定义了虚拟机使用check point机制的四种场景：</p>
+<blockquote>
+<ol>
+<li><strong>kSuspendRequest</strong>：如果设置该标志，表示着suspend_count大于0，则要求线程进入到挂起状态；</li>
+<li><strong>kCheckpointRequest</strong>：如果设置该标志，则请求当前线程执行check point任务，执行完成后继续原任务；</li>
+<li><strong>kEmptyCheckpointRequest</strong>：如果设置该标志，则请求当前线程执行空的check point任务，执行完成后继续原任务；</li>
+<li><strong>kActiveSuspendBarrier</strong>：如果设置该标志，则要求至少设置一个挂起栅栏给当前线程，这个标志只在设置了kSuspendRequest标志才生效，并且仅用于挂起所有线程(SuspendAll)的流程中。这个机制类似于Java多线程并发编程中的栅栏（CyclicBarrier）。</li>
+</ol>
+</blockquote>
+<p><code>ThreadState</code>枚举类中定义了虚拟机中线程所有可能的状态：</p>
+<p><a href="http://source.bytedance.net/android/xref/android-12.0.0_r7/art/runtime/thread_state.h#28" target="_blank" rel="noopener">art/runtime/thread_state.h</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">enum ThreadState &#123;</span><br><span class="line">  //                                   Java</span><br><span class="line">  //                                   Thread.State   JDWP state</span><br><span class="line">  kTerminated = 66,                 // TERMINATED     TS_ZOMBIE    Thread.run has returned, but Thread* still around</span><br><span class="line">  //线程正常运行状态</span><br><span class="line">  kRunnable,                        // RUNNABLE       TS_RUNNING   runnable</span><br><span class="line">  //调用了Object.wait()，并设置了超时时长的状态</span><br><span class="line">  kTimedWaiting,                    // TIMED_WAITING  TS_WAIT      in Object.wait() with a timeout</span><br><span class="line">  //调用了Thread.sleep()进入sleep状态</span><br><span class="line">  kSleeping,                        // TIMED_WAITING  TS_SLEEPING  in Thread.sleep()</span><br><span class="line">  //被monitor阻塞，一般是尝试持有锁，但锁未被释放</span><br><span class="line">  kBlocked,                         // BLOCKED        TS_MONITOR   blocked on a monitor</span><br><span class="line">  //调用Object.wait()</span><br><span class="line">  kWaiting,                         // WAITING        TS_WAIT      in Object.wait()</span><br><span class="line">  kWaitingForLockInflation,         // WAITING        TS_WAIT      blocked inflating a thin-lock</span><br><span class="line">  kWaitingForTaskProcessor,         // WAITING        TS_WAIT      blocked waiting for taskProcessor</span><br><span class="line">  //等待GC完成</span><br><span class="line">  kWaitingForGcToComplete,          // WAITING        TS_WAIT      blocked waiting for GC</span><br><span class="line">  //GC时等待检查点执行完成</span><br><span class="line">  kWaitingForCheckPointsToRun,      // WAITING        TS_WAIT      GC waiting for checkpoints to run</span><br><span class="line">  //正在执行GC</span><br><span class="line">  kWaitingPerformingGc,             // WAITING        TS_WAIT      performing GC</span><br><span class="line">  kWaitingForDebuggerSend,          // WAITING        TS_WAIT      blocked waiting for events to be sent</span><br><span class="line">  kWaitingForDebuggerToAttach,      // WAITING        TS_WAIT      blocked waiting for debugger to attach</span><br><span class="line">  //主线程等待调试器</span><br><span class="line">  kWaitingInMainDebuggerLoop,       // WAITING        TS_WAIT      blocking/reading/processing debugger events</span><br><span class="line">  kWaitingForDebuggerSuspension,    // WAITING        TS_WAIT      waiting for debugger suspend all</span><br><span class="line">  //等待dlopen和JNI_Onload执行完成</span><br><span class="line">  kWaitingForJniOnLoad,             // WAITING        TS_WAIT      waiting for execution of dlopen and JNI on load code</span><br><span class="line">  kWaitingForSignalCatcherOutput,   // WAITING        TS_WAIT      waiting for signal catcher IO to complete</span><br><span class="line">  kWaitingInMainSignalCatcherLoop,  // WAITING        TS_WAIT      blocking/reading/processing signals</span><br><span class="line">  //等待HDeoptimization流程中挂起所有线程</span><br><span class="line">  kWaitingForDeoptimization,        // WAITING        TS_WAIT      waiting for deoptimization suspend all</span><br><span class="line">  kWaitingForMethodTracingStart,    // WAITING        TS_WAIT      waiting for method tracing to start</span><br><span class="line">  kWaitingForVisitObjects,          // WAITING        TS_WAIT      waiting for visiting objects</span><br><span class="line">  kWaitingForGetObjectsAllocated,   // WAITING        TS_WAIT      waiting for getting the number of allocated objects</span><br><span class="line">  kWaitingWeakGcRootRead,           // WAITING        TS_WAIT      waiting on the GC to read a weak root</span><br><span class="line">  kWaitingForGcThreadFlip,          // WAITING        TS_WAIT      waiting on the GC thread flip (CC collector) to finish</span><br><span class="line">  kNativeForAbort,                  // WAITING        TS_WAIT      checking other threads are not run on abort.</span><br><span class="line">  kStarting,                        // NEW            TS_WAIT      native thread started, not yet ready to run managed code</span><br><span class="line">  //正在执行JNI代码</span><br><span class="line">  kNative,                          // RUNNABLE       TS_RUNNING   running in a JNI native method</span><br><span class="line">  //挂起状态</span><br><span class="line">  kSuspended,                       // RUNNABLE       TS_RUNNING   suspended by GC or debugger</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>checkPoint相关的flag和线程状态相关的state，保存在art::Thread类<code>StateAndFlags</code>联合体中。</p>
+<p><code>StateAndFlags</code>联合体的定义如下：</p>
+<p><a href="http://aospxref.com/android-12.0.0_r3/xref/art/runtime/thread.h#StateAndFlags" target="_blank" rel="noopener">art/runtime/thread.h</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">class Thread&#123;</span><br><span class="line">......</span><br><span class="line"> union PACKED(4) StateAndFlags &#123;</span><br><span class="line">   StateAndFlags() &#123;&#125;</span><br><span class="line">   struct PACKED(4) &#123;</span><br><span class="line">     volatile uint16_t flags; //跟Check Point机制相关的标志位，取值为ThreadFlag的值</span><br><span class="line">     volatile uint16_t state; //跟线程状态相关的状态位，取值为ThreadState的值</span><br><span class="line">   &#125; as_struct;</span><br><span class="line">   AtomicInteger as_atomic_int;</span><br><span class="line">   volatile int32_t as_int;</span><br><span class="line"> &#125;;</span><br><span class="line"> ......</span><br><span class="line"> &#125;;</span><br></pre></td></tr></table></figure>
+<p>数据结构<code>StateAndFlags</code>是一个联合体，长度为32位，包含三个身份：</p>
+<blockquote>
+<ol>
+<li><strong>as_struct</strong>：包含两个长度为16位的成员，低16位为flags，这个就是跟Check Point机制相关的状态变量，取值来自于枚举类ThreadFlag，高16位为state，表示线程运行状态，取值来自于枚举类ThreadState；</li>
+<li><strong>as_atomic_int：</strong> 用于整体设置as_struct的值，由于是原子操作，确保了线程安全；</li>
+<li><strong>as_int：</strong> 用于整体设置as_struct的值，非线程安全；</li>
+</ol>
+</blockquote>
+<h1 id="线程挂起恢复流程"><a href="#线程挂起恢复流程" class="headerlink" title="线程挂起恢复流程"></a>线程挂起恢复流程</h1><h2 id="挂起函数"><a href="#挂起函数" class="headerlink" title="挂起函数"></a>挂起函数</h2><p>虚拟机中，挂起所有线程和挂起单个线程，分别调用了thread_list.cc文件中的<code>SuspendAll()</code>函数和<code>SuspendThreadByThreadId()</code>函数。这两个函数的核心流程都是调用了thread.cc中的<code>ModifySuspendCountInternal</code>函数，这个函数的实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">bool Thread::ModifySuspendCountInternal(Thread* self,</span><br><span class="line">                                        int delta,</span><br><span class="line">                                        AtomicInteger* suspend_barrier,</span><br><span class="line">                                        SuspendReason reason) &#123;</span><br><span class="line">  ...</span><br><span class="line">  ...</span><br><span class="line">  uint16_t flags = kSuspendRequest;</span><br><span class="line">  if (delta &gt; 0 &amp;&amp; suspend_barrier != nullptr) &#123;</span><br><span class="line">    uint32_t available_barrier = kMaxSuspendBarriers;</span><br><span class="line">    for (uint32_t i = 0; i &lt; kMaxSuspendBarriers; ++i) &#123;</span><br><span class="line">      if (tlsPtr_.active_suspend_barriers[i] == nullptr) &#123;</span><br><span class="line">        available_barrier = i;</span><br><span class="line">        break;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    if (available_barrier == kMaxSuspendBarriers) &#123;</span><br><span class="line">      // No barrier spaces available, we can&apos;t add another.</span><br><span class="line">      return false;</span><br><span class="line">    &#125;</span><br><span class="line">    // 这个是挂起所有线程时，用于处理栅栏</span><br><span class="line">    tlsPtr_.active_suspend_barriers[available_barrier] = suspend_barrier;</span><br><span class="line">    flags |= kActiveSuspendBarrier;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  tls32_.suspend_count += delta;</span><br><span class="line">  switch (reason) &#123;</span><br><span class="line">    case SuspendReason::kForUserCode:</span><br><span class="line">      tls32_.user_code_suspend_count += delta;</span><br><span class="line">      break;</span><br><span class="line">    case SuspendReason::kInternal:</span><br><span class="line">      break;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  if (tls32_.suspend_count == 0) &#123;</span><br><span class="line">    AtomicClearFlag(kSuspendRequest);</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    // Two bits might be set simultaneously.</span><br><span class="line">    tls32_.state_and_flags.as_atomic_int.fetch_or(flags, std::memory_order_seq_cst);</span><br><span class="line">    TriggerSuspend();</span><br><span class="line">  &#125;</span><br><span class="line">  return true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>ModifySuspendCountInternal</code>函数的逻辑很好理解，要点有：</p>
+<ol>
+<li>如果需要暂停线程，传入的参数delta设置为1，那么将会给线程的成员变量<code>state_and_flags</code>设置 <code>kSuspendRequest</code>这个flag，标识这个线程需要被挂起；</li>
+<li>如果需要恢复线程，传入的参数delta设置为-1，如果<code>tls32_.suspend_count + delta</code>的值变成了0，则清除线程的<code>kSuspendRequest</code>标志位。</li>
+</ol>
+<p>这个函数的另外一个参数<code>suspend_barrier</code>是用于挂起所有线程的，将<code>suspend_barrier</code>地址保存到每个需要挂起的线程中，并给线程设置<code>kActiveSuspendBarrier</code>标志位。每个线程挂起完成后，都会将<code>suspend_barrier</code>减去1，只要等到<code>suspend_barrier</code>的值为0，就可以知道所有线程都完成挂起。后面的<code>SuspendAll</code>流程中再详细分析这个过程。  </p>
+<p>另外， <code>TriggerSupend()</code> 是 Android 5.1 版本之前旧的实现，通过注释可以看到，这是隐式的触发suspend的实现，主要原理是通过一个空指针异常触发一个SIGSEGV信号，然后在 signal_handler中，切换到suspend check，进行suspend的。不过现在 ART 源码里已经找不到读取<code>tlsPtr_.suspend_trigger</code>的代码，这个逻辑已经被废弃。<br>从其代码注释中也可以看出来：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// Trigger a suspend check by making the suspend_trigger_ TLS value an invalid pointer.</span><br><span class="line">// The next time a suspend check is done, it will load from the value at this address</span><br><span class="line">// and trigger a SIGSEGV.</span><br><span class="line">// Only needed if Runtime::implicit_suspend_checks_ is true and fully implemented.  It currently</span><br><span class="line">// is always false. Client code currently just looks at the thread flags directly to determine</span><br><span class="line">// whether we should suspend, so this call is currently unnecessary.</span><br><span class="line">void TriggerSuspend() &#123;</span><br><span class="line">  tlsPtr_.suspend_trigger = nullptr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="CheckSuspend函数"><a href="#CheckSuspend函数" class="headerlink" title="CheckSuspend函数"></a><code>CheckSuspend</code>函数</h2><p>在Android源码中搜索<code>kSuspendRequest</code>使用之处，仅发现三处，分别是函数：<br><code>CheckSuspend</code><br><code>TransitionFromSuspendedToRunnable</code><br><code>TransitionFromSuspendedToRunnable</code></p>
+<p><img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/d96455c0-b8db-40cb-bef7-7eb085b11f09.png" alt></p>
+<p>这里，<code>CheckSuspend</code>函数是整个CheckPoint机制中最核心的一个函数。上文提到，无论是在解释执行或者机器码执行的流程中，都会注入检查点，这个检查点就是<code>CheckSuspend</code>函数。</p>
+<p><code>CheckSuspend</code>函数的实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">inline void Thread::CheckSuspend() &#123;</span><br><span class="line">  DCHECK_EQ(Thread::Current(), this);</span><br><span class="line">  for (;;) &#123;</span><br><span class="line">    if (ReadFlag(kCheckpointRequest)) &#123;</span><br><span class="line">      RunCheckpointFunction();</span><br><span class="line">    &#125; else if (ReadFlag(kSuspendRequest)) &#123;</span><br><span class="line">      FullSuspendCheck();</span><br><span class="line">    &#125; else if (ReadFlag(kEmptyCheckpointRequest)) &#123;</span><br><span class="line">      RunEmptyCheckpoint();</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      break;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>逻辑比较简单，判断当前线程的<code>state_and_flag</code>是否设置<code>kCheckpointRequest</code>，<code>kSuspendRequest</code>，<code>kEmptyCheckpointRequest</code>这三个标志位，如果有设置，则分别做相应的处理。  </p>
+<p>它们的作用分别为：  </p>
+<ol>
+<li><code>kCheckpointRequest</code>：调用函数<code>RunCheckpointFunction()</code>，执行Check Point闭包函数；  </li>
+<li><code>kSuspendRequest</code>：调用<code>FullSuspendCheck()</code>，将线程挂起；</li>
+<li><code>kEmptyCheckpointRequest</code>：调用<code>RunEmptyCheckpoint()</code>，执行空的Check Point闭包函数；</li>
+</ol>
+<p>先看看<code>FullSuspendCheck</code>函数中将线程挂起的实现过程。</p>
+<h2 id="线程挂起"><a href="#线程挂起" class="headerlink" title="线程挂起"></a>线程挂起</h2><p>如果线程设置了 <code>kSuspendRequest</code>标志位，则执行<code>FullSuspendCheck()</code>，这个函数的实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">void Thread::FullSuspendCheck() &#123;</span><br><span class="line">  ScopedTrace trace(__FUNCTION__);</span><br><span class="line">  VLOG(threads) &lt;&lt; this &lt;&lt; &quot; self-suspending&quot;;</span><br><span class="line">  // Make thread appear suspended to other threads, release mutator_lock_.</span><br><span class="line">  // Transition to suspended and back to runnable, re-acquire share on mutator_lock_.</span><br><span class="line">  ScopedThreadSuspension(this, kSuspended);  // NOLINT</span><br><span class="line">  VLOG(threads) &lt;&lt; this &lt;&lt; &quot; self-reviving&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个函数只是构造一个栈上的<code>ScopedThreadSuspensio</code>类的对象，这个对象的作用是：</p>
+<ol>
+<li>在构造函数中调用了<code>TransitionFromRunnableToSuspended</code>函数，将线程状态(<code>state_and_flag</code>中的state)从<code>kRunnable</code>切换到<code>kSuspended</code></li>
+<li>在析构函数中调用了<code>TransitionFromSuspendedToRunnable</code>函数,，将线程状态从<code>kSuspended</code>切换到<code>kRunnable</code>，这个过程可能会使线程进入等待状态，从而实现线程的挂起。</li>
+</ol>
+<p><code>ScopedThreadSuspension</code>类的构造函数和析构函数实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">inline ScopedThreadSuspension::ScopedThreadSuspension(Thread* self, ThreadState suspended_state)</span><br><span class="line">    : self_(self), suspended_state_(suspended_state) &#123;</span><br><span class="line">  DCHECK(self_ != nullptr);</span><br><span class="line">  self_-&gt;TransitionFromRunnableToSuspended(suspended_state);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">inline ScopedThreadSuspension::~ScopedThreadSuspension() &#123;</span><br><span class="line">  DCHECK_EQ(self_-&gt;GetState(), suspended_state_);</span><br><span class="line">  self_-&gt;TransitionFromSuspendedToRunnable();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="TransitionFromRunnableToSuspended-函数"><a href="#TransitionFromRunnableToSuspended-函数" class="headerlink" title="TransitionFromRunnableToSuspended 函数"></a>TransitionFromRunnableToSuspended 函数</h3><p><code>TransitionFromRunnableToSuspended</code>函数的实现如下：</p>
+<p><img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/1d74bd8d-d442-4c1b-a22f-07f99fa0fb9b.png" alt></p>
+<p>这个函数主要调用了<code>TransitionToSuspendedAndRunCheckpoints</code>和mutator_lock的TransitionFromRunnableToSuspended()函数，其中前者实现线程状态到kSuspended的切换，后者是释放当前线程对mutator_lock_的 shared hold，Runnable状态的线程都会持有mutator_lock_，切换到Suspended状态时需要释放掉。</p>
+<p><code>TransitionToSuspendedAndRunCheckpoints</code>函数时实现如下：</p>
+<p><img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/83061ba9-d4f0-4040-8ae7-ec1abd303afc.png" alt></p>
+<p>这个函数最核心的内容就是通过CAS的方式将线程的<code>state_and_flags</code>成员变量设置 <code>kSuspended</code>的state，从而完成线程状态从<code>kRunnable</code>到<code>kSuspended</code>的切换。</p>
+<p>在切换线程状态前，先判断是否设置了<code>kCheckpointRequest</code>标志位，如果有设置，则需要先执行Check Point闭包函数。这应该是为了避免线程挂起后，已设置的Check Point函数无法得到及时执行。</p>
+<h3 id="TransitionFromSuspendedToRunnable-函数"><a href="#TransitionFromSuspendedToRunnable-函数" class="headerlink" title="TransitionFromSuspendedToRunnable 函数"></a>TransitionFromSuspendedToRunnable 函数</h3><p>接下来，在<code>ScopedThreadSuspension</code>类的析构函数中调用了<code>TransitionFromSuspendedToRunnable</code>函数，最终实现线程的挂起。<br>源码如下：</p>
+<p><img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/1bc3398a-745c-406c-bc7a-82c8756799c5.png" alt></p>
+<p>根据函数名可知，这个函数会将线程状态从<code>kSuspended</code>切换为<code>kRunnable</code>。这个流程里会判断<code>state_and_flags</code>里的flag是否设置了<code>kSuspendRequest</code>标志位，如果设置，则通过调用 <code>Thread::resume_cond_-&gt;Wait(thread_to_pass)</code>函数使线程进入等待状态，完成线程的挂起操作。  </p>
+<p>挂起结束恢复线程时，在while循环退出前调用了 <code>Locks::mutator_lock_-&gt;TransitionFromSuspendedToRunnable(this)</code>，通过shared方式持有全局锁mutator_lock_，使得Runnable状态的线程持有了这个锁，线程继续执行。</p>
+<p><code>TransitionFromSuspendedToRunnable</code>函数看起来很复杂，其实里面很多内容只不过是因为用了无锁编程而引入的”套路“代码。</p>
+<h2 id="线程恢复"><a href="#线程恢复" class="headerlink" title="线程恢复"></a>线程恢复</h2><p>线程恢复的流程比较简单。</p>
+<p>恢复线程需要调用thread_list.cc中的<code>Resume()</code>函数，代码如下：</p>
+<p><img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/830edd07-def1-4427-a9a9-89698358b1fb.png" alt></p>
+<p>Resume函数中，先调用<code>ModifySuspendCount</code>将线程的suspend_count减1，然后再<code>ModifySuspendCountInternal</code>函数中，当线程的suspend_count等于0时，会清除线程<code>state_and_flags</code>的<code>kSuspendRequest</code>的标志位，清除挂起标志位后，调用<code>Thread::resume_cond_-&gt;Broadcast()</code>唤醒线程。  </p>
+<p>线程将从<code>TransitionFromSuspendedToRunnable</code>函数的<code>Thread::resume_cond_-&gt;Wait()</code>处被唤醒，开始继续原来的执行流程，并且线程的状态切换为<code>kRunnable</code>。</p>
+<h2 id="Wait-和-Broadcast-的实现原理"><a href="#Wait-和-Broadcast-的实现原理" class="headerlink" title="Wait 和 Broadcast 的实现原理"></a>Wait 和 Broadcast 的实现原理</h2><p>以上分析了线程挂起和恢复的流程，其中，</p>
+<p>线程挂起调用的是<code>Wait</code>函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Thread::resume_cond_-&gt;Wait(thread_to_pass)</span><br></pre></td></tr></table></figure>
+<p>线程恢复调用的是<code>Broadcast</code>函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Thread::resume_cond_-&gt;Broadcast(self)</span><br></pre></td></tr></table></figure>
+<p><code>resume_cond_</code>是类<code>art::Thread</code>中的静态成员变量，对应的类型是<code>ConditionVariable</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">class Thread &#123;</span><br><span class="line">  ...</span><br><span class="line">  // Used to notify threads that they should attempt to resume, they will suspend again if</span><br><span class="line">  // their suspend count is &gt; 0.</span><br><span class="line">  static ConditionVariable* resume_cond_ GUARDED_BY(Locks::thread_suspend_count_lock_);</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>类<code>ConditionVariable</code>中<code>Wait()</code>函数的实现为：</p>
+<p><a href="http://aospxref.com/android-12.0.0_r3/xref/art/runtime/base/mutex.cc#WaitHoldingLocks" target="_blank" rel="noopener">[art/runtime/base/mutex.cc]</a></p>
+<p><img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/12be2e56-53c7-4526-8a73-f8a7e252d3f9.png" alt></p>
+<p>根据宏<code>ART_USE_FUTUXES</code> 来判断是使用<code>futex</code>系统调用挂起线程还是使用<code>pthread_cond_wait</code>来挂起。</p>
+<p>显然，这里使用了<code>futex</code>，因为宏<code>ART_USE_FUTUXES</code>的定义如下：</p>
+<p><img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/bad90a13-556a-45e3-aa99-af5744b8e5bd.png" alt></p>
+<p>另外，在Android的bionic库中，<code>pthread_cond_wait</code>最终实现其实也是<code>futex</code>系统调用:</p>
+<p><a href="http://aospxref.com/android-12.0.0_r3/xref/bionic/libc/bionic/pthread_cond.cpp#__pthread_cond_timedwait" target="_blank" rel="noopener">[pthread_cond.cpp]</a></p>
+<p>  <img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/900bfeef-fa74-47c0-b0b0-5f2a88a3fcd1.png" alt></p>
+<p>再看看线程恢复函数<code>Broadcast</code>的实现：<br><a href="http://aospxref.com/android-12.0.0_r3/xref/art/runtime/base/mutex.cc#RequeueWaiters" target="_blank" rel="noopener">[art/runtime/base/mutex.cc]</a></p>
+<p><img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/0de81a29-cf5c-4ea5-8b86-a35c438ec955.png" alt></p>
+<p><img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/e5b51ce2-932c-40a9-bc57-1c285855d570.png" alt></p>
+<p>最终也是调用的<code>futex</code>函数实现的，跟挂起时相比，只是传入的flag不相同而已。</p>
+<blockquote>
+<p>线程挂起时，调用futex传入flag：<code>FUTEX_WAIT_PRIVATE</code>，实现线程等待；</p>
+<p>线程恢复时，调用futex传入flag：<code>FUTEX_REQUEUE_PRIVATE</code>，实现线程唤醒；</p>
+</blockquote>
+<p>这两个宏定义在futex.h头文件中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#define FUTEX_WAIT 0    // 等待</span><br><span class="line">#define FUTEX_WAKE 1    // 唤醒</span><br><span class="line">#define FUTEX_REQUEUE 3    // 类似基本的唤醒动作</span><br><span class="line">#define FUTEX_PRIVATE_FLAG 128</span><br><span class="line"></span><br><span class="line">#define FUTEX_WAIT_PRIVATE (FUTEX_WAIT | FUTEX_PRIVATE_FLAG)</span><br><span class="line">#define FUTEX_WAKE_PRIVATE (FUTEX_WAKE | FUTEX_PRIVATE_FLAG)</span><br><span class="line">#define FUTEX_REQUEUE_PRIVATE (FUTEX_REQUEUE | FUTEX_PRIVATE_FLAG)</span><br></pre></td></tr></table></figure>
+<p>Futex是linux上一种用户态和内核态混合的同步机制，支持进程内的线程之间和进程间的同步锁操作。</p>
+<p>futex原理可参考文档：<a href="https://www.openeuler.org/zh/blog/wangshuo/Linux_Futex_Principle_Analysis/Linux_Futex_Principle_Analysis.html" target="_blank" rel="noopener">linux–futex原理分析</a>  </p>
+<p>至此，完成的线程挂起和恢复的流程分析。</p>
+<h2 id="SuspendAll和ResumeAll"><a href="#SuspendAll和ResumeAll" class="headerlink" title="SuspendAll和ResumeAll"></a>SuspendAll和ResumeAll</h2><p><code>SuspendAll</code>用于暂停所有Java线程的执行，而<code>ResumeAll</code>用于恢复所有Java线程的执行。</p>
+<p>下面分别介绍这两个函数的实现过程。</p>
+<h3 id="SuspendAll流程"><a href="#SuspendAll流程" class="headerlink" title="SuspendAll流程"></a>SuspendAll流程</h3><p><code>SuspendAll</code>函数最终调用到了<code>SuspendAllInternal</code>函数，这个函数的具体实现如下：</p>
+<p><a href="http://aospxref.com/android-12.0.0_r3/xref/art/runtime/thread_list.cc#SuspendAllInternal" target="_blank" rel="noopener">art/runtime/thread_list.cc</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line">void ThreadList::SuspendAllInternal(Thread* self,</span><br><span class="line">                                    Thread* ignore1,</span><br><span class="line">                                    Thread* ignore2,</span><br><span class="line">                                    SuspendReason reason) &#123;</span><br><span class="line"></span><br><span class="line">  // The atomic counter for number of threads that need to pass the barrier.</span><br><span class="line">  AtomicInteger pending_threads;</span><br><span class="line">  uint32_t num_ignored = 0;</span><br><span class="line">  if (ignore1 != nullptr) &#123;</span><br><span class="line">    ++num_ignored;</span><br><span class="line">  &#125;</span><br><span class="line">  if (ignore2 != nullptr &amp;&amp; ignore1 != ignore2) &#123;</span><br><span class="line">    ++num_ignored;</span><br><span class="line">  &#125;</span><br><span class="line">  &#123;</span><br><span class="line">    MutexLock mu(self, *Locks::thread_list_lock_);</span><br><span class="line">    MutexLock mu2(self, *Locks::thread_suspend_count_lock_);</span><br><span class="line">    // Update global suspend all state for attaching threads.</span><br><span class="line">    ++suspend_all_count_;</span><br><span class="line">    // 步骤一：设置pending_threads值为线程数量，主要要剔除忽略的线程</span><br><span class="line">    pending_threads.store(list_.size() - num_ignored, std::memory_order_relaxed);</span><br><span class="line">    // Increment everybody&apos;s suspend count (except those that should be ignored).</span><br><span class="line">    for (const auto&amp; thread : list_) &#123;</span><br><span class="line">      if (thread == ignore1 || thread == ignore2) &#123;</span><br><span class="line">        continue;</span><br><span class="line">      &#125;</span><br><span class="line">      VLOG(threads) &lt;&lt; &quot;requesting thread suspend: &quot; &lt;&lt; *thread;</span><br><span class="line">      // 步骤二： 通知每个线程准备挂起，注意这里传入了pending_threads的地址，这将触发设置kActiveSuspendBarrier标志，用于等待栅栏</span><br><span class="line">      bool updated = thread-&gt;ModifySuspendCount(self, +1, &amp;pending_threads, reason);</span><br><span class="line">      DCHECK(updated);</span><br><span class="line"></span><br><span class="line">      // Must install the pending_threads counter first, then check thread-&gt;IsSuspend() and clear</span><br><span class="line">      // the counter. Otherwise there&apos;s a race with Thread::TransitionFromRunnableToSuspended()</span><br><span class="line">      // that can lead a thread to miss a call to PassActiveSuspendBarriers().</span><br><span class="line">      if (thread-&gt;IsSuspended()) &#123;</span><br><span class="line">        // Only clear the counter for the current thread.</span><br><span class="line">        thread-&gt;ClearSuspendBarrier(&amp;pending_threads);</span><br><span class="line">        pending_threads.fetch_sub(1, std::memory_order_seq_cst);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  // Wait for the barrier to be passed by all runnable threads. This wait</span><br><span class="line">  // is done with a timeout so that we can detect problems.</span><br><span class="line">#if ART_USE_FUTEXES</span><br><span class="line">  timespec wait_timeout;</span><br><span class="line">  InitTimeSpec(false, CLOCK_MONOTONIC, NsToMs(thread_suspend_timeout_ns_), 0, &amp;wait_timeout);</span><br><span class="line">#endif</span><br><span class="line">  const uint64_t start_time = NanoTime();</span><br><span class="line">  while (true) &#123;</span><br><span class="line">    // 获取pending_threads中的值是否为0，为0则所有线程挂起完成，不为0，则调用futex继续等待，等待线程挂起完成后调用futxt FUTEX_WAKE_PRIVATE幻唤醒这里的等待</span><br><span class="line">    int32_t cur_val = pending_threads.load(std::memory_order_relaxed);</span><br><span class="line">    if (LIKELY(cur_val &gt; 0)) &#123;</span><br><span class="line">      if (futex(pending_threads.Address(), FUTEX_WAIT_PRIVATE, cur_val, &amp;wait_timeout, nullptr, 0)</span><br><span class="line">          != 0) &#123;</span><br><span class="line">        ......</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">          PLOG(FATAL) &lt;&lt; &quot;futex wait failed for SuspendAllInternal()&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;  // else re-check pending_threads in the next iteration (this may be a spurious wake-up).</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      CHECK_EQ(cur_val, 0);</span><br><span class="line">      break;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个函数的核心逻辑包含三部分，分别是：</p>
+<ol>
+<li>将需要挂起的线程数量设置到<code>pending_threads</code>变量中，此变量起到栅栏作用，用于等待所有线程的挂起完成；</li>
+<li>遍历所有线程，调用针对每个线程调用<code>ModifySuspendCount</code>函数，传入<code>pending_threads</code>的地址，将线程的<code>suspend_cout</code>加1，设置kSuspendRequest标志，并且设置kActiveSuspendBarrier标志(表示此次挂起需要等待栅栏)；</li>
+<li>等待所有线程挂起完成，方法是在循环语句中检测<code>pending_threads</code>值是否为0，不为0则通过futex系统调用继续等待，直到等于0，则所有线程挂起成功，完成SuspendAll的流程；  </li>
+</ol>
+<p>SuspendAllInternal函数跟Suspend单个线程的核心不同点是<code>SuspendBarrier</code>的栅栏处理流程。<br>挂起多个线程，需要使用栅栏等待所有线程完成挂起，挂起完成后通知到调用侧。  </p>
+<p>每个线程执行到Check Point后完成本线程的挂起，同时也要处理栅栏。此时，会调用<code>art::Thread</code>的<code>PassActiveSuspendBarriers</code>函数。<br><code>PassActiveSuspendBarriers</code>源码如下：</p>
+<p><a href="http://aospxref.com/android-12.0.0_r3/xref/art/runtime/thread.cc#PassActiveSuspendBarriers" target="_blank" rel="noopener">art/runtime/Thread.cc</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">bool Thread::PassActiveSuspendBarriers(Thread* self) &#123;</span><br><span class="line">  ......</span><br><span class="line">  uint32_t barrier_count = 0;</span><br><span class="line">  for (uint32_t i = 0; i &lt; kMaxSuspendBarriers; i++) &#123;</span><br><span class="line">    AtomicInteger* pending_threads = pass_barriers[i];</span><br><span class="line">    if (pending_threads != nullptr) &#123;</span><br><span class="line">      bool done = false;</span><br><span class="line">      do &#123;</span><br><span class="line">        int32_t cur_val = pending_threads-&gt;load(std::memory_order_relaxed);</span><br><span class="line">        CHECK_GT(cur_val, 0) &lt;&lt; &quot;Unexpected value for PassActiveSuspendBarriers(): &quot; &lt;&lt; cur_val;</span><br><span class="line">        // Reduce value by 1.</span><br><span class="line">        done = pending_threads-&gt;CompareAndSetWeakRelaxed(cur_val, cur_val - 1);</span><br><span class="line">        if (done &amp;&amp; (cur_val - 1) == 0) &#123;  // Weak CAS may fail spuriously.</span><br><span class="line">          futex(pending_threads-&gt;Address(), FUTEX_WAKE_PRIVATE, INT_MAX, nullptr, nullptr, 0);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125; while (!done);</span><br><span class="line">      ++barrier_count;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  CHECK_GT(barrier_count, 0U);</span><br><span class="line">  return true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个函数其实很简单，主要包含两个逻辑：</p>
+<ol>
+<li>将调用SuspendAllInternal时传入本线程的计数器<code>pending_threads</code>指针变量的值减1；</li>
+<li>当<code>pending_threads</code>减小到0时，调用<code>futex FUTEX_WAKE_PRIVATE</code>，唤醒调用SuspendAllInternal的线程，通知它所有线程已完成挂起；</li>
+</ol>
+<h3 id="ResumeAll流程"><a href="#ResumeAll流程" class="headerlink" title="ResumeAll流程"></a>ResumeAll流程</h3><p>ResumeAll用于恢复所有暂停线程，使其继续执行。</p>
+<p>由于这里并不用等待暂停线程的状态变更，所以实现非常简单，跟恢复单个线程执行的流程基本一致。</p>
+<p>核心逻辑就两条：</p>
+<ol>
+<li><strong>thread-&gt;ModifySuspendCount</strong>：将所有线程的<code>suspend_count</code>减1，如果<code>suspend_count</code>等于0，则清除线程<code>state_and_flags</code>的<code>kSuspendRequest</code>的标志；</li>
+<li><strong>Thread::resume_cond_-&gt;Broadcast</strong>：通知所有线程，如果线程的<code>state_and_flags</code>的<code>kSuspendRequest</code>的标志被清除就立即恢复执行；</li>
+</ol>
+<p>源码如下：<br><a href="http://aospxref.com/android-12.0.0_r3/xref/art/runtime/thread_list.cc#ResumeAll" target="_blank" rel="noopener">art/runtime/thread_list.cc</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">void ThreadList::ResumeAll() &#123;</span><br><span class="line">  Thread* self = Thread::Current();</span><br><span class="line">  ......</span><br><span class="line">  long_suspend_ = false;</span><br><span class="line">  Locks::mutator_lock_-&gt;ExclusiveUnlock(self);</span><br><span class="line">  &#123;</span><br><span class="line">    MutexLock mu(self, *Locks::thread_list_lock_);</span><br><span class="line">    MutexLock mu2(self, *Locks::thread_suspend_count_lock_);</span><br><span class="line">    // Update global suspend all state for attaching threads.</span><br><span class="line">    --suspend_all_count_;</span><br><span class="line">    // Decrement the suspend counts for all threads.</span><br><span class="line">    for (const auto&amp; thread : list_) &#123;</span><br><span class="line">      if (thread == self) &#123;</span><br><span class="line">        continue;</span><br><span class="line">      &#125;</span><br><span class="line">      bool updated = thread-&gt;ModifySuspendCount(self, -1, nullptr, SuspendReason::kInternal);</span><br><span class="line">      DCHECK(updated);</span><br><span class="line">    &#125;</span><br><span class="line">    ......</span><br><span class="line">    Thread::resume_cond_-&gt;Broadcast(self);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="执行CheckPoint闭包任务"><a href="#执行CheckPoint闭包任务" class="headerlink" title="执行CheckPoint闭包任务"></a>执行CheckPoint闭包任务</h1><p>在上面<code>CheckSuspend()</code>函数的分析中，如果线程的state_and_flag变量设置了<code>kCheckpointRequest</code>标志位，则会调用<code>RunCheckpointFunction()</code>函数，执行检查点任务。  </p>
+<p>下面详细分析此流程。</p>
+<h2 id="执行Closure任务流程"><a href="#执行Closure任务流程" class="headerlink" title="执行Closure任务流程"></a>执行Closure任务流程</h2><p><code>RunCheckpointFunction</code>函数的代码如下：<a href="http://aospxref.com/android-12.0.0_r3/xref/art/runtime/thread.cc#1553" target="_blank" rel="noopener">art/runtime/thread.cc</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"> Closure* checkpoint_function GUARDED_BY(Locks::thread_suspend_count_lock_);</span><br><span class="line"></span><br><span class="line">// Pending extra checkpoints if checkpoint_function_ is already used.</span><br><span class="line">std::list&lt;Closure*&gt; checkpoint_overflow_ GUARDED_BY(Locks::thread_suspend_count_lock_);</span><br><span class="line"></span><br><span class="line">void Thread::RunCheckpointFunction() &#123;</span><br><span class="line">  Closure* checkpoint;</span><br><span class="line">  &#123;</span><br><span class="line">    MutexLock mu(this, *Locks::thread_suspend_count_lock_);</span><br><span class="line">    checkpoint = tlsPtr_.checkpoint_function;</span><br><span class="line">    if (!checkpoint_overflow_.empty()) &#123;</span><br><span class="line">      // Overflow list not empty, copy the first one out and continue.</span><br><span class="line">      tlsPtr_.checkpoint_function = checkpoint_overflow_.front();</span><br><span class="line">      checkpoint_overflow_.pop_front();</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      // No overflow checkpoints. Clear the kCheckpointRequest flag</span><br><span class="line">      tlsPtr_.checkpoint_function = nullptr;</span><br><span class="line">      AtomicClearFlag(kCheckpointRequest);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  checkpoint-&gt;Run(this);  // 执行Check Point任务</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个函数的实现并不复杂，主要包含两点：</p>
+<ol>
+<li>保存线程成员变量<code>checkpoint_function</code>到checkpoint指针中，并执行这个Closure任务；</li>
+<li>将线程成员变量<code>checkpoint_overflow_</code>这个list中的头部元素取出保存到<code>checkpoint_function</code>中，下次继续执行这个Closure任务，如果list中任务已经消费完，则清除线程的<code>kCheckpointRequest</code>标志；</li>
+</ol>
+<p>其中，<br><br>线程的<code>checkpoint_function</code>变量：保存了当前需要执行的Closure任务<br><br>线程的list变量<code>checkpoint_overflow_</code>：保存了下次需要执行的所有Closure任务。<br></p>
+<p>这里，<code>Closure</code>是一个非常简单的纯虚类，内部仅包含一个析构函数和一个虚函数<code>Run()</code>，有点类似于Java的<code>Runnable</code>接口:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">class Closure &#123;</span><br><span class="line"> public:</span><br><span class="line">  virtual ~Closure() &#123; &#125;</span><br><span class="line">  virtual void Run(Thread* self) = 0;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="设置Closure任务"><a href="#设置Closure任务" class="headerlink" title="设置Closure任务"></a>设置Closure任务</h2><p>下面看看如何设置Closure任务。</p>
+<p>thread.cc中有两个可设置Closure任务的函数：<code>RequestSynchronousCheckpoint</code>和<code>RequestCheckpoint</code>。  </p>
+<p>前者是同步的，也就是设置后，当前线程会等待目标线程Closure任务执行完成。  </p>
+<p>后者是异步的，只给线程设置Closure任务，不关心执行完成的时间。  </p>
+<p>这里介绍下<code>RequestCheckpoint</code>的实现。    </p>
+<p>其源码如下：<a href="http://aospxref.com/android-12.0.0_r3/xref/art/runtime/thread.cc#RequestCheckpoint" target="_blank" rel="noopener">art/runtime/thread.cc</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">bool Thread::RequestCheckpoint(Closure* function) &#123;</span><br><span class="line">  union StateAndFlags old_state_and_flags;</span><br><span class="line">  old_state_and_flags.as_int = tls32_.state_and_flags.as_int;</span><br><span class="line">  if (old_state_and_flags.as_struct.state != kRunnable) &#123;</span><br><span class="line">    return false;  // Fail, thread is suspended and so can&apos;t run a checkpoint.</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  // We must be runnable to request a checkpoint.</span><br><span class="line">  DCHECK_EQ(old_state_and_flags.as_struct.state, kRunnable);</span><br><span class="line">  union StateAndFlags new_state_and_flags;</span><br><span class="line">  new_state_and_flags.as_int = old_state_and_flags.as_int;</span><br><span class="line">  new_state_and_flags.as_struct.flags |= kCheckpointRequest;</span><br><span class="line">  bool success = tls32_.state_and_flags.as_atomic_int.CompareAndSetStrongSequentiallyConsistent(</span><br><span class="line">      old_state_and_flags.as_int, new_state_and_flags.as_int);</span><br><span class="line">  if (success) &#123;</span><br><span class="line">    // Succeeded setting checkpoint flag, now insert the actual checkpoint.</span><br><span class="line">    if (tlsPtr_.checkpoint_function == nullptr) &#123;</span><br><span class="line">      tlsPtr_.checkpoint_function = function;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      checkpoint_overflow_.push_back(function);</span><br><span class="line">    &#125;</span><br><span class="line">    CHECK_EQ(ReadFlag(kCheckpointRequest), true);</span><br><span class="line">    // 隐式suspendCheck方法，过时代码</span><br><span class="line">    TriggerSuspend(); </span><br><span class="line">  &#125;</span><br><span class="line">  return success;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个函数的要点有：</p>
+<ol>
+<li>线程的状态如果非<code>kRunnable</code>，则无法设置Closure任务，返回false；</li>
+<li>给线程设置<code>kCheckpointRequest</code>的标志位；</li>
+<li>如果线程的<code>checkpoint_function</code>为空，则将任务保存到里面，如果非空，则保存到这个list中<code>checkpoint_overflow_</code>；</li>
+</ol>
+<h2 id="所有线程执行Closure任务"><a href="#所有线程执行Closure任务" class="headerlink" title="所有线程执行Closure任务"></a>所有线程执行Closure任务</h2><p>在thread_list.cc中，还有一个函数可以设置所有线程执行某个Closure任务：<code>RunCheckpoint</code>。  </p>
+<p><code>RunCheckpoint</code>函数的要点有：  </p>
+<ol>
+<li>遍历所有Java线程，针对每个线程调用<code>RequestCheckpoint</code>函数，设置线程的Closure任务；</li>
+<li>如果线程是非<code>kRunnable</code>状态，<code>RequestCheckpoint</code>会设置任务失败，此时会调用<code>ModifySuspendCount</code>函数尝试挂起线程，并轮训等待线程挂起完成，挂起成功后将线程指针保存到<code>suspended_count_modified_threads</code>这个vector中；</li>
+<li>遍历保存了挂起线程的vector:<code>suspended_count_modified_threads</code>，在本线程执行Closure任务，然后恢复线程的执行。</li>
+</ol>
+<p>代码如下：</p>
+<p><a href="http://aospxref.com/android-12.0.0_r3/xref/art/runtime/thread_list.cc#RunCheckpoint" target="_blank" rel="noopener">art/runtime/thread_list.cc</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line">size_t ThreadList::RunCheckpoint(Closure* checkpoint_function, Closure* callback) &#123;</span><br><span class="line">  Thread* self = Thread::Current();</span><br><span class="line">  ......</span><br><span class="line">  std::vector&lt;Thread*&gt; suspended_count_modified_threads;</span><br><span class="line">  size_t count = 0;</span><br><span class="line">  &#123;</span><br><span class="line">    ......</span><br><span class="line">    count = list_.size();</span><br><span class="line">    for (const auto&amp; thread : list_) &#123;</span><br><span class="line">      if (thread != self) &#123;</span><br><span class="line">        bool requested_suspend = false;</span><br><span class="line">        while (true) &#123;</span><br><span class="line">          if (thread-&gt;RequestCheckpoint(checkpoint_function)) &#123;</span><br><span class="line">            // This thread will run its checkpoint some time in the near future.</span><br><span class="line">            if (requested_suspend) &#123;</span><br><span class="line">              // The suspend request is now unnecessary.</span><br><span class="line">              bool updated =</span><br><span class="line">                  thread-&gt;ModifySuspendCount(self, -1, nullptr, SuspendReason::kInternal);</span><br><span class="line">              DCHECK(updated);</span><br><span class="line">              requested_suspend = false;</span><br><span class="line">            &#125;</span><br><span class="line">            break;</span><br><span class="line">          &#125; else &#123;</span><br><span class="line">            // The thread is probably suspended, try to make sure that it stays suspended.</span><br><span class="line">            if (thread-&gt;GetState() == kRunnable) &#123;</span><br><span class="line">              // Spurious fail, try again.</span><br><span class="line">              continue;</span><br><span class="line">            &#125;</span><br><span class="line">            if (!requested_suspend) &#123;</span><br><span class="line">              // 尝试挂起线程</span><br><span class="line">              bool updated =</span><br><span class="line">                  thread-&gt;ModifySuspendCount(self, +1, nullptr, SuspendReason::kInternal);</span><br><span class="line">              DCHECK(updated);</span><br><span class="line">              requested_suspend = true;</span><br><span class="line">              if (thread-&gt;IsSuspended()) &#123;</span><br><span class="line">                break;</span><br><span class="line">              &#125;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">              DCHECK(thread-&gt;IsSuspended());</span><br><span class="line">              break;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        if (requested_suspend) &#123;</span><br><span class="line">          suspended_count_modified_threads.push_back(thread);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    // Run the callback to be called inside this critical section.</span><br><span class="line">    if (callback != nullptr) &#123;</span><br><span class="line">      callback-&gt;Run(self);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  // Run the checkpoint on ourself while we wait for threads to suspend.</span><br><span class="line">  checkpoint_function-&gt;Run(self);</span><br><span class="line">  // Run the checkpoint on the suspended threads.</span><br><span class="line">  for (const auto&amp; thread : suspended_count_modified_threads) &#123;</span><br><span class="line">    // We know for sure that the thread is suspended at this point.</span><br><span class="line">    DCHECK(thread-&gt;IsSuspended());  // 所有线程都要进入suspend状态</span><br><span class="line">    checkpoint_function-&gt;Run(thread);</span><br><span class="line">    &#123;</span><br><span class="line">      MutexLock mu2(self, *Locks::thread_suspend_count_lock_);</span><br><span class="line">      // 恢复线程执行</span><br><span class="line">      bool updated = thread-&gt;ModifySuspendCount(self, -1, nullptr, SuspendReason::kInternal);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  &#123;</span><br><span class="line">    MutexLock mu2(self, *Locks::thread_suspend_count_lock_);</span><br><span class="line">    Thread::resume_cond_-&gt;Broadcast(self);</span><br><span class="line">  &#125;</span><br><span class="line">  return count;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过<code>RunCheckpoint</code>可知，它会要求所有线程都执行指定的Closure任务，假如某些线程非Runnable状态（比如kSuspend状态），无法执行Closure任务，则由调用者来代替这些线程执行Closure任务，即是在调用者线程里直接调用Run函数，并传入真正的目标线程对象。  </p>
+<p>哪些情况下会用到这种强操作呢？</p>
+<p>比如，应用程序的某些重要线程阻塞了，但我们又需要打印所有线程的调用栈信息以协助排查问题。显然，让阻塞的线程从阻塞处退出并进入CheckPoint点以执行打印调用栈是不现实的。此时，<code>RunCheckpoint</code>的这种处理方式就派上用场了。</p>
+<h2 id="源码中Check-Point闭包使用案例"><a href="#源码中Check-Point闭包使用案例" class="headerlink" title="源码中Check Point闭包使用案例"></a>源码中Check Point闭包使用案例</h2><h3 id="打印线程调用堆栈：DumpCheckPoint"><a href="#打印线程调用堆栈：DumpCheckPoint" class="headerlink" title="打印线程调用堆栈：DumpCheckPoint"></a>打印线程调用堆栈：DumpCheckPoint</h3><p>当App发生ANR时，会发送一个SIGQUIT信号，在信号处理器SignalCatcher中，监听到SIGQUIT后，调用了<code>signal_catcher</code>的<code>HandleSigQuit()</code>函数，代码如下：</p>
+<p><img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/94869a59-4894-49ee-aa2a-801096e30a3e.png" alt></p>
+<p>在<code>HandleSigQuit</code>函数中，调用了runtime的<code>DumpForSigQuit</code>函数</p>
+<p><img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/8476c470-4a66-4ad8-b3ce-7cb8f7ccd9fd.png" alt></p>
+<p>在Runtime的<code>DumpForSigQuit</code>函数中，调用了thread_list.cc中的<code>DumpForSigQuit</code>函数，打印所有线程的调用堆栈，包括Java线程和native线程：</p>
+<p><img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/f0597830-253a-473c-8b9b-03a9132de820.png" alt></p>
+<p><img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/9265b80a-83ea-46b4-b2dd-9bb2bc692800.png" alt></p>
+<p><code>DumpForSigQuit</code>函数最终调用了thread_list.cc中的<code>Dump</code>函数打印线程堆栈，Dump函数中，构造了一个<code>DumpCheckPoint</code>类型的闭包任务，然后调用<code>RunCheckPoint</code>函数，通知所有Java线程执行这个闭包任务(挂起的线程在当前线程中执行闭包)，代码如下：</p>
+<p><img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/e61ee1c5-0ee9-47b7-912f-2e612e3c411c.png" alt></p>
+<p>上面已经介绍<code>RunCheckPoint</code>函数的执行流程，这里重点介绍下thread_list.cc中的<code>DumpCheckPoint</code>这个类的具体实现。</p>
+<p><code>DumpCheckpoint</code>继承了纯虚类<code>Closure</code>，实现了虚函数<code>Run</code>函数，在Run函数中调用Thread的<code>Dump</code>函数输出当前线程的调用堆栈。  </p>
+<p><code>DumpCheckpoint</code>类中，比较难理解的点是成员变量<code>barrier_</code>以及函数<code>WaitForThreadsToRunThroughCheckpoint</code>。这里重点介绍下。  </p>
+<p><code>Barrier</code>这个词的本意是栅栏，在ART虚拟机中，它是当做多线程同步计数器来使用。比如，有6个线程，其中一个线程需要等待其他5个线程执行完某个任务才能返回，这种情形下，就可以使用<code>Barrier</code>来实现。</p>
+<p>具体用法如下：</p>
+<ol>
+<li>创建一个<code>Barrier</code>对象，设置初始值为5，并将这个对象传递给另外5个线程；</li>
+<li>这5个线程执行完任务后，调用<code>Barrier</code>的<code>Pass</code>函数，该函数会将<code>Barrier</code>的计数器减1；</li>
+<li>第6个线程将等待着这个<code>Barrier</code>对象，直到其计数器变成0；</li>
+</ol>
+<p>在thread_list.cc的<code>Dump</code>函数中，调用了<code>RunCheckPoint</code>，根据上面的分析，这个函数会返回需要执行check point任务的线程数量，然后将这个数量传给<code>WaitForThreadsToRunThroughCheckpoint</code>函数，将<code>barrier_</code>的计数器加上线程的数量，并等待<code>barrier_</code>计数器减少到0。  </p>
+<p>而在<code>DumpCheckpoint</code>的<code>Run</code>函数中，执行完后会将barrier_的计数器减去1，变成0后，说明所有线程的<code>DumpCheckpoint</code>都执行完，<code>WaitForThreadsToRunThroughCheckpoint</code>函数从<code>barrier_.Increment</code>处开始恢复执行，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">// A closure used by Thread::Dump.</span><br><span class="line">class DumpCheckpoint final : public Closure &#123;</span><br><span class="line"> public:</span><br><span class="line">  DumpCheckpoint(std::ostream* os, bool dump_native_stack)</span><br><span class="line">      : os_(os),</span><br><span class="line">        barrier_(0, /*verify_count_on_shutdown=*/false),</span><br><span class="line">        backtrace_map_(dump_native_stack ? BacktraceMap::Create(getpid()) : nullptr),</span><br><span class="line">        dump_native_stack_(dump_native_stack) &#123;</span><br><span class="line">    if (backtrace_map_ != nullptr) &#123;</span><br><span class="line">      backtrace_map_-&gt;SetSuffixesToIgnore(std::vector&lt;std::string&gt; &#123; &quot;oat&quot;, &quot;odex&quot; &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  void Run(Thread* thread) override &#123;</span><br><span class="line">    // Note thread and self may not be equal if thread was already suspended at the point of the</span><br><span class="line">    // request.</span><br><span class="line">    Thread* self = Thread::Current();</span><br><span class="line">    CHECK(self != nullptr);</span><br><span class="line">    std::ostringstream local_os;</span><br><span class="line">    &#123;</span><br><span class="line">      ScopedObjectAccess soa(self);</span><br><span class="line">      // 调用Thread的Dump函数，打印调用堆栈信息</span><br><span class="line">      thread-&gt;Dump(local_os, dump_native_stack_, backtrace_map_.get());</span><br><span class="line">    &#125;</span><br><span class="line">    &#123;</span><br><span class="line">      // Use the logging lock to ensure serialization when writing to the common ostream.</span><br><span class="line">      MutexLock mu(self, *Locks::logging_lock_);</span><br><span class="line">      *os_ &lt;&lt; local_os.str() &lt;&lt; std::endl;</span><br><span class="line">    &#125;</span><br><span class="line">    // 完成check point任务后，调用Pass，barrier_计数器减1，这个计数器初始为0，因此，可能是一个负数，也可能是正数</span><br><span class="line">    barrier_.Pass(self);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  void WaitForThreadsToRunThroughCheckpoint(size_t threads_running_checkpoint) &#123;</span><br><span class="line">    Thread* self = Thread::Current();</span><br><span class="line">    ScopedThreadStateChange tsc(self, kWaitingForCheckPointsToRun);</span><br><span class="line">    // barrier_在这里等待计数器变成0，或者等待超时，这里传入的threads_running_checkpoint等于所有需要执行check point任务的线程数</span><br><span class="line">    bool timed_out = barrier_.Increment(self, threads_running_checkpoint, kDumpWaitTimeout);</span><br><span class="line">    if (timed_out) &#123;</span><br><span class="line">      LOG((kIsDebugBuild &amp;&amp; (gAborting == 0)) ? ::android::base::FATAL : ::android::base::ERROR)</span><br><span class="line">          &lt;&lt; &quot;Unexpected time out during dump checkpoint.&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"> private:</span><br><span class="line">  std::ostream* const os_;</span><br><span class="line">  // The barrier to be passed through and for the requestor to wait upon.</span><br><span class="line">  Barrier barrier_;</span><br><span class="line">  // A backtrace map, so that all threads use a shared info and don&apos;t reacquire/parse separately.</span><br><span class="line">  std::unique_ptr&lt;BacktraceMap&gt; backtrace_map_;</span><br><span class="line">  const bool dump_native_stack_;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这里使用<code>Barrier</code>的原因是，在<code>RunCheckPoint</code>函数中，如果线程是<code>kRunnable</code>状态，则会将check point任务丢到该线程的check point点处，在本线程中执行。因此，需要Dump线程等待其他线程执行完check point任务。</p>
+<h3 id="Jit垃圾回收：MarkCodeClosure"><a href="#Jit垃圾回收：MarkCodeClosure" class="headerlink" title="Jit垃圾回收：MarkCodeClosure"></a>Jit垃圾回收：MarkCodeClosure</h3><p>在JIT流程中，有一个类JitCodeCache，它提供了一个存储空间，用于存放JIT编译的结果。当编译结果超过一定的阈值时（大约是64M），该部分空间会被释放，也就是JIT的GC过程。  </p>
+<p>对于JIT的GC而言，使用的算是Mark-Sweep，即标记清除法。  </p>
+<p>标记时，需要判断所有线程的正在执行的方法栈是否有使用到JIT编译的机器码，如果有，则标记这些方法对应的code cache，清除时忽略这些方法对应的机器码。  </p>
+<p>JIT GC的标记对应的函数是jit_code_cache.cc中的 <code>MarkCompiledCodeOnThreadStacks</code>，这个函数具体实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">void JitCodeCache::MarkCompiledCodeOnThreadStacks(Thread* self) &#123;</span><br><span class="line">  Barrier barrier(0);</span><br><span class="line">  size_t threads_running_checkpoint = 0;</span><br><span class="line">  // 构造一个MarkCodeClosure</span><br><span class="line">  MarkCodeClosure closure(this, GetLiveBitmap(), &amp;barrier);</span><br><span class="line">  // 让所有Java线程执行这个Closure</span><br><span class="line">  threads_running_checkpoint = Runtime::Current()-&gt;GetThreadList()-&gt;RunCheckpoint(&amp;closure);</span><br><span class="line">  // Now that we have run our checkpoint, move to a suspended state and wait</span><br><span class="line">  // for other threads to run the checkpoint.</span><br><span class="line">  ScopedThreadSuspension sts(self, kSuspended);</span><br><span class="line">  if (threads_running_checkpoint != 0) &#123;</span><br><span class="line">    // 等待所有线程的Closure任务都执行完成</span><br><span class="line">    barrier.Increment(self, threads_running_checkpoint);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里的代码逻辑跟<code>ThreadList::Dump()</code>中使用<code>DumpCheckPoint</code>的流程基本一致，先是构造一个Check point的Closure类，然后调用ThreadList的<code>RunCheckpoint</code>函数让所有线程执行这个Closure，最后，通过barrier等待每个线程的Closure执行完成。  </p>
+<p>在<code>MarkCodeClosure</code>的<code>Run</code>函数中，通过<code>StackVisitor</code>遍历线程的当前调用栈，如果有quick_code，则判断quick_code是否在jit_code_cache中，如果在，则在CodeCacheBitmap中标记当前quick_code的地址。在JIT的GC的清除阶段，就不清除对应的机器码。<br>代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">class MarkCodeClosure final : public Closure &#123;</span><br><span class="line"> public:</span><br><span class="line">  MarkCodeClosure(JitCodeCache* code_cache, CodeCacheBitmap* bitmap, Barrier* barrier)</span><br><span class="line">      : code_cache_(code_cache), bitmap_(bitmap), barrier_(barrier) &#123;&#125;</span><br><span class="line"></span><br><span class="line">  void Run(Thread* thread) override REQUIRES_SHARED(Locks::mutator_lock_) &#123;</span><br><span class="line">    ScopedTrace trace(__PRETTY_FUNCTION__);</span><br><span class="line">    DCHECK(thread == Thread::Current() || thread-&gt;IsSuspended());</span><br><span class="line">    StackVisitor::WalkStack(</span><br><span class="line">        [&amp;](const art::StackVisitor* stack_visitor) &#123;</span><br><span class="line">          const OatQuickMethodHeader* method_header =</span><br><span class="line">              stack_visitor-&gt;GetCurrentOatQuickMethodHeader();</span><br><span class="line">          if (method_header == nullptr) &#123;</span><br><span class="line">            return true;</span><br><span class="line">          &#125;</span><br><span class="line">          const void* code = method_header-&gt;GetCode();</span><br><span class="line">          // 判断当前线程栈中的机器码是否在jit code cache中</span><br><span class="line">          if (code_cache_-&gt;ContainsPc(code) &amp;&amp; !code_cache_-&gt;IsInZygoteExecSpace(code)) &#123;</span><br><span class="line">            // Use the atomic set version, as multiple threads are executing this code.</span><br><span class="line">            bitmap_-&gt;AtomicTestAndSet(FromCodeToAllocation(code));</span><br><span class="line">          &#125;</span><br><span class="line">          return true;</span><br><span class="line">        &#125;,</span><br><span class="line">        thread,</span><br><span class="line">        /* context= */ nullptr,</span><br><span class="line">        art::StackVisitor::StackWalkKind::kSkipInlinedFrames);</span><br><span class="line"></span><br><span class="line">    if (kIsDebugBuild) &#123;</span><br><span class="line">      // The stack walking code queries the side instrumentation stack if it</span><br><span class="line">      // sees an instrumentation exit pc, so the JIT code of methods in that stack</span><br><span class="line">      // must have been seen. We check this below.</span><br><span class="line">      for (const auto&amp; it : *thread-&gt;GetInstrumentationStack()) &#123;</span><br><span class="line">        // The &apos;method_&apos; in InstrumentationStackFrame is the one that has return_pc_ in</span><br><span class="line">        // its stack frame, it is not the method owning return_pc_. We just pass null to</span><br><span class="line">        // LookupMethodHeader: the method is only checked against in debug builds.</span><br><span class="line">        OatQuickMethodHeader* method_header =</span><br><span class="line">            code_cache_-&gt;LookupMethodHeader(it.second.return_pc_, /* method= */ nullptr);</span><br><span class="line">        if (method_header != nullptr) &#123;</span><br><span class="line">          const void* code = method_header-&gt;GetCode();</span><br><span class="line">          CHECK(bitmap_-&gt;Test(FromCodeToAllocation(code)));</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    // barrier_的计数器减1</span><br><span class="line">    barrier_-&gt;Pass(Thread::Current());</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"> private:</span><br><span class="line">  JitCodeCache* const code_cache_;</span><br><span class="line">  CodeCacheBitmap* const bitmap_;</span><br><span class="line">  Barrier* const barrier_;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h1 id="检查点-CheckPPoint-的插入流程"><a href="#检查点-CheckPPoint-的插入流程" class="headerlink" title="检查点(CheckPPoint)的插入流程"></a>检查点(CheckPPoint)的插入流程</h1><p>上面分析了挂起函数的实现，当主动触发线程挂起时，并没有直接让线程暂停执行，而仅仅是将线程的<code>state_and_flags</code>设置了<code>kSuspendRequest</code>标志位，最终是在<code>Thread::CheckSuspend()</code>函数中执行的线程挂起操作。  </p>
+<p>那么<code>Thread::CheckSuspend()</code>函数又是在何时何处被调用的呢？  </p>
+<p>答案是，在Check Point(检查点)中被执行的。在Java代码正常执行的过程中，会插入一些检查点，当代码执行到检查点时，会挂起当前线程，而执行其他任务，这些其他任务包括：垃圾回收、Debug、获取调用栈等等。</p>
+<p>在ART虚拟机中，检查点存在下面几个位置（解释执行和机器码执行略有区别）：</p>
+<ul>
+<li>方法结束时</li>
+<li>条件语句分支</li>
+<li>for\while 循环一次结束的出口</li>
+<li>抛出异常的地方</li>
+</ul>
+<p>下面分别分析解释执行和机器码执行流程中，检查点是如何被插入的。</p>
+<h2 id="解释执行"><a href="#解释执行" class="headerlink" title="解释执行"></a>解释执行</h2><p>先看看解释执行中的检查点。</p>
+<p><a href="http://aospxref.com/android-12.0.0_r3/xref/art/runtime/interpreter/interpreter_switch_impl-inl.h" target="_blank" rel="noopener">[art/runtime/interpreter/interpreter_switch_impl-inl.h]</a></p>
+<ol>
+<li><p>异常处理流程中的检查点：</p>
+<p><img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/db2b88e6-b1ae-4153-a37e-4f82e344aaf4.png" alt></p>
+</li>
+</ol>
+<ol start="2">
+<li><p>方法返回流程中的检查点：</p>
+<p><img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/54424c22-5c79-4890-952e-4380b4dde900.png" alt></p>
+</li>
+</ol>
+<ol start="3">
+<li><p>Goto, switch等跳转中的检查点：</p>
+<p><img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/5038cdd7-2b0a-4cd3-a960-ae84eb25ebb4.png" alt> </p>
+</li>
+</ol>
+<p>其中 Self()-&gt;AllowThreadSuspension() 就是挂起线程的检查点，它最终会执行到 <code>Thread::CheckSuspend()</code> 中，这里的 Self() 就是当前的Thread指针，代码如下：</p>
+<p><a href="http://aospxref.com/android-12.0.0_r3/xref/art/runtime/thread-inl.h#42" target="_blank" rel="noopener">[art/runtime/thread-inl.h]</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">inline void Thread::AllowThreadSuspension() &#123;</span><br><span class="line">  DCHECK_EQ(Thread::Current(), this);</span><br><span class="line">  if (UNLIKELY(TestAllFlags())) &#123;</span><br><span class="line">    CheckSuspend();</span><br><span class="line">  &#125;</span><br><span class="line">  // Invalidate the current thread&apos;s object pointers (ObjPtr) to catch possible moving GC bugs due</span><br><span class="line">  // to missing handles.</span><br><span class="line">  PoisonObjectPointers();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，最终调到了<code>CheckSuspend</code>函数。</p>
+<h2 id="机器码执行"><a href="#机器码执行" class="headerlink" title="机器码执行"></a>机器码执行</h2><p>字节指令的机器码是在dex2oat或者jit流程中编译生成的，在编译器生成quick code时，会在生成代码的各个流程中插入调用<code>CheckSuspend</code>函数的指令。</p>
+<h3 id="生成机器码流程"><a href="#生成机器码流程" class="headerlink" title="生成机器码流程"></a>生成机器码流程</h3><p>这里以arm64位指令生成过程为例，介绍机器码生成过程中，是如何插入<code>CheckSuspend</code>函数的相关指令。</p>
+<p>机器码中的检查点跟解释执行模式稍有不同，主要安装在以下位置：</p>
+<ul>
+<li>函数入口设置一个检查点；</li>
+<li>循环头(Loop Handler)设置一个检查点；</li>
+<li>HGoTo IR处理中，如果存在往回跳转的情况，也会设置一个检查点；</li>
+</ul>
+<p>具体来说，构造IR时，在<code>HInstructionBuilder</code>的<code>Build</code>函数中，在以下两处添加SuspendCheck的IR:</p>
+<ol>
+<li>Entry Block中设置一个检查点，其中<code>HSuspendCheck</code>是用于生成检查点机器码对应的IR；</li>
+<li>Loop Header Block中设置一个<code>HSuspendCheck</code>；</li>
+</ol>
+<p>代码如下：</p>
+<p><a href="http://aospxref.com/android-12.0.0_r3/xref/art/compiler/optimizing/instruction_builder.cc#Build" target="_blank" rel="noopener">art/compiler/optimizing/instruction_builder.cc</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">bool HInstructionBuilder::Build() &#123;</span><br><span class="line">  ......</span><br><span class="line">  for (HBasicBlock* block : graph_-&gt;GetReversePostOrder()) &#123;</span><br><span class="line">    current_block_ = block;</span><br><span class="line">    uint32_t block_dex_pc = current_block_-&gt;GetDexPc();</span><br><span class="line"></span><br><span class="line">    InitializeBlockLocals();</span><br><span class="line"></span><br><span class="line">    if (current_block_-&gt;IsEntryBlock()) &#123;</span><br><span class="line">      InitializeParameters();</span><br><span class="line">      AppendInstruction(new (allocator_) HSuspendCheck(0u));</span><br><span class="line">      AppendInstruction(new (allocator_) HGoto(0u));</span><br><span class="line">      continue;</span><br><span class="line">    &#125; else if (current_block_-&gt;IsExitBlock()) &#123;</span><br><span class="line">      AppendInstruction(new (allocator_) HExit());</span><br><span class="line">      continue;</span><br><span class="line">    &#125; else if (current_block_-&gt;IsLoopHeader()) &#123;</span><br><span class="line">      HSuspendCheck* suspend_check = new (allocator_) HSuspendCheck(current_block_-&gt;GetDexPc());</span><br><span class="line">      current_block_-&gt;GetLoopInformation()-&gt;SetSuspendCheck(suspend_check);</span><br><span class="line">      // This is slightly odd because the loop header might not be empty (TryBoundary).</span><br><span class="line">      // But we&apos;re still creating the environment with locals from the top of the block.</span><br><span class="line">      InsertInstructionAtTop(suspend_check);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (block_dex_pc == kNoDexPc || current_block_ != block_builder_-&gt;GetBlockAt(block_dex_pc)) &#123;</span><br><span class="line">      // Synthetic block that does not need to be populated.</span><br><span class="line">      DCHECK(IsBlockPopulated(current_block_));</span><br><span class="line">      continue;</span><br><span class="line">    &#125;</span><br><span class="line">    ......</span><br><span class="line">  &#125;</span><br><span class="line">  .....</span><br><span class="line">  return true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最终生成机器码时，在CodeGenerator中，会针对<code>HSuspendCheck</code>和<code>HGoTo</code> IR生成与检查点相关的机器码，代码如下：</p>
+<p><a href="http://aospxref.com/android-12.0.0_r3/xref/art/compiler/optimizing/code_generator_arm64.cc#VisitSuspendCheck" target="_blank" rel="noopener">art/compiler/optimizing/code_generator_arm64.cc</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">void InstructionCodeGeneratorARM64::VisitSuspendCheck(HSuspendCheck* instruction) &#123;</span><br><span class="line">  HBasicBlock* block = instruction-&gt;GetBlock();</span><br><span class="line">  // 如果是因为循环而设置的HSuspendCheck，则统一放到HGoTo IR的处理流程中操作</span><br><span class="line">  if (block-&gt;GetLoopInformation() != nullptr) &#123;</span><br><span class="line">    DCHECK(block-&gt;GetLoopInformation()-&gt;GetSuspendCheck() == instruction);</span><br><span class="line">    // The back edge will generate the suspend check.</span><br><span class="line">    return;</span><br><span class="line">  &#125;</span><br><span class="line">  // 根据上面的HInstructionBuilder::Build函数可知，在Entry Block的处理中，会先添加一个HSuspendCheck IR</span><br><span class="line">  // 再添加一个HGoTo IR。由于HGoTo IR中也会添加检查点，因此这里的EntryBlock就不添加</span><br><span class="line">  if (block-&gt;IsEntryBlock() &amp;&amp; instruction-&gt;GetNext()-&gt;IsGoto()) &#123;</span><br><span class="line">    // The goto will generate the suspend check.</span><br><span class="line">    return;</span><br><span class="line">  &#125;</span><br><span class="line">  // 生成检查点相关的机器码</span><br><span class="line">  GenerateSuspendCheck(instruction, nullptr);</span><br><span class="line">  codegen_-&gt;MaybeGenerateMarkingRegisterCheck(/* code= */ __LINE__);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在<code>HGoTo</code> IR中，也有<code>HSuspendCheck</code>的处理流程，这里针对循环回跳和Entry Block分别设置了检查点：</p>
+<p><a href="http://aospxref.com/android-12.0.0_r3/xref/art/compiler/optimizing/code_generator_arm64.cc#HandleGoto" target="_blank" rel="noopener">art/compiler/optimizing/code_generator_arm64.cc</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">void InstructionCodeGeneratorARM64::VisitGoto(HGoto* got) &#123;</span><br><span class="line">  HandleGoto(got, got-&gt;GetSuccessor());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void InstructionCodeGeneratorARM64::HandleGoto(HInstruction* got, HBasicBlock* successor) &#123;</span><br><span class="line">  if (successor-&gt;IsExitBlock()) &#123;</span><br><span class="line">    DCHECK(got-&gt;GetPrevious()-&gt;AlwaysThrows());</span><br><span class="line">    return;  // no code needed</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  HBasicBlock* block = got-&gt;GetBlock();</span><br><span class="line">  HInstruction* previous = got-&gt;GetPrevious();</span><br><span class="line">  HLoopInformation* info = block-&gt;GetLoopInformation();</span><br><span class="line"></span><br><span class="line">  // 针对循环回跳，设置一个检查点</span><br><span class="line">  if (info != nullptr &amp;&amp; info-&gt;IsBackEdge(*block) &amp;&amp; info-&gt;HasSuspendCheck()) &#123;</span><br><span class="line">    codegen_-&gt;MaybeIncrementHotness(/* is_frame_entry= */ false);</span><br><span class="line">    GenerateSuspendCheck(info-&gt;GetSuspendCheck(), successor);</span><br><span class="line">    return;</span><br><span class="line">  &#125;</span><br><span class="line">  // 针对Entry Block设置一个检查点</span><br><span class="line">  if (block-&gt;IsEntryBlock() &amp;&amp; (previous != nullptr) &amp;&amp; previous-&gt;IsSuspendCheck()) &#123;</span><br><span class="line">    GenerateSuspendCheck(previous-&gt;AsSuspendCheck(), nullptr);</span><br><span class="line">    codegen_-&gt;MaybeGenerateMarkingRegisterCheck(/* code= */ __LINE__);</span><br><span class="line">  &#125;</span><br><span class="line">  if (!codegen_-&gt;GoesToNextBlock(block, successor)) &#123;</span><br><span class="line">    __ B(codegen_-&gt;GetLabelOf(successor));</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>再看看<code>GenerateSuspendCheck()</code>函数中生成SuspendCheck函数调用对应的指令的步骤，主要包括三个步骤：</p>
+<ol>
+<li>创建一个<code>SuspendCheckSlowPathARM64</code>对象；</li>
+<li>根据线程的<code>state_and_flag</code>成员变量的偏移，并生成ldhr指令；</li>
+<li>生成cbnz或者cnd指令；</li>
+</ol>
+<p><a href="http://aospxref.com/android-12.0.0_r3/xref/art/compiler/optimizing/code_generator_arm64.cc#GenerateSuspendCheck" target="_blank" rel="noopener">art/compiler/optimizing/code_generator_arm64.cc</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">void InstructionCodeGeneratorARM64::GenerateSuspendCheck(HSuspendCheck* instruction,</span><br><span class="line">                                                         HBasicBlock* successor) &#123;</span><br><span class="line">  SuspendCheckSlowPathARM64* slow_path =</span><br><span class="line">      down_cast&lt;SuspendCheckSlowPathARM64*&gt;(instruction-&gt;GetSlowPath());</span><br><span class="line">  if (slow_path == nullptr) &#123;</span><br><span class="line">    slow_path =</span><br><span class="line">        new (codegen_-&gt;GetScopedAllocator()) SuspendCheckSlowPathARM64(instruction, successor);</span><br><span class="line">    instruction-&gt;SetSlowPath(slow_path);</span><br><span class="line">    codegen_-&gt;AddSlowPath(slow_path);</span><br><span class="line">    if (successor != nullptr) &#123;</span><br><span class="line">      DCHECK(successor-&gt;IsLoopHeader());</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    DCHECK_EQ(slow_path-&gt;GetSuccessor(), successor);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  UseScratchRegisterScope temps(codegen_-&gt;GetVIXLAssembler());</span><br><span class="line">  Register temp = temps.AcquireW();</span><br><span class="line"></span><br><span class="line">  // 生成机器码里，需要先获取线程的tls32.state_and_flag是否被设置，如果是，才执行SuspendCheck函数</span><br><span class="line">  __ Ldrh(temp, MemOperand(tr, Thread::ThreadFlagsOffset&lt;kArm64PointerSize&gt;().SizeValue()));</span><br><span class="line">  if (successor == nullptr) &#123;</span><br><span class="line">    __ Cbnz(temp, slow_path-&gt;GetEntryLabel());</span><br><span class="line">    __ Bind(slow_path-&gt;GetReturnLabel());</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    __ Cbz(temp, codegen_-&gt;GetLabelOf(successor));</span><br><span class="line">    __ B(slow_path-&gt;GetEntryLabel());</span><br><span class="line">    // slow_path will return to GetLabelOf(successor).</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>再看看<code>SuspendCheckSlowPathARM64</code>这个类，检查点对应的机器码在这个类的<code>EmitNativeCode</code>函数生成：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">class SuspendCheckSlowPathARM64 : public SlowPathCodeARM64 &#123;</span><br><span class="line"> public:</span><br><span class="line">  SuspendCheckSlowPathARM64(HSuspendCheck* instruction, HBasicBlock* successor)</span><br><span class="line">      : SlowPathCodeARM64(instruction), successor_(successor) &#123;&#125;</span><br><span class="line"></span><br><span class="line">  void EmitNativeCode(CodeGenerator* codegen) override &#123;</span><br><span class="line">    LocationSummary* locations = instruction_-&gt;GetLocations();</span><br><span class="line">    CodeGeneratorARM64* arm64_codegen = down_cast&lt;CodeGeneratorARM64*&gt;(codegen);</span><br><span class="line">    __ Bind(GetEntryLabel());</span><br><span class="line">    SaveLiveRegisters(codegen, locations);  // Only saves live 128-bit regs for SIMD.</span><br><span class="line">    // 调用kQuickTestSuspend函数</span><br><span class="line">    arm64_codegen-&gt;InvokeRuntime(kQuickTestSuspend, instruction_, instruction_-&gt;GetDexPc(), this);</span><br><span class="line">    CheckEntrypointTypes&lt;kQuickTestSuspend, void, void&gt;();</span><br><span class="line">    RestoreLiveRegisters(codegen, locations);  // Only restores live 128-bit regs for SIMD.</span><br><span class="line">    if (successor_ == nullptr) &#123;</span><br><span class="line">      __ B(GetReturnLabel());</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      __ B(arm64_codegen-&gt;GetLabelOf(successor_));</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  vixl::aarch64::Label* GetReturnLabel() &#123;return &amp;return_label_; &#125;</span><br><span class="line">  HBasicBlock* GetSuccessor() const &#123; return successor_; &#125;</span><br><span class="line"> private:</span><br><span class="line">  HBasicBlock* const successor_;</span><br><span class="line">  vixl::aarch64::Label return_label_;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><code>kQuickTestSuspend</code>定义在<code>QuickEntrypointEnum</code>这个枚举类中，这里使用了两层#define宏定义包裹：</p>
+<p><a href="http://aospxref.com/android-12.0.0_r3/xref/art/runtime/entrypoints/quick/quick_entrypoints_enum.h#29" target="_blank" rel="noopener">art/runtime/entrypoints/quick/quick_entrypoints_enum.h</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// Define an enum for the entrypoints. Names are prepended a &apos;kQuick&apos;.</span><br><span class="line">enum QuickEntrypointEnum &#123;  // NOLINT(whitespace/braces)</span><br><span class="line">#define ENTRYPOINT_ENUM(name, rettype, ...) kQuick ## name,</span><br><span class="line">#include &quot;quick_entrypoints_list.h&quot;</span><br><span class="line">  QUICK_ENTRYPOINT_LIST(ENTRYPOINT_ENUM)</span><br><span class="line">#undef QUICK_ENTRYPOINT_LIST</span><br><span class="line">#undef ENTRYPOINT_ENUM</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><code>kQuickTestSuspend</code>对应的函数的声明在<code>QuickEntryPoints</code>结构体中，对应的函数名称是<code>pTestSuspend</code>，这里的<code>QuickEntryPoints</code>结构体，在thread.h中也被使用到:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">class Thread &#123;</span><br><span class="line">    ...</span><br><span class="line">    QuickEntryPoints quick_entrypoints;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><a href="http://aospxref.com/android-12.0.0_r3/xref/art/runtime/entrypoints/quick/quick_entrypoints.h#49" target="_blank" rel="noopener">art/runtime/entrypoints/quick/quick_entrypoints.h</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// Pointers to functions that are called by quick compiler generated code via thread-local storage.</span><br><span class="line">struct PACKED(4) QuickEntryPoints &#123;</span><br><span class="line">#define ENTRYPOINT_ENUM(name, rettype, ...) rettype ( * p ## name )( __VA_ARGS__ );</span><br><span class="line">#include &quot;quick_entrypoints_list.h&quot;</span><br><span class="line">  QUICK_ENTRYPOINT_LIST(ENTRYPOINT_ENUM)</span><br><span class="line">#undef QUICK_ENTRYPOINT_LIST</span><br><span class="line">#undef ENTRYPOINT_ENUM</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>以上两处，共同使用<code>QUICK_ENTRYPOINT_LIST</code>的宏定义：</p>
+<p><a href="http://aospxref.com/android-12.0.0_r3/xref/art/runtime/entrypoints/quick/quick_entrypoints_list.h#22" target="_blank" rel="noopener">art/runtime/entrypoints/quick/quick_entrypoints_list.h</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// All quick entrypoints. Format is name, return type, argument types.</span><br><span class="line">#define QUICK_ENTRYPOINT_LIST(V) \</span><br><span class="line">  V(AllocArrayResolved, void*, mirror::Class*, int32_t) \</span><br><span class="line">  V(AllocArrayResolved8, void*, mirror::Class*, int32_t) \</span><br><span class="line">  .....</span><br><span class="line">  V(TestSuspend, void, void) \</span><br><span class="line">  ......</span><br></pre></td></tr></table></figure>
+<p><code>pTestSuspend</code>函数在线程初始化时设置为<code>art_quick_test_suspend</code>函数的地址，进而调用到<code>SuspendCheck</code>函数，下文具体分析这个流程。</p>
+<h3 id="生成机器码结果"><a href="#生成机器码结果" class="headerlink" title="生成机器码结果"></a>生成机器码结果</h3><p>这里以一个非常简单的java方法为例，使用下面的命令编译出release apk的odex文件：</p>
+<blockquote>
+<p>adb shell cmd package compile -m speed -f my-package</p>
+</blockquote>
+<p>分析其编译后的机器码中的指令（Android10）：</p>
+<p><img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/2a27dacd-ecfc-40f7-afc7-a54e7b397517.png" alt></p>
+<p>方法开头的一些指令是进行栈溢出检测，开辟栈空间以及保存寄存的操作。  </p>
+<p>看红框中的指令，读取了x19寄存器（tr)中的值到w16寄存器中，x19寄存器中保存的是当前线程的地址，thread指针偏移为0出的成员变量刚好就是thread的<code>state_and_flags</code>，从源码中可以看出:</p>
+<p><img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/8fbc42a9-a0c8-44d9-b414-6942fbed87af.png" alt></p>
+<p>红框中这两条指令：</p>
+<blockquote>
+<p>0x0059232c: 79400270 ldrh w16, [tr] ; state_and_flags</p>
+<p>0x00592330: 35000670 cbnz w16, #+0xcc (addr 0x5923fc)</p>
+</blockquote>
+<p>意思就是，当前线程的<code>state_and_flags</code>的值不为0，就跳转到地址0x5923fc执行。</p>
+<p>地址0x5923fc处的指令如下：</p>
+<p><img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/a3aa5567-eb0f-432a-a4b3-19913e8cea2e.png" alt></p>
+<p>红框中的指令，读取x19寄存器中地址偏移1352处的内容到lr寄存器中，然后跳转到这个地址中执行。</p>
+<p>x19寄存器保存的是当前线程的地址，当前线程偏移1352处刚好就是当前线程<code>pTestSuspend</code>成员变量。（PS: 在Android12及以上版本编译后的机器码中,此处已改成直接跳转到目标函数。）   </p>
+<p>线程的<code>pTestSuspend</code>成员变量的赋值是在线程初始化的流程中进行的：</p>
+<p><a href="http://aospxref.com/android-12.0.0_r3/xref/art/runtime/thread.h#1828" target="_blank" rel="noopener">[art/runtime/thread.h]</a></p>
+<p><img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/fbb4e2f5-507c-4c2d-81d3-0b77667b8c33.png" alt></p>
+<p><a href="http://aospxref.com/android-12.0.0_r3/xref/art/runtime/thread.cc#180" target="_blank" rel="noopener">[art/runtime/thread.cc]</a></p>
+<p>  <img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/acbe5ed2-36b4-4ad2-8b1d-4d0adefe84b8.png" alt></p>
+<p>在线程的初始化流程中的注册了EntryPoints，<code>pTestSuspend</code>这个成员变量设置了函数<code>art_quick_test_suspend</code>的地址，这是一个纯汇编实现的函数，arm64中实现如下：</p>
+<p><a href="http://aospxref.com/android-12.0.0_r3/xref/art/runtime/arch/arm64/quick_entrypoints_arm64.S#1661" target="_blank" rel="noopener">[art/runtime/arch/arm64/quick_entrypoints_arm64.S]</a></p>
+<p><img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/40aab672-f808-4dff-a326-51d7e22ebf84.png" alt></p>
+<p>直接跳转到了函数<code>artTestSuspendFromCode</code>中：</p>
+<p><a href="http://aospxref.com/android-12.0.0_r3/xref/art/runtime/entrypoints/quick/quick_thread_entrypoints.cc#24" target="_blank" rel="noopener">[art/runtime/entrypoints/quick/quick_thread_entrypoints.cc]</a></p>
+<p><img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/4a70826b-cc5c-4fb3-87f3-ccf870db8cb0.png" alt></p>
+<p>最终也是执行了线程的<code>CheckSuspend()</code>函数。  </p>
+<p>另外，在jni函数的调用结束时，也加入了检查点。</p>
+<p><img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/5d2b0c35-6e50-49de-900a-8b4dcfc9b7c0.png" alt></p>
+<p><img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/328b44a5-c6f9-463c-85b3-913b7098c22f.png" alt></p>
+<p>普通的jni方法调用时，会将线程状态切换到kNative，执行完成切换回kRunnable，因此这个流程不需要检查点。</p>
+<p>但FastNative注解的jni方法，由于不会切换线程状态，因此，方法执行完成，会调用一次<code>CheckSuspend()</code>。  </p>
+<p>至此，总结完解释执行和机器码执行中的checkPoint点的设置流程。</p>
+<h1 id="线程CheckPoint机制流程图"><a href="#线程CheckPoint机制流程图" class="headerlink" title="线程CheckPoint机制流程图"></a>线程CheckPoint机制流程图</h1><p>线程CheckPoint机制的整体流程图如下：</p>
+<p><img src="https://raw.githubusercontent.com/WindySha/WindySha.github.io/source/source/images/%E6%B5%81%E7%A8%8B%E5%9B%BE123211223.jpg" alt>  </p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>ART虚拟机的Check Point机制主要为了实现两个功能：</p>
+<ol>
+<li>线程运行时执行Check Point闭包任务；</li>
+<li>挂起和恢复线程的执行；</li>
+</ol>
+<p>虚拟机为了实现这两个功能，在Java线程对应的Native类中添加了<code>state_and_flag</code>变量，通过设置<code>kSuspendRequest</code>或者<code>kCheckpointRequest</code>来通知线程需要执行挂起任务还是闭包任务。具体执行任务的时机是在<code>CheckSuspend</code>函数中，这函数(检查点)被插入到了解释执行和机器码执行的多个流程中，这样，Runnable状态的线程就能快速执行到检查点，完成线程挂起或者执行闭包任务。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>Android Source Code</li>
+<li>《深入理解Android Java虚拟机ART》邓凡平 著</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/ART/" rel="tag"># ART</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/02/19/一种基于JDWP动态注入代码的方案/" rel="next" title="一种基于JDWP动态注入代码的方案">
+                <i class="fa fa-chevron-left"></i> 一种基于JDWP动态注入代码的方案
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div id="gitalk-container"></div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/my_photo.jpg" alt="Windy">
+            
+              <p class="site-author-name" itemprop="name">Windy</p>
+              <p class="site-description motion-element" itemprop="description">用技术撬动地球</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">46</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/WindySha" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/2d35b94de2a4" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-globe"></i>简书</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CheckPoint机制"><span class="nav-number">2.</span> <span class="nav-text">CheckPoint机制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CheckPoint标志位和线程状态"><span class="nav-number">3.</span> <span class="nav-text">CheckPoint标志位和线程状态</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#线程挂起恢复流程"><span class="nav-number">4.</span> <span class="nav-text">线程挂起恢复流程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#挂起函数"><span class="nav-number">4.1.</span> <span class="nav-text">挂起函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CheckSuspend函数"><span class="nav-number">4.2.</span> <span class="nav-text">CheckSuspend函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程挂起"><span class="nav-number">4.3.</span> <span class="nav-text">线程挂起</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TransitionFromRunnableToSuspended-函数"><span class="nav-number">4.3.1.</span> <span class="nav-text">TransitionFromRunnableToSuspended 函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TransitionFromSuspendedToRunnable-函数"><span class="nav-number">4.3.2.</span> <span class="nav-text">TransitionFromSuspendedToRunnable 函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程恢复"><span class="nav-number">4.4.</span> <span class="nav-text">线程恢复</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Wait-和-Broadcast-的实现原理"><span class="nav-number">4.5.</span> <span class="nav-text">Wait 和 Broadcast 的实现原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SuspendAll和ResumeAll"><span class="nav-number">4.6.</span> <span class="nav-text">SuspendAll和ResumeAll</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SuspendAll流程"><span class="nav-number">4.6.1.</span> <span class="nav-text">SuspendAll流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ResumeAll流程"><span class="nav-number">4.6.2.</span> <span class="nav-text">ResumeAll流程</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#执行CheckPoint闭包任务"><span class="nav-number">5.</span> <span class="nav-text">执行CheckPoint闭包任务</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#执行Closure任务流程"><span class="nav-number">5.1.</span> <span class="nav-text">执行Closure任务流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设置Closure任务"><span class="nav-number">5.2.</span> <span class="nav-text">设置Closure任务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#所有线程执行Closure任务"><span class="nav-number">5.3.</span> <span class="nav-text">所有线程执行Closure任务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#源码中Check-Point闭包使用案例"><span class="nav-number">5.4.</span> <span class="nav-text">源码中Check Point闭包使用案例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#打印线程调用堆栈：DumpCheckPoint"><span class="nav-number">5.4.1.</span> <span class="nav-text">打印线程调用堆栈：DumpCheckPoint</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Jit垃圾回收：MarkCodeClosure"><span class="nav-number">5.4.2.</span> <span class="nav-text">Jit垃圾回收：MarkCodeClosure</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#检查点-CheckPPoint-的插入流程"><span class="nav-number">6.</span> <span class="nav-text">检查点(CheckPPoint)的插入流程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#解释执行"><span class="nav-number">6.1.</span> <span class="nav-text">解释执行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#机器码执行"><span class="nav-number">6.2.</span> <span class="nav-text">机器码执行</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#生成机器码流程"><span class="nav-number">6.2.1.</span> <span class="nav-text">生成机器码流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#生成机器码结果"><span class="nav-number">6.2.2.</span> <span class="nav-text">生成机器码结果</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#线程CheckPoint机制流程图"><span class="nav-number">7.</span> <span class="nav-text">线程CheckPoint机制流程图</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">8.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">9.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Windy</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+<span id="busuanzi_container_site_pv" class="theme-info">
+&nbsp;&nbsp;|&nbsp;&nbsp;本站总访问量<span id="busuanzi_value_site_pv"></span>次
+  </span>
+  <span id="busuanzi_container_site_uv" class="theme-info">
+&nbsp;&nbsp;|&nbsp;&nbsp;本站访客数<span id="busuanzi_value_site_uv"></span>人次
+  </span>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="“https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js”"></script>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+  <script src="/js/src/md5.min.js"></script>
+   <script type="text/javascript">
+        var gitalk = new Gitalk({
+          clientID: '74fae1ebd3ed7c477fa3',
+          clientSecret: '6c20e96e69c1d539a3150d1c464977fbcd2ce50e',
+          repo: 'my_hexo_blog_comments',
+          owner: 'WindySha',
+          admin: ['WindySha'],
+          id: md5(location.pathname),
+          distractionFreeMode: 'true'
+        })
+        gitalk.render('gitalk-container')           
+       </script>
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "box";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+  </script>
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
