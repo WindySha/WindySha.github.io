@@ -326,7 +326,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2024/03/22/一种Android-Root环境下动态注入Java和Native代码的方案/" itemprop="url">一种Android Root环境下动态注入Java和Native代码的方案</a></h1>
+                <a class="post-title-link" href="/2024/03/22/一种Android-Root环境下动态注入Java和Native代码的方案/" itemprop="url">Android Root环境下动态注入Java和Native代码的实践</a></h1>
         
 
         <div class="post-meta">
@@ -433,8 +433,8 @@
       
         
           <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>在Android逆向开发中，我们通常会使用Frida工具在命令行中动态注入JavaScript代码到目标应用，编写JavaScript对Android新手来说可能会有些困难，假如能用Java代码Hook Java层方法，c/c++代码Hook native层函数指令，用起来可能会更顺手。</p>
-<p>在Android 正向开发中，我们往往需要在Release包上进行性能优化或复杂问题的分析，然而，这并不是一件容易的事情。原因在于，Release包通常不方便调试，大型App的编译过程需要消耗大量时间，修改框架或第三方SDK代码也相对困难。因此，有时候我们就需要利用逆向工具，比如Xposed，通过代码注入的方式来进行问题调试。</p>
-<p>那么，问题来了，如何实现在命令行中将Xposed插件动态地注入到目标应用中呢？</p>
+<p>在Android正向开发中，我们往往需要在Release包上进行性能诊断或复杂问题的分析，然而，这并不是一件容易的事情。原因在于，Release包通常不方便调试，大型App的编译过程需要消耗大量时间，修改框架或第三方SDK代码也相对困难。因此，有时候我们就需要利用逆向工具，比如Xposed或者Frida，通过代码注入的方式来进行问题调试。</p>
+<p>那么，如何实现在命令行中将Xposed插件动态地注入到目标应用中呢？<br>本文将探讨在Android Root设备上将Xposed插件动态注入到目标应用的一种实践。</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2024/03/22/一种Android-Root环境下动态注入Java和Native代码的方案/#more" rel="contents">
